@@ -71,6 +71,8 @@ void WSystemCore::OnFirst_GameModeInit()
 		std::bind_front(&WSystemCore::Post_GameModeStateTransition, this),
 		nullptr);
 
+	ship_database.ScanShipData();
+
 	first_game_mode_init = false;
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <compare>
 #include <utility>
 #include <source_location>
 
@@ -18,6 +19,7 @@ public:
     UObjWrapper(RC::Unreal::UObject* obj);
     [[nodiscard]] bool IsValid() const noexcept;
     RC::Unreal::UObject* operator->() const;
+    friend std::strong_ordering operator<=>(const UObjWrapper& lhs, const UObjWrapper& rhs) noexcept;
 
 protected:
     [[nodiscard]] RC::Unreal::FProperty* FindProperty(

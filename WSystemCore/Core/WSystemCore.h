@@ -18,6 +18,7 @@
 
 #include "ResearchManager.h"
 #include "RuleManager.h"
+#include "ShipDatabase.h"
 
 class WSystemCore final : public CppUserModBase
 {
@@ -40,6 +41,7 @@ public:
     WSysResearchManager research_manager;
     WSysRuleManager rule_manager;
     LuaInterface lua_interface;
+    ShipDatabase ship_database;
 
     void on_unreal_init() override;
     // void on_update() override;

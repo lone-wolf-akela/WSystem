@@ -107,3 +107,8 @@ RC::Unreal::UFunction* UObjWrapper::FindFunction(const TCHAR* name, const std::s
 		return nullptr;
 	}
 }
+
+std::strong_ordering operator<=>(const UObjWrapper& lhs, const UObjWrapper& rhs) noexcept
+{
+	return lhs.obj <=> rhs.obj;
+}
