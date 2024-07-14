@@ -1,4 +1,4 @@
-#include <nowide/convert.hpp>
+#include <boost/nowide/convert.hpp>
 
 #include "UObject.h"
 
@@ -23,10 +23,10 @@ RC::Unreal::FProperty* UObjWrapper::FindProperty(const TCHAR* name, const std::s
 	{
 		RC::Output::send<RC::LogLevel::LogLevel::Error>(
 			STR("{}({}:{}) `{}`: Invalid object.\n"),
-			nowide::widen(location.file_name()),
+			boost::nowide::widen(location.file_name()),
 			location.line(),
 			location.column(),
-			nowide::widen(location.function_name()));
+			boost::nowide::widen(location.function_name()));
 		return nullptr;
 	}
 	if (const auto prop = obj->GetPropertyByNameInChain(name))
@@ -37,10 +37,10 @@ RC::Unreal::FProperty* UObjWrapper::FindProperty(const TCHAR* name, const std::s
 	{
 		RC::Output::send<RC::LogLevel::LogLevel::Error>(
 			STR("{}({}:{}) `{}`: Failed to find property `{}`.\n"),
-			nowide::widen(location.file_name()),
+			boost::nowide::widen(location.file_name()),
 			location.line(),
 			location.column(),
-			nowide::widen(location.function_name()),
+			boost::nowide::widen(location.function_name()),
 			name);
 		return nullptr;
 	}
@@ -56,10 +56,10 @@ void* UObjWrapper::GetPropertyValue(RC::Unreal::FProperty* prop, const std::sour
 	{
 		RC::Output::send<RC::LogLevel::LogLevel::Error>(
 			STR("{}({}:{}) `{}`: Invalid object.\n"),
-			nowide::widen(location.file_name()),
+			boost::nowide::widen(location.file_name()),
 			location.line(),
 			location.column(),
-			nowide::widen(location.function_name()));
+			boost::nowide::widen(location.function_name()));
 		return nullptr;
 	}
 
@@ -71,10 +71,10 @@ void* UObjWrapper::GetPropertyValue(RC::Unreal::FProperty* prop, const std::sour
 	{
 		RC::Output::send<RC::LogLevel::LogLevel::Error>(
 			STR("{}({}:{}) `{}`: Failed to get property value.\n"),
-			nowide::widen(location.file_name()),
+			boost::nowide::widen(location.file_name()),
 			location.line(),
 			location.column(),
-			nowide::widen(location.function_name()));
+			boost::nowide::widen(location.function_name()));
 		return nullptr;
 	}
 }
@@ -85,10 +85,10 @@ RC::Unreal::UFunction* UObjWrapper::FindFunction(const TCHAR* name, const std::s
 	{
 		RC::Output::send<RC::LogLevel::LogLevel::Error>(
 			STR("{}({}:{}) `{}`: Invalid object.\n"),
-			nowide::widen(location.file_name()),
+			boost::nowide::widen(location.file_name()),
 			location.line(),
 			location.column(),
-			nowide::widen(location.function_name()));
+			boost::nowide::widen(location.function_name()));
 		return nullptr;
 	}
 	if (const auto func = obj->GetFunctionByNameInChain(name))
@@ -99,10 +99,10 @@ RC::Unreal::UFunction* UObjWrapper::FindFunction(const TCHAR* name, const std::s
 	{
 		RC::Output::send<RC::LogLevel::LogLevel::Error>(
 			STR("{}({}:{}) `{}`: Failed to find function `{}`.\n"),
-			nowide::widen(location.file_name()),
+			boost::nowide::widen(location.file_name()),
 			location.line(),
 			location.column(),
-			nowide::widen(location.function_name()),
+			boost::nowide::widen(location.function_name()),
 			name);
 		return nullptr;
 	}

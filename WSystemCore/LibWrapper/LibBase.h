@@ -1,7 +1,7 @@
 #pragma once
 #include <utility>
 
-#include <nowide/convert.hpp>
+#include <boost/nowide/convert.hpp>
 
 #include <Unreal/UClass.hpp>
 #include <Unreal/UFunction.hpp>
@@ -32,10 +32,10 @@ public:
 		{
 			RC::Output::send<RC::LogLevel::LogLevel::Error>(
 				STR("{}({}:{}) `{}`: Failed to find lib: {}\n"),
-				nowide::widen(location.file_name()),
+				boost::nowide::widen(location.file_name()),
 				location.line(),
 				location.column(),
-				nowide::widen(location.function_name()),
+				boost::nowide::widen(location.function_name()),
 				LibT::LibPath);
 		}
 	}
@@ -56,10 +56,10 @@ protected:
 		{
 			RC::Output::send<RC::LogLevel::LogLevel::Error>(
 				STR("{}({}:{}) `{}`: lib_class has not been initialized.\n"),
-				nowide::widen(location.file_name()),
+				boost::nowide::widen(location.file_name()),
 				location.line(),
 				location.column(),
-				nowide::widen(location.function_name()));
+				boost::nowide::widen(location.function_name()));
 			return nullptr;
 		}
 		if (const auto func = RC::Unreal::UObjectGlobals::StaticFindObject<RC::Unreal::UFunction*>(
@@ -72,10 +72,10 @@ protected:
 		{
 			RC::Output::send<RC::LogLevel::LogLevel::Error>(
 				STR("{}({}:{}) `{}`: Failed to find function `{}`.\n"),
-				nowide::widen(location.file_name()),
+				boost::nowide::widen(location.file_name()),
 				location.line(),
 				location.column(),
-				nowide::widen(location.function_name()),
+				boost::nowide::widen(location.function_name()),
 				name);
 			return nullptr;
 		}

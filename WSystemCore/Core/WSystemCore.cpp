@@ -1,7 +1,7 @@
 #include <vector>
 
 #include <magic_enum_all.hpp>
-#include <nowide/convert.hpp>
+#include <boost/nowide/convert.hpp>
 
 #include <Unreal/Hooks.hpp>
 #include <Unreal/UObject.hpp>
@@ -12,7 +12,8 @@
 #include "WSystemCore.h"
 
 WSystemCore::WSystemCore() : 
-	research_manager(&tiir_research_function_library),
+	research_manager(&this->function_libs.Research),
+	rule_manager(&this->lua),
 	lua_interface(this)
 {
 	ModName = STR("WSystem");
@@ -99,8 +100,8 @@ void WSystemCore::Post_GameModeStateTransition(
 	const auto state = p_state ? *p_state : LobbyState::Invalid;
 	RC::Output::send<LogLevel::Verbose>(
 		STR("post_game_mode_state_transition: {} -> {}\n"), 
-		nowide::widen(magic_enum::enum_name(last_lobby_state)),
-		nowide::widen(magic_enum::enum_name(state)));
+		boost::nowide::widen(magic_enum::enum_name(last_lobby_state)),
+		boost::nowide::widen(magic_enum::enum_name(state)));
 	last_lobby_state = state;
 
 	if (!raven_game_mode.IsValid() || raven_game_mode.IsLobbyRavenGameMode())
@@ -129,6 +130,7 @@ void WSystemCore::Post_TiirTick(
 	[[maybe_unused]] void* custom_data)
 {
 	research_manager.Tick();
+	rule_manager.Tick();
 }
 
 void WSystemCore::Begin_InitScenario()
@@ -186,6 +188,9 @@ void WSystemCore::Begin_InGame()
 
 	research_manager.Bind(raven_simulation_proxy, raven_hud);
 	research_manager.EnableTick = true;
+
+	rule_manager.ResetTickTimer();
+	lua_interface.Rule_OnInit();
 }
 
 void WSystemCore::on_unreal_init()
@@ -195,7 +200,7 @@ void WSystemCore::on_unreal_init()
 	UC::FMemory::Init(Unreal::FMemory::Realloc);  // NOLINT(clang-diagnostic-microsoft-cast)
 	Unreal::Hook::RegisterInitGameStatePostCallback(std::bind_front(&WSystemCore::On_GameModeInit, this));
 	
-	tiir_research_function_library.Init();
+	function_libs.Init();
 }
 
 void WSystemCore::on_lua_start(LuaMadeSimple::Lua& lua, LuaMadeSimple::Lua& main_lua, LuaMadeSimple::Lua& async_lua,

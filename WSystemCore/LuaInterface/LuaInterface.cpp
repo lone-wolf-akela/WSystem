@@ -1,6 +1,6 @@
 #include <boost/algorithm/string.hpp>
 
-#include <nowide/convert.hpp>
+#include <boost/nowide/convert.hpp>
 #include <sol/sol.hpp>
 
 #include <Core/WSystemCore.h>
@@ -12,14 +12,45 @@ LuaInterface::LuaInterface(WSystemCore* wsystem_core)
 	this->wsystem_core = wsystem_core;
 }
 
+LuaInterface::LuaInterface(const LuaInterface& o): wsystem_core(o.wsystem_core)
+{
+}
+
+LuaInterface& LuaInterface::operator=(const LuaInterface& o)
+{
+	wsystem_core= o.wsystem_core;
+	return *this;
+}
+
+LuaInterface::LuaInterface(LuaInterface&& o) noexcept
+{
+	wsystem_core = o.wsystem_core;
+	o.wsystem_core = nullptr;
+}
+
+LuaInterface& LuaInterface::operator=(LuaInterface&& o) noexcept
+{
+	wsystem_core = o.wsystem_core;
+	o.wsystem_core = nullptr;
+	return *this;
+}
+
 void LuaInterface::Initialize()
 {
 	auto& lua_state = *this->wsystem_core->lua;
-	sol::usertype<LuaInterface> lua_interface_type = lua_state.new_usertype<LuaInterface>(
+	sol::usertype<LuaInterface> wsys_t = lua_state.new_usertype<LuaInterface>(
 		"WSysType",
 		sol::constructors<LuaInterface(WSystemCore*)>()
 	); 
-	lua_interface_type["AddResearchCondition"] = &LuaInterface::AddResearchCondition;
+
+	wsys_t["AddResearchCondition"] = &LuaInterface::AddResearchCondition;
+	
+	wsys_t["Rule_Add"] = &LuaInterface::AddRule;
+	wsys_t["Rule_AddInterval"] = &LuaInterface::AddRuleInterval;
+	wsys_t["Rule_AddIntervalOneTime"] = &LuaInterface::AddRuleIntervalOneTime;
+	wsys_t["Rule_Remove"] = &LuaInterface::RemoveRule;
+	wsys_t["Rule_Exists"] = &LuaInterface::IsRuleExists;
+
 	lua_state["WSys"] = *this;
 }
 
@@ -36,12 +67,31 @@ void LuaInterface::ScanForResearchConditions() const
 		if (const auto result = scan(); !result.valid())
 		{
 			const sol::error err = result;
-			RC::Output::send<LogLevel::Error>(STR("Error in WSys_SetupResearchConditions: {}\n"), nowide::widen(err.what()));
+			RC::Output::send<LogLevel::Error>(STR("Error in WSys_SetupResearchConditions(): {}\n"), boost::nowide::widen(err.what()));
 		}
 	}
 	else
 	{
-		RC::Output::send<LogLevel::Verbose>(STR("WSys_SetupResearchConditions not found in Lua\n"));
+		RC::Output::send<LogLevel::Verbose>(STR("WSys_SetupResearchConditions() not found in Lua\n"));
+	}
+}
+
+void LuaInterface::Rule_OnInit() const
+{
+	RC::Output::send<LogLevel::Verbose>(STR("Finding Rule_OnInit()...\n"));
+
+	auto& lua_state = *this->wsystem_core->lua;
+	if (const sol::protected_function init_func = lua_state["Rule_OnInit"]; init_func.valid())
+	{
+		if (const auto result = init_func(); !result.valid())
+		{
+			const sol::error err = result;
+			RC::Output::send<LogLevel::Error>(STR("Error in Rule_OnInit(): {}\n"), boost::nowide::widen(err.what()));
+		}
+	}
+	else
+	{
+		RC::Output::send<LogLevel::Verbose>(STR("Rule_OnInit() not found in Lua\n"));
 	}
 }
 
@@ -54,7 +104,7 @@ void LuaInterface::AddResearchCondition(
 {
 	RC::Output::send<LogLevel::Verbose>(
 		STR("Registering research conditions for {}\n"), 
-		nowide::widen(target_research));
+		boost::nowide::widen(target_research));
 	auto& research_manager = this->wsystem_core->research_manager;
 	
 	std::vector<std::string> all_of_units_list;
@@ -67,7 +117,7 @@ void LuaInterface::AddResearchCondition(
 	split(all_of_researches_list, all_of_researches, boost::is_any_of(","));
 	split(none_of_researches_list, none_of_researches, boost::is_any_of(","));
 
-	const auto wide_research_name = nowide::widen(target_research);
+	const auto wide_research_name = boost::nowide::widen(target_research);
 
 	if (!research_manager.ConditionController.ResearchConditions.contains(wide_research_name))
 	{
@@ -83,7 +133,7 @@ void LuaInterface::AddResearchCondition(
 		boost::trim(line);
 		if (!line.empty())
 		{
-			condition.RequiredAllOfUnits.push_back(nowide::widen(line));
+			condition.RequiredAllOfUnits.push_back(boost::nowide::widen(line));
 		}
 	}
 
@@ -92,7 +142,7 @@ void LuaInterface::AddResearchCondition(
 		boost::trim(line);
 		if (!line.empty())
 		{
-			condition.RequiredNoneOfUnits.push_back(nowide::widen(line));
+			condition.RequiredNoneOfUnits.push_back(boost::nowide::widen(line));
 		}
 	}
 	
@@ -101,7 +151,7 @@ void LuaInterface::AddResearchCondition(
 		boost::trim(line);
 		if (!line.empty())
 		{
-			condition.RequiredAllOfResearches.push_back(nowide::widen(line));
+			condition.RequiredAllOfResearches.push_back(boost::nowide::widen(line));
 		}
 	}
 
@@ -110,9 +160,39 @@ void LuaInterface::AddResearchCondition(
 		boost::trim(line);
 		if (!line.empty())
 		{
-			condition.RequiredNoneOfResearches.push_back(nowide::widen(line));
+			condition.RequiredNoneOfResearches.push_back(boost::nowide::widen(line));
 		}
 	}
 
 	group.RequiredAnyOf.push_back(std::move(condition));
+}
+
+void LuaInterface::AddRule(std::string_view name) const
+{
+	auto& rule_manager = this->wsystem_core->rule_manager;
+	rule_manager.AddRule(name);
+}
+
+void LuaInterface::AddRuleInterval(std::string_view name, std::int64_t interval) const
+{
+	auto& rule_manager = this->wsystem_core->rule_manager;
+	rule_manager.AddRuleInterval(name, interval);
+}
+
+void LuaInterface::AddRuleIntervalOneTime(std::string_view name, std::int64_t interval) const
+{
+	auto& rule_manager = this->wsystem_core->rule_manager;
+	rule_manager.AddRuleIntervalOneTime(name, interval);
+}
+
+void LuaInterface::RemoveRule(std::string_view name) const
+{
+	auto& rule_manager = this->wsystem_core->rule_manager;
+	rule_manager.RemoveRule(name);
+}
+
+bool LuaInterface::IsRuleExists(std::string_view name) const
+{
+	auto& rule_manager = this->wsystem_core->rule_manager;
+	return rule_manager.IsRuleExists(name);
 }

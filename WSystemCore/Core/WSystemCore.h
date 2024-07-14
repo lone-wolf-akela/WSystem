@@ -12,11 +12,12 @@
 #include <DataWrapper/RTSLevelScriptActor.h>
 #include <DataWrapper/RavenHUD.h>
 
-#include <LibWrapper/TiirResearchFunctionLibrary.h>
+#include <LibWrapper/Libs.h>
 
 #include <LuaInterface/LuaInterface.h>
 
 #include "ResearchManager.h"
+#include "RuleManager.h"
 
 class WSystemCore final : public CppUserModBase
 {
@@ -34,9 +35,10 @@ public:
     RTSLevelScriptActor rts_level_script_actor = nullptr;
     RavenHUD raven_hud = nullptr;
 
-    TiirResearchFunctionLibrary tiir_research_function_library;
+    FunctionLibs function_libs;
 
     WSysResearchManager research_manager;
+    WSysRuleManager rule_manager;
     LuaInterface lua_interface;
 
     void on_unreal_init() override;

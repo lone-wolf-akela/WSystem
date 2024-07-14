@@ -1,6 +1,8 @@
-add_requires("vcpkg::magic-enum", { debug = is_mode_debug(), configs = {runtimes = get_mode_runtimes()} })
-add_requires("vcpkg::nowide", { debug = is_mode_debug(), configs = {runtimes = get_mode_runtimes()} })
-add_requires("vcpkg::boost-algorithm", { debug = is_mode_debug(), configs = {runtimes = get_mode_runtimes()} })
+add_requires("vcpkg::magic-enum", { debug = is_mode_debug(), configs = {baseline = "7aeffc91033ad35cc4e2c152f213a866ec6c11ac", runtimes = get_mode_runtimes()} })
+add_requires("vcpkg::boost-nowide", { debug = is_mode_debug(), configs = {baseline = "7aeffc91033ad35cc4e2c152f213a866ec6c11ac", runtimes = get_mode_runtimes()} })
+add_requires("vcpkg::boost-algorithm", { debug = is_mode_debug(), configs = {baseline = "7aeffc91033ad35cc4e2c152f213a866ec6c11ac", runtimes = get_mode_runtimes()} })
+add_requires("vcpkg::boost-heap", { debug = is_mode_debug(), configs = {baseline = "7aeffc91033ad35cc4e2c152f213a866ec6c11ac", runtimes = get_mode_runtimes()} })
+add_requires("vcpkg::plf-colony", { debug = is_mode_debug(), configs = {baseline = "7aeffc91033ad35cc4e2c152f213a866ec6c11ac", runtimes = get_mode_runtimes()} })
 
 local projectName = "WSystemCore"
 
@@ -8,8 +10,10 @@ target(projectName)
     add_rules("ue4ss.mod")
 
     add_packages("vcpkg::magic-enum")
-    add_packages("vcpkg::nowide")
+    add_packages("vcpkg::boost-nowide")
     add_packages("vcpkg::boost-algorithm")
+    add_packages("vcpkg::boost-heap")
+    add_packages("vcpkg::plf-colony")
 
     add_includedirs(".")
     add_includedirs("./ThirdParty")
