@@ -7,51 +7,36 @@
 
 #include "LuaInterface.h"
 
-LuaInterface::LuaInterface(WSystemCore* wsystem_core)
+LuaInterface::LuaInterface(WSystemCore* wsystem_core) : 
+	wsystem_core(wsystem_core)
 {
-	this->wsystem_core = wsystem_core;
-}
-
-LuaInterface::LuaInterface(const LuaInterface& o): wsystem_core(o.wsystem_core)
-{
-}
-
-LuaInterface& LuaInterface::operator=(const LuaInterface& o)
-{
-	wsystem_core= o.wsystem_core;
-	return *this;
-}
-
-LuaInterface::LuaInterface(LuaInterface&& o) noexcept
-{
-	wsystem_core = o.wsystem_core;
-	o.wsystem_core = nullptr;
-}
-
-LuaInterface& LuaInterface::operator=(LuaInterface&& o) noexcept
-{
-	wsystem_core = o.wsystem_core;
-	o.wsystem_core = nullptr;
-	return *this;
 }
 
 void LuaInterface::Initialize()
 {
 	auto& lua_state = *this->wsystem_core->lua;
+	rule_manager.BindLuaState(&lua_state);
+
 	sol::usertype<LuaInterface> wsys_t = lua_state.new_usertype<LuaInterface>(
-		"WSysType",
-		sol::constructors<LuaInterface(WSystemCore*)>()
+		// ctor
+		"WSysType",	sol::constructors<LuaInterface(WSystemCore*)>(),
+		// functions
+		"AddResearchCondition", &LuaInterface::AddResearchCondition,
+		// members
+		"Rule", sol::readonly(&LuaInterface::rule_manager)
 	); 
-
-	wsys_t["AddResearchCondition"] = &LuaInterface::AddResearchCondition;
 	
-	wsys_t["Rule_Add"] = &LuaInterface::AddRule;
-	wsys_t["Rule_AddInterval"] = &LuaInterface::AddRuleInterval;
-	wsys_t["Rule_AddIntervalOneTime"] = &LuaInterface::AddRuleIntervalOneTime;
-	wsys_t["Rule_Remove"] = &LuaInterface::RemoveRule;
-	wsys_t["Rule_Exists"] = &LuaInterface::IsRuleExists;
+	sol::usertype<ScriptRuleManager> rule_manager_t = lua_state.new_usertype<ScriptRuleManager>(
+		"Rule",
+		// functions
+		"Add", &ScriptRuleManager::AddRule,
+		"AddInterval", &ScriptRuleManager::AddRuleInterval,
+		"AddIntervalOneTime", &ScriptRuleManager::AddRuleIntervalOneTime,
+		"Remove", &ScriptRuleManager::RemoveRule,
+		"Exists", &ScriptRuleManager::IsRuleExists
+	);
 
-	lua_state["WSys"] = *this;
+	lua_state["WSys"] = shared_from_this();
 }
 
 void LuaInterface::ScanForResearchConditions() const
@@ -76,9 +61,11 @@ void LuaInterface::ScanForResearchConditions() const
 	}
 }
 
-void LuaInterface::Rule_OnInit() const
+void LuaInterface::Rule_OnInit()
 {
 	RC::Output::send<LogLevel::Verbose>(STR("Finding Rule_OnInit()...\n"));
+
+	rule_manager.ResetTickTimer();
 
 	auto& lua_state = *this->wsystem_core->lua;
 	if (const sol::protected_function init_func = lua_state["Rule_OnInit"]; init_func.valid())
@@ -93,6 +80,11 @@ void LuaInterface::Rule_OnInit() const
 	{
 		RC::Output::send<LogLevel::Verbose>(STR("Rule_OnInit() not found in Lua\n"));
 	}
+}
+
+void LuaInterface::Rule_Tick()
+{
+	rule_manager.Tick();
 }
 
 void LuaInterface::AddResearchCondition(
@@ -167,32 +159,3 @@ void LuaInterface::AddResearchCondition(
 	group.RequiredAnyOf.push_back(std::move(condition));
 }
 
-void LuaInterface::AddRule(std::string_view name) const
-{
-	auto& rule_manager = this->wsystem_core->rule_manager;
-	rule_manager.AddRule(name);
-}
-
-void LuaInterface::AddRuleInterval(std::string_view name, std::int64_t interval) const
-{
-	auto& rule_manager = this->wsystem_core->rule_manager;
-	rule_manager.AddRuleInterval(name, interval);
-}
-
-void LuaInterface::AddRuleIntervalOneTime(std::string_view name, std::int64_t interval) const
-{
-	auto& rule_manager = this->wsystem_core->rule_manager;
-	rule_manager.AddRuleIntervalOneTime(name, interval);
-}
-
-void LuaInterface::RemoveRule(std::string_view name) const
-{
-	auto& rule_manager = this->wsystem_core->rule_manager;
-	rule_manager.RemoveRule(name);
-}
-
-bool LuaInterface::IsRuleExists(std::string_view name) const
-{
-	auto& rule_manager = this->wsystem_core->rule_manager;
-	return rule_manager.IsRuleExists(name);
-}

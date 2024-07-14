@@ -13,8 +13,7 @@
 
 WSystemCore::WSystemCore() : 
 	research_manager(&this->function_libs.Research),
-	rule_manager(&this->lua),
-	lua_interface(this)
+	lua_interface(std::make_shared<LuaInterface>(this))
 {
 	ModName = STR("WSystem");
 	ModVersion = STR("0.0.2");
@@ -132,7 +131,7 @@ void WSystemCore::Post_TiirTick(
 	[[maybe_unused]] void* custom_data)
 {
 	research_manager.Tick();
-	rule_manager.Tick();
+	lua_interface->Rule_Tick();
 }
 
 void WSystemCore::Begin_InitScenario()
@@ -170,7 +169,7 @@ void WSystemCore::Begin_InitScenario()
 		std::bind_front(&WSystemCore::Post_TiirTick, this),
 		nullptr);
 
-	lua_interface.ScanForResearchConditions();
+	lua_interface->ScanForResearchConditions();
 }
 
 void WSystemCore::Begin_InGame()
@@ -191,8 +190,7 @@ void WSystemCore::Begin_InGame()
 	research_manager.Bind(raven_simulation_proxy, raven_hud);
 	research_manager.EnableTick = true;
 
-	rule_manager.ResetTickTimer();
-	lua_interface.Rule_OnInit();
+	lua_interface->Rule_OnInit();
 }
 
 void WSystemCore::on_unreal_init()
@@ -209,7 +207,7 @@ void WSystemCore::on_lua_start(LuaMadeSimple::Lua& lua, LuaMadeSimple::Lua& main
 	std::vector<LuaMadeSimple::Lua*>& hook_luas)
 {
 	this->lua = lua.get_lua_state();
-	this->lua_interface.Initialize();
+	this->lua_interface->Initialize();
 
 	RC::Output::send<LogLevel::Verbose>(STR("WSystem Lua Mod Loaded.\n"));
 }

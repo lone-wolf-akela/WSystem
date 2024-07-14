@@ -2,14 +2,9 @@
 
 #include <DynamicOutput/Output.hpp>
 
-#include "RuleManager.h"
+#include "RuleLib.h"
 
-WSysRuleManager::WSysRuleManager(std::optional<sol::state_view>* lua) :
-	lua(lua)
-{
-}
-
-void WSysRuleManager::AddRule(std::string_view name)
+void ScriptRuleManager::AddRule(std::string_view name)
 {
 	if (!lua)
 	{
@@ -25,9 +20,9 @@ void WSysRuleManager::AddRule(std::string_view name)
 		return;
 	}
 
-	WSysRule rule;
+	ScriptRule rule;
 	rule.Name = name;
-	rule.Func = (**lua)[name];
+	rule.Func = (*lua)[name];
 
 	if (!rule.Func.valid())
 	{
@@ -40,17 +35,17 @@ void WSysRuleManager::AddRule(std::string_view name)
 	normal_rules.insert(std::move(rule));
 }
 
-void WSysRuleManager::AddRuleInterval(std::string_view name, std::int64_t interval)
+void ScriptRuleManager::AddRuleInterval(std::string_view name, std::int64_t interval)
 {
 	AddRuleInterval_Impl(name, interval, true);
 }
 
-void WSysRuleManager::AddRuleIntervalOneTime(std::string_view name, std::int64_t interval)
+void ScriptRuleManager::AddRuleIntervalOneTime(std::string_view name, std::int64_t interval)
 {
 	AddRuleInterval_Impl(name, interval, false);
 }
 
-void WSysRuleManager::AddRuleInterval_Impl(std::string_view name, std::int64_t interval, bool repeat)
+void ScriptRuleManager::AddRuleInterval_Impl(std::string_view name, std::int64_t interval, bool repeat)
 {
 	if (!lua)
 	{
@@ -66,9 +61,9 @@ void WSysRuleManager::AddRuleInterval_Impl(std::string_view name, std::int64_t i
 		return;
 	}
 
-	WSysIntervalRule rule;
+	ScriptIntervalRule rule;
 	rule.Name = name;
-	rule.Func = (**lua)[name];
+	rule.Func = (*lua)[name];
 	rule.TickInterval = interval;
 	rule.NextTick = current_tick + interval;
 	rule.Repeat = repeat;
@@ -85,7 +80,7 @@ void WSysRuleManager::AddRuleInterval_Impl(std::string_view name, std::int64_t i
 	(*h).Handle = h;
 }
 
-void WSysRuleManager::RemoveRule(std::string_view name)
+void ScriptRuleManager::RemoveRule(std::string_view name)
 {
 	for (auto it = begin(normal_rules); it != end(normal_rules); ++it)
 	{
@@ -108,7 +103,7 @@ void WSysRuleManager::RemoveRule(std::string_view name)
 		boost::nowide::widen(name));
 }
 
-bool WSysRuleManager::IsRuleExists(std::string_view name)
+bool ScriptRuleManager::IsRuleExists(std::string_view name)
 {
 	for (const auto& rule : normal_rules)
 	{
@@ -127,12 +122,12 @@ bool WSysRuleManager::IsRuleExists(std::string_view name)
 	return false;
 }
 
-void WSysRuleManager::ResetTickTimer()
+void ScriptRuleManager::ResetTickTimer()
 {
 	current_tick = 0;
 }
 
-void WSysRuleManager::Tick()
+void ScriptRuleManager::Tick()
 {
 	current_tick++;
 	for(auto& rule : normal_rules)
@@ -169,7 +164,12 @@ void WSysRuleManager::Tick()
 	}
 }
 
-bool WSysRuleManager::IsTopIntervalRuleReady() const
+void ScriptRuleManager::BindLuaState(sol::state_view* lua)
+{
+	this->lua = lua;
+}
+
+bool ScriptRuleManager::IsTopIntervalRuleReady() const
 {
 	if (interval_rules.empty())
 	{

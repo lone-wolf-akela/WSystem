@@ -1,40 +1,37 @@
 #pragma once
+#include <memory>
 #include <string>
 #include <string_view>
 
+#include "RuleLib.h"
+
 class WSystemCore;
 
-class LuaInterface
+class LuaInterface : public std::enable_shared_from_this<LuaInterface>
 {
 public:
 	explicit LuaInterface(WSystemCore* wsystem_core);
 
-	LuaInterface(const LuaInterface& o);
-	LuaInterface& operator=(const LuaInterface& o);
-	LuaInterface(LuaInterface&& o) noexcept;
-	LuaInterface& operator=(LuaInterface&& o) noexcept;
-
+	LuaInterface(const LuaInterface& o) = delete;
+	LuaInterface& operator=(const LuaInterface& o) = delete;
+	LuaInterface(LuaInterface&& o) noexcept = default;
+	LuaInterface& operator=(LuaInterface&& o) noexcept = default;
 	~LuaInterface() = default;
 
 	void Initialize();
 	void ScanForResearchConditions() const;
-	void Rule_OnInit() const;
+	void Rule_OnInit();
+	void Rule_Tick();
 
 	// interface part
 public:
-	// research manage
 	void AddResearchCondition(
 		std::string_view target_research, 
 		std::string_view all_of_units, 
 		std::string_view none_of_units,
 		std::string_view all_of_researches,
 		std::string_view none_of_researches) const;
-	// rule manage
-	void AddRule(std::string_view name) const;
-	void AddRuleInterval(std::string_view name, std::int64_t interval) const;
-	void AddRuleIntervalOneTime(std::string_view name, std::int64_t interval) const;
-	void RemoveRule(std::string_view name) const;
-	bool IsRuleExists(std::string_view name) const;
 private:
 	WSystemCore* wsystem_core;
+	ScriptRuleManager rule_manager;
 };

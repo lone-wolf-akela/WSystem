@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <optional>
 
 #include <sol/sol.hpp>
@@ -17,7 +18,6 @@
 #include <LuaInterface/LuaInterface.h>
 
 #include "ResearchManager.h"
-#include "RuleManager.h"
 #include "ShipDatabase.h"
 
 class WSystemCore final : public CppUserModBase
@@ -39,8 +39,7 @@ public:
     FunctionLibs function_libs;
 
     WSysResearchManager research_manager;
-    WSysRuleManager rule_manager;
-    LuaInterface lua_interface;
+    std::shared_ptr<LuaInterface> lua_interface;
     ShipDatabase ship_database;
 
     void on_unreal_init() override;
