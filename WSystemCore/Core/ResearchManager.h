@@ -10,15 +10,13 @@
 
 #include <LibWrapper/TiirResearchFunctionLibrary.h>
 
-struct ResearchList
-{
-	std::vector<RC::StringType> Researches;
-};
 
 struct ResearchCondition
 {
-	ResearchList RequiredAllOf;
-	ResearchList RequiredNoneOf;
+	std::vector<RC::StringType> RequiredAllOfUnits;
+	std::vector<RC::StringType> RequiredNoneOfUnits;
+	std::vector<RC::StringType> RequiredAllOfResearches;
+	std::vector<RC::StringType> RequiredNoneOfResearches;
 };
 
 struct ResearchConditionGroup
@@ -38,8 +36,10 @@ class ResearchConditionController
 public:
 	std::map<RC::StringType, ResearchConditionGroup, std::less<>> ResearchConditions;
 	ResearchConditionCheckResult CheckResearchCondition(
-		const std::set<RC::StringType>& owned_ships, 
-		RC::StringViewType research) const;
+		RC::StringViewType target_research,
+		const std::set<RC::StringType>& owned_units,
+		const std::set<RC::StringType>& done_researches
+		) const;
 };
 
 class WSysResearchManager

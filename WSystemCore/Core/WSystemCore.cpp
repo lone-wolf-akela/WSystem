@@ -16,9 +16,9 @@ WSystemCore::WSystemCore() :
 	lua_interface(this)
 {
 	ModName = STR("WSystem");
-	ModVersion = STR("1.0");
-	ModDescription = STR("This is my awesome mod");
-	ModAuthors = STR("LoneWolfAkela");
+	ModVersion = STR("0.0.2");
+	ModDescription = STR("A Lua scripting system for Homeworld 3.");
+	ModAuthors = STR("Lone Wolf Akela");
 	// Do not change this unless you want to target a UE4SS version
 	// other than the one you're currently building with somehow.
 	//ModIntendedSDKVersion = STR("2.6");

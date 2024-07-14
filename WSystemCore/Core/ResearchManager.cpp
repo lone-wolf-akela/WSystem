@@ -10,10 +10,11 @@
 #include "Property/FMulticastDelegateProperty.hpp"
 
 ResearchConditionCheckResult ResearchConditionController::CheckResearchCondition(
-	const std::set<RC::StringType>& owned_ships,
-	RC::StringViewType research) const
+	RC::StringViewType target_research,
+	const std::set<RC::StringType>& owned_units,
+	const std::set<RC::StringType>& done_researches) const
 {
-	const auto research_condition = ResearchConditions.find(research);
+	const auto research_condition = ResearchConditions.find(target_research);
 	if (research_condition == ResearchConditions.end())
 	{
 		return ResearchConditionCheckResult::DoNotCare;
@@ -21,16 +22,30 @@ ResearchConditionCheckResult ResearchConditionController::CheckResearchCondition
 
 	for (auto& condition : research_condition->second.RequiredAnyOf)
 	{
-		for (auto& ship : condition.RequiredAllOf.Researches)
+		for (auto& unit : condition.RequiredAllOfUnits)
 		{
-			if (!owned_ships.contains(ship))
+			if (!owned_units.contains(unit))
 			{
 				goto next_condition;
 			}
 		}
-		for (auto& ship : condition.RequiredNoneOf.Researches)
+		for (auto& ship : condition.RequiredNoneOfUnits)
 		{
-			if (owned_ships.contains(ship))
+			if (owned_units.contains(ship))
+			{
+				goto next_condition;
+			}
+		}
+		for (auto& research : condition.RequiredAllOfResearches)
+		{
+			if (!done_researches.contains(research))
+			{
+				goto next_condition;
+			}
+		}
+		for (auto& research : condition.RequiredNoneOfResearches)
+		{
+			if (done_researches.contains(research))
 			{
 				goto next_condition;
 			}
@@ -63,6 +78,7 @@ void WSysResearchManager::Bind(RavenSimulationProxy sim_proxy, RavenHUD hud)
 void WSysResearchManager::Tick() const
 {
 	static std::set<RC::StringType> owned_ship_types;
+	static std::set<RC::StringType> done_research_list;
 
 	if (!sim_proxy.IsValid() || !EnableTick)
 	{
@@ -81,19 +97,28 @@ void WSysResearchManager::Tick() const
 		auto entity_list = player.GetOwnedSimObjects();
 		
 		owned_ship_types.clear();
+		done_research_list.clear();
+
 		for (auto& entity : *entity_list)
 		{
 			if(!entity.IsShip() || !entity.IsAlive())
 			{
 				continue;
 			}
-			auto& ship = static_cast<SimShip&>(entity);
-			const auto ship_static_data = *ship.GetDataAsset();
+			const auto* ship = static_cast<SimShip*>(&entity);
+			const auto ship_static_data = *ship->GetDataAsset();
 
 			// name example: SA_F01_Fighter01 <-- this is hgn scout
 			// name example: SA_F01_Probe <-- this is hgn probe
-			auto name = ship_static_data->GetName();
-			owned_ship_types.emplace(name);
+			owned_ship_types.emplace(ship_static_data->GetName());
+		}
+
+		for (auto& research : *research_list)
+		{
+			if (research.State == ResearchState::Done)
+			{
+				done_research_list.emplace(research.StaticData->GetName());
+			}
 		}
 
 		for (auto& research : *research_list)
@@ -103,7 +128,10 @@ void WSysResearchManager::Tick() const
 			// name example: Skirmish_F01_Fighter01_Research <-- this is hgn scout
 			// name example: Skirmish_F01_Fighter02_Research <-- this is hgn interceptor
 			auto name = research_static_data->GetName();
-			switch (ConditionController.CheckResearchCondition(owned_ship_types, name))
+			switch (ConditionController.CheckResearchCondition(
+				name, 
+				owned_ship_types, 
+				done_research_list))
 			{
 			case ResearchConditionCheckResult::Unlocked:
 			{

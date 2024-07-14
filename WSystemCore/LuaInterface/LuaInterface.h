@@ -14,7 +14,12 @@ public:
 
 	// interface part
 public:
-	void AddResearchCondition(std::string_view research_name, std::string_view all_of, std::string_view none_of) const;
+	void AddResearchCondition(
+		std::string_view target_research, 
+		std::string_view all_of_units, 
+		std::string_view none_of_units,
+		std::string_view all_of_researches,
+		std::string_view none_of_researches) const;
 private:
 	WSystemCore* wsystem_core;
 };

@@ -45,18 +45,29 @@ void LuaInterface::ScanForResearchConditions() const
 	}
 }
 
-void LuaInterface::AddResearchCondition(std::string_view research_name, std::string_view all_of, std::string_view none_of) const
+void LuaInterface::AddResearchCondition(
+	std::string_view target_research,
+	std::string_view all_of_units,
+	std::string_view none_of_units,
+	std::string_view all_of_researches,
+	std::string_view none_of_researches) const
 {
-	RC::Output::send<LogLevel::Verbose>(STR("Registering research conditions for {}\n"), nowide::widen(research_name));
+	RC::Output::send<LogLevel::Verbose>(
+		STR("Registering research conditions for {}\n"), 
+		nowide::widen(target_research));
 	auto& research_manager = this->wsystem_core->research_manager;
 	
-	std::vector<std::string> all_of_list;
-	std::vector<std::string> none_of_list;
+	std::vector<std::string> all_of_units_list;
+	std::vector<std::string> none_of_units_list;
+	std::vector<std::string> all_of_researches_list;
+	std::vector<std::string> none_of_researches_list;
 
-	split(all_of_list, all_of, boost::is_any_of(","));
-	split(none_of_list, none_of, boost::is_any_of(","));
+	split(all_of_units_list, all_of_units, boost::is_any_of(","));
+	split(none_of_units_list, none_of_units, boost::is_any_of(","));
+	split(all_of_researches_list, all_of_researches, boost::is_any_of(","));
+	split(none_of_researches_list, none_of_researches, boost::is_any_of(","));
 
-	const auto wide_research_name = nowide::widen(research_name);
+	const auto wide_research_name = nowide::widen(target_research);
 
 	if (!research_manager.ConditionController.ResearchConditions.contains(wide_research_name))
 	{
@@ -67,23 +78,41 @@ void LuaInterface::AddResearchCondition(std::string_view research_name, std::str
 
 	ResearchCondition condition;
 
-	for (auto& line : all_of_list)
+	for (auto& line : all_of_units_list)
 	{
 		boost::trim(line);
 		if (!line.empty())
 		{
-			condition.RequiredAllOf.Researches.push_back(nowide::widen(line));
+			condition.RequiredAllOfUnits.push_back(nowide::widen(line));
 		}
 	}
 
-	for (auto& line : none_of_list)
+	for (auto& line : none_of_units_list)
 	{
 		boost::trim(line);
 		if (!line.empty())
 		{
-			condition.RequiredNoneOf.Researches.push_back(nowide::widen(line));
+			condition.RequiredNoneOfUnits.push_back(nowide::widen(line));
 		}
 	}
 	
+	for (auto& line : all_of_researches_list)
+	{
+		boost::trim(line);
+		if (!line.empty())
+		{
+			condition.RequiredAllOfResearches.push_back(nowide::widen(line));
+		}
+	}
+
+	for (auto& line : none_of_researches_list)
+	{
+		boost::trim(line);
+		if (!line.empty())
+		{
+			condition.RequiredNoneOfResearches.push_back(nowide::widen(line));
+		}
+	}
+
 	group.RequiredAnyOf.push_back(std::move(condition));
 }
