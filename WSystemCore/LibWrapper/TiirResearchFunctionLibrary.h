@@ -1,16 +1,10 @@
 #pragma once
 #include <cstdint>
 
-#include <ThirdParty/UnrealContainers/UnrealContainers.h>
-
 #include <DataWrapper/ResearchStaticData.h>
 
 #include "LibBase.h"
-
-struct TiirResearch 
-{
-	std::uint32_t ResearchID;
-};
+#include "LibDataTypes.h"
 
 class TiirResearchFunctionLibrary : public LibBase<TiirResearchFunctionLibrary>
 {
@@ -32,11 +26,11 @@ public:
 	WSYS_MEMBER_FUNCTION_VOID(RestrictResearchTechTreeForPlayer, std::int32_t, player_index, bool, restrict_tech_tree)
 	
 	
-	WSYS_MEMBER_FUNCTION(bool, NotEqual_TiirResearchTiirResearch, TiirResearch&, a, TiirResearch&, b)
-	WSYS_MEMBER_FUNCTION(bool, EqualEqual_TiirResearchTiirResearch, TiirResearch&, a, TiirResearch&, b)
+	WSYS_MEMBER_FUNCTION(bool, NotEqual_TiirResearchTiirResearch, TiirResearch*, a, TiirResearch*, b)
+	WSYS_MEMBER_FUNCTION(bool, EqualEqual_TiirResearchTiirResearch, TiirResearch*, a, TiirResearch*, b)
 
-	WSYS_MEMBER_FUNCTION(bool, IsResearchOfType, TiirResearch&, research_id, ResearchStaticData, research_type)
-	WSYS_MEMBER_FUNCTION(bool, IsResearchOfAnyType, TiirResearch&, research_id, UC::TArray<ResearchStaticData>*, research_type_list)
+	WSYS_MEMBER_FUNCTION(bool, IsResearchOfType, TiirResearch*, research_id, ResearchStaticData, research_type)
+	WSYS_MEMBER_FUNCTION(bool, IsResearchOfAnyType, TiirResearch*, research_id, UC::TArray<ResearchStaticData>*, research_type_list)
 	
 	WSYS_MEMBER_FUNCTION(TiirResearch, GetResearchID, ResearchStaticData, research_type)
 };

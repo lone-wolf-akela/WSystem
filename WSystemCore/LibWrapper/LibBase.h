@@ -1,6 +1,5 @@
 #pragma once
-#include <concepts>
-#include <type_traits>
+#include <utility>
 
 #include <nowide/convert.hpp>
 
@@ -86,21 +85,21 @@ protected:
 	Ret CallFunction(
 		const TCHAR* name,
 		const std::source_location& location,
-		Args... args
+		Args&&... args
 	) const
 	{
 		const auto func = FindFunction(name, location);
-		return utils::call_unreal_function<Ret, Args...>(lib_class, func, args...);
+		return utils::call_unreal_function<Ret, Args...>(lib_class, func, std::forward<Args>(args)...);
 	}
 
 	template<typename... Args>
 	void CallFunctionVoid(
 		const TCHAR* name,
 		const std::source_location& location,
-		Args... args
+		Args&&... args
 	) const
 	{
 		const auto func = FindFunction(name, location);
-		utils::call_unreal_function_void(lib_class, func, args...);
+		utils::call_unreal_function_void(lib_class, func, std::forward<Args>(args)...);
 	}
 };

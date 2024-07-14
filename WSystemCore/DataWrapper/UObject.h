@@ -1,5 +1,5 @@
 #pragma once
-
+#include <utility>
 #include <source_location>
 
 #include <Unreal/UObject.hpp>
@@ -58,21 +58,21 @@ protected:
 	Ret CallFunction(
 		const TCHAR* name,
         const std::source_location& location,
-		Args... args
+		Args&&... args
 	) const
 	{
 		const auto func = FindFunction(name, location);
-		return utils::call_unreal_function<Ret, Args...>(obj, func, args...);
+		return utils::call_unreal_function<Ret, Args...>(obj, func, std::forward<Args>(args)...);
 	}
 
     template<typename... Args>
     void CallFunctionVoid(
 		const TCHAR* name,
         const std::source_location& location,
-		Args... args
+		Args&&... args
 	) const
 	{
 		const auto func = FindFunction(name, location);
-		utils::call_unreal_function_void(obj, func, args...);
+		utils::call_unreal_function_void(obj, func, std::forward<Args>(args)...);
 	}
 };

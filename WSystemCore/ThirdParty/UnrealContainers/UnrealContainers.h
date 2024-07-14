@@ -4,6 +4,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <iostream>
 
 #pragma push_macro("NumBitsPerDWORD")
 #pragma push_macro("NumBitsPerDWORDLogTwo")
