@@ -20,7 +20,8 @@ public:
     [[nodiscard]] bool IsValid() const noexcept;
     RC::Unreal::UObject* operator->() const;
     friend std::strong_ordering operator<=>(const UObjWrapper& lhs, const UObjWrapper& rhs) noexcept;
-    UObjWrapper* operator&() noexcept = delete;
+    friend bool operator==(const UObjWrapper& lhs, const UObjWrapper& rhs) noexcept;
+    UObjWrapper* operator&() noexcept = delete;  // NOLINT(google-runtime-operator)
 protected:
     [[nodiscard]] RC::Unreal::FProperty* FindProperty(
         const TCHAR* name,

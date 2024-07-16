@@ -3,6 +3,8 @@
 
 #include "RuleLib.h"
 
+#include <ranges>
+
 #include "DynamicOutput/Output.hpp"
 
 void ScriptRule::Call() const
@@ -45,7 +47,7 @@ void ScriptRuleManager::AddRule(std::string_view name)
 	rule.Name = name;
 	rule.Func = FindFunc(name);
 
-	normal_rules.insert(std::move(rule));
+	normal_rules.emplace(name, std::move(rule));
 }
 
 void ScriptRuleManager::AddRuleInterval(std::string_view name, std::int64_t interval)
@@ -70,7 +72,7 @@ void ScriptRuleManager::AddRuleParam(std::string_view name, std::string_view par
 	rule.Param = param;
 	rule.Func = FindFunc(name);
 
-	param_rules.insert(std::move(rule));
+	param_rules.emplace(NameParamPair{ std::string(name), std::string(param) }, std::move(rule));
 }
 
 void ScriptRuleManager::AddRuleParamInterval(std::string_view name, std::string_view param, std::int64_t interval)
@@ -98,8 +100,7 @@ void ScriptRuleManager::AddRuleInterval_Impl(std::string_view name, std::int64_t
 	rule.NextTick = current_tick + interval;
 	rule.Repeat = repeat;
 
-	const auto h = interval_rules.emplace(std::move(rule));
-	(*h).Handle = h;
+	interval_rules.emplace(name, std::move(rule));
 }
 
 void ScriptRuleManager::AddRuleParamInterval_Impl(std::string_view name, std::string_view param, std::int64_t interval, bool repeat)
@@ -118,90 +119,51 @@ void ScriptRuleManager::AddRuleParamInterval_Impl(std::string_view name, std::st
 	rule.NextTick = current_tick + interval;
 	rule.Repeat = repeat;
 
-	const auto h = param_interval_rules.emplace(std::move(rule));
-	(*h).Handle = h;
+	param_interval_rules.emplace(NameParamPair{ std::string(name), std::string(param) }, std::move(rule));
 }
 
 void ScriptRuleManager::RemoveRule(std::string_view name)
 {
-	for (auto it = begin(normal_rules); it != end(normal_rules); ++it)
+	if (const auto found = normal_rules.find(name); found != normal_rules.end())
 	{
-		if (it->Name == name)
-		{
-			normal_rules.erase(it);
-			return;
-		}
+		normal_rules.erase(found);
+		return;
 	}
-	for (auto& rule : interval_rules)
+	if (const auto found = interval_rules.find(name); found != interval_rules.end())
 	{
-		if (rule.Name == name)
-		{
-			interval_rules.erase(rule.Handle);
-			return;
-		}
+		interval_rules.erase(found);
+		return;
 	}
+
 	const auto err_msg = std::format("RemoveRule failed: rule `{}` not found", name);
 	throw std::runtime_error(err_msg);
 }
 
 void ScriptRuleManager::RemoveRuleParam(std::string_view name, std::string_view param)
 {
-	for (auto it = begin(param_rules); it != end(param_rules); ++it)
+	if (const auto found = param_rules.find(NameParamPairView{ name, param }); found != param_rules.end())
 	{
-		if (it->Name == name && it->Param == param)
-		{
-			param_rules.erase(it);
-			return;
-		}
+		param_rules.erase(found);
+		return;
 	}
-	for (auto& rule : param_interval_rules)
+	if (const auto found = param_interval_rules.find(NameParamPairView{ name, param }); found != param_interval_rules.end())
 	{
-		if (rule.Name == name && rule.Param == param)
-		{
-			param_interval_rules.erase(rule.Handle);
-			return;
-		}
+		param_interval_rules.erase(found);
+		return;
 	}
+	
 	const auto err_msg = std::format("RemoveRuleParam failed: rule `{}` with param `{}` not found", name, param);
 	throw std::runtime_error(err_msg);
 }
 
-bool ScriptRuleManager::IsRuleExists(std::string_view name)
+bool ScriptRuleManager::IsRuleExists(std::string_view name) const
 {
-	for (const auto& rule : normal_rules)
-	{
-		if (rule.Name == name)
-		{
-			return true;
-		}
-	}
-	for (const auto& rule : interval_rules)
-	{
-		if (rule.Name == name)
-		{
-			return true;
-		}
-	}
-	return false;
+	return normal_rules.contains(name) || interval_rules.contains(name);
 }
 
-bool ScriptRuleManager::IsRuleParamExists(std::string_view name, std::string_view param)
+bool ScriptRuleManager::IsRuleParamExists(std::string_view name, std::string_view param) const
 {
-	for (const auto& rule : param_rules)
-	{
-		if (rule.Name == name && rule.Param == param)
-		{
-			return true;
-		}
-	}
-	for (const auto& rule : param_interval_rules)
-	{
-		if (rule.Name == name && rule.Param == param)
-		{
-			return true;
-		}
-	}
-	return false;
+	return param_rules.contains(NameParamPairView{ name, param }) || param_interval_rules.contains(NameParamPairView{ name, param });
 }
 
 void ScriptRuleManager::ResetTickTimer()
@@ -212,41 +174,54 @@ void ScriptRuleManager::ResetTickTimer()
 void ScriptRuleManager::Tick()
 {
 	current_tick++;
-	for(auto& rule : normal_rules)
+	for(auto& rule : normal_rules | std::views::values)
 	{
 		rule.Call();
 	}
-	for (auto& rule : param_rules)
+	for (auto& rule : param_rules | std::views::values)
 	{
 		rule.Call();
 	}
-	while (IsTopIntervalRuleReady())
+	std::vector<std::string> to_remove_names;
+	for(auto& [name, rule] : interval_rules)
 	{
-		auto& rule = interval_rules.top();
-		rule.Call();
-		if (rule.Repeat)
+		if (rule.NextTick <= current_tick)
 		{
-			(*rule.Handle).NextTick += rule.TickInterval;
-			interval_rules.update(rule.Handle);
-		}
-		else
-		{
-			interval_rules.pop();
+			rule.Call();
+			if (rule.Repeat)
+			{
+				rule.NextTick += rule.TickInterval;
+			}
+			else
+			{
+				to_remove_names.push_back(name);
+			}
 		}
 	}
-	while (IsTopParamIntervalRuleReady())
+	for(auto& name : to_remove_names)
 	{
-		auto& rule = param_interval_rules.top();
-		rule.Call();
-		if (rule.Repeat)
+		interval_rules.erase(name);
+	}
+
+	std::vector<NameParamPair> to_remove_name_params;
+	for(auto& [name_param, rule] : param_interval_rules)
+	{
+		if (rule.NextTick <= current_tick)
 		{
-			(*rule.Handle).NextTick += rule.TickInterval;
-			param_interval_rules.update(rule.Handle);
+			rule.Call();
+			if (rule.Repeat)
+			{
+				rule.NextTick += rule.TickInterval;
+			}
+			else
+			{
+				to_remove_name_params.push_back(name_param);
+			}
 		}
-		else
-		{
-			param_interval_rules.pop();
-		}
+	}
+	for(auto& name_param : to_remove_name_params)
+	{
+		param_interval_rules.erase(name_param);
 	}
 }
 
@@ -255,7 +230,7 @@ void ScriptRuleManager::BindLuaState(sol::state_view* lua)
 	this->lua = lua;
 
 	auto rule_manager_t = lua->new_usertype<ScriptRuleManager>(
-		"Rule",
+		"ScriptRuleManagerType",
 		// functions
 		"Add", &ScriptRuleManager::AddRule,
 		"AddInterval", &ScriptRuleManager::AddRuleInterval,
@@ -268,26 +243,6 @@ void ScriptRuleManager::BindLuaState(sol::state_view* lua)
 		"Exists", &ScriptRuleManager::IsRuleExists,
 		"ParamExists", &ScriptRuleManager::IsRuleParamExists
 	);
-}
-
-bool ScriptRuleManager::IsTopIntervalRuleReady() const
-{
-	if (interval_rules.empty())
-	{
-		return false;
-	}
-
-	return interval_rules.top().NextTick <= current_tick;
-}
-
-bool ScriptRuleManager::IsTopParamIntervalRuleReady() const
-{
-	if (param_interval_rules.empty())
-	{
-		return false;
-	}
-
-	return param_interval_rules.top().NextTick <= current_tick;
 }
 
 sol::protected_function ScriptRuleManager::FindFunc(std::string_view name) const

@@ -5,6 +5,7 @@
 
 #include "RuleLib.h"
 #include "SobGroupLib.h"
+#include "CustomCodeLib.h"
 
 class WSystemCore;
 
@@ -20,11 +21,10 @@ public:
 	~LuaInterface() = default;
 
 	void Initialize();
-	void ScanForResearchConditions() const;
+	void LoadRegistration() const;
 	void Rule_OnInit();
 	void Rule_Tick();
-
-	// interface part
+	bool EnableTick = false;
 public:
 	void AddResearchCondition(
 		std::string_view target_research, 
@@ -36,4 +36,5 @@ private:
 	WSystemCore* wsystem_core;
 	ScriptRuleManager rule_manager;
 	SobGroupManager sobgroup_manager;
+	CustomCodeManager custom_code_manager;
 };

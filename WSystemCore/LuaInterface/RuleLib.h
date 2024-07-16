@@ -1,12 +1,11 @@
 #pragma once
+#include <compare>
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <map>
 
 #include <sol/sol.hpp>
-#undef check
-#include <boost/heap/fibonacci_heap.hpp>
-#include <plf_colony.h>
 
 struct ScriptRule
 {
@@ -21,18 +20,12 @@ struct ScriptParamRule : ScriptRule
 	void Call() const;
 };
 
+
 struct ScriptIntervalRule : ScriptRule
 {
 	std::int64_t TickInterval;
 	std::int64_t NextTick;
 	bool Repeat;
-
-	boost::heap::fibonacci_heap<ScriptIntervalRule>::handle_type Handle;
-
-	friend bool operator<(const ScriptIntervalRule& lhs, const ScriptIntervalRule& rhs)
-	{
-		return lhs.NextTick > rhs.NextTick;
-	}
 };
 
 struct ScriptParamIntervalRule : ScriptParamRule
@@ -40,12 +33,27 @@ struct ScriptParamIntervalRule : ScriptParamRule
 	std::int64_t TickInterval;
 	std::int64_t NextTick;
 	bool Repeat;
+};
 
-	boost::heap::fibonacci_heap<ScriptParamIntervalRule>::handle_type Handle;
+struct NameParamPairView
+{
+	std::string_view Name;
+	std::string_view Param;
+	friend std::strong_ordering operator<=>(const NameParamPairView&, const NameParamPairView&) = default;
+};
 
-	friend bool operator<(const ScriptParamIntervalRule& lhs, const ScriptParamIntervalRule& rhs)
+struct NameParamPair
+{
+	std::string Name;
+	std::string Param;
+	friend std::strong_ordering operator<=>(const NameParamPair&, const NameParamPair&) = default;
+	friend std::strong_ordering operator<=>(const NameParamPair& lhs, const NameParamPairView& rhs)
 	{
-		return lhs.NextTick > rhs.NextTick;
+		return NameParamPairView{ lhs.Name, lhs.Param } <=> rhs;
+	}
+	friend std::strong_ordering operator<=>(const NameParamPairView& lhs, const NameParamPair& rhs)
+	{
+		return lhs <=> NameParamPairView{ rhs.Name, rhs.Param };
 	}
 };
 
@@ -69,8 +77,8 @@ public:
 	void AddRuleParamIntervalOneTime(std::string_view name, std::string_view param, std::int64_t interval);
 	void RemoveRule(std::string_view name);
 	void RemoveRuleParam(std::string_view name, std::string_view param);
-	bool IsRuleExists(std::string_view name);
-	bool IsRuleParamExists(std::string_view name, std::string_view param);
+	[[nodiscard]] bool IsRuleExists(std::string_view name) const;
+	[[nodiscard]] bool IsRuleParamExists(std::string_view name, std::string_view param) const;
 	
 	
 	void ResetTickTimer();
@@ -79,15 +87,13 @@ public:
 private:
 	sol::state_view* lua = nullptr;
 	std::int64_t current_tick = 0;
-	boost::heap::fibonacci_heap<ScriptIntervalRule> interval_rules;
-	boost::heap::fibonacci_heap<ScriptParamIntervalRule> param_interval_rules;
-	plf::colony<ScriptRule> normal_rules;
-	plf::colony<ScriptParamRule> param_rules;
+	std::map<std::string, ScriptIntervalRule, std::less<>> interval_rules;
+	std::map<NameParamPair, ScriptParamIntervalRule, std::less<>> param_interval_rules;
+	std::map<std::string, ScriptRule, std::less<>> normal_rules;
+	std::map<NameParamPair, ScriptParamRule, std::less<>> param_rules;
 
 	void AddRuleInterval_Impl(std::string_view name, std::int64_t interval, bool repeat);
 	void AddRuleParamInterval_Impl(std::string_view name, std::string_view param, std::int64_t interval, bool repeat);
 
-	bool IsTopIntervalRuleReady() const;
-	bool IsTopParamIntervalRuleReady() const;
 	sol::protected_function FindFunc(std::string_view name) const;
 };

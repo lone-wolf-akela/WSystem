@@ -7,7 +7,7 @@ void SobGroupManager::BindLuaState(sol::state_view* lua, TiirEntityGroupFunction
 	this->database = database;
 
 	auto sobgroup_manager_t = lua->new_usertype<SobGroupManager>(
-		"SobGroup",
+		"SobGroupManagerType",
 		// functions
 		"CreateOrClear", &SobGroupManager::CreateOrClear,
 		"CreateIfNotExists", &SobGroupManager::CreateIfNotExists,

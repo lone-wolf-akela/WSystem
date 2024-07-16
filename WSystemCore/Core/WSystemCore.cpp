@@ -139,6 +139,7 @@ void WSystemCore::Begin_InitScenario()
 	RC::Output::send<LogLevel::Verbose>(STR("on_init_scenario_begin\n"));
 
 	research_manager.EnableTick = false;
+	lua_interface->EnableTick = false;
 
 	std::vector<Unreal::UObject*> actors;
 	Unreal::UObjectGlobals::FindAllOf(STR("RTSLevelScriptActor"), actors);
@@ -169,7 +170,7 @@ void WSystemCore::Begin_InitScenario()
 		std::bind_front(&WSystemCore::Post_TiirTick, this),
 		nullptr);
 
-	lua_interface->ScanForResearchConditions();
+	lua_interface->LoadRegistration();
 }
 
 void WSystemCore::Begin_InGame()
@@ -190,6 +191,7 @@ void WSystemCore::Begin_InGame()
 	research_manager.Bind(raven_simulation_proxy, raven_hud);
 	research_manager.EnableTick = true;
 
+	lua_interface->EnableTick = true;
 	lua_interface->Rule_OnInit();
 }
 

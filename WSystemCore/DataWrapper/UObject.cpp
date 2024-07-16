@@ -112,3 +112,8 @@ std::strong_ordering operator<=>(const UObjWrapper& lhs, const UObjWrapper& rhs)
 {
 	return lhs.obj <=> rhs.obj;
 }
+
+bool operator==(const UObjWrapper& lhs, const UObjWrapper& rhs) noexcept
+{
+	return lhs.obj == rhs.obj;
+}

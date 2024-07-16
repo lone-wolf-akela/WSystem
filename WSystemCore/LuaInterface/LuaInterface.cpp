@@ -21,21 +21,27 @@ void LuaInterface::Initialize()
 		&this->wsystem_core->function_libs.EntityGroup,
 		&this->wsystem_core->database
 	);
+	custom_code_manager.BindLuaState(
+		&lua_state, 
+		&this->wsystem_core->database, 
+		this->wsystem_core->raven_simulation_proxy
+	);
 
 	auto wsys_t = lua_state.new_usertype<LuaInterface>(
 		// ctor
-		"WSysType",	sol::constructors<LuaInterface(WSystemCore*)>(),
+		"WSysType",
 		// functions
 		"AddResearchCondition", &LuaInterface::AddResearchCondition,
 		// members
 		"Rule", sol::readonly(&LuaInterface::rule_manager),
-		"SobGroup", sol::readonly(&LuaInterface::sobgroup_manager)
+		"SobGroup", sol::readonly(&LuaInterface::sobgroup_manager),
+		"CustomCode", sol::readonly(&LuaInterface::custom_code_manager)
 	); 
 
 	lua_state["WSys"] = shared_from_this();
 }
 
-void LuaInterface::ScanForResearchConditions() const
+void LuaInterface::LoadRegistration() const
 {
 	RC::Output::send<LogLevel::Verbose>(STR("Loading Research Conditions...\n"));
 
@@ -62,6 +68,7 @@ void LuaInterface::Rule_OnInit()
 	RC::Output::send<LogLevel::Verbose>(STR("Finding Rule_OnInit()...\n"));
 
 	rule_manager.ResetTickTimer();
+	custom_code_manager.ResetTickTimer();
 
 	auto& lua_state = *this->wsystem_core->lua;
 	if (const sol::protected_function init_func = lua_state["Rule_OnInit"]; init_func.valid())
@@ -80,8 +87,14 @@ void LuaInterface::Rule_OnInit()
 
 void LuaInterface::Rule_Tick()
 {
+	if (!EnableTick)
+	{
+		return;
+	}
 	rule_manager.Tick();
+	custom_code_manager.Tick();
 }
+
 
 void LuaInterface::AddResearchCondition(
 	std::string_view target_research,
