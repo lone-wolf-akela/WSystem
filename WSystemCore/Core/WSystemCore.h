@@ -18,7 +18,7 @@
 #include <LuaInterface/LuaInterface.h>
 
 #include "ResearchManager.h"
-#include "ShipDatabase.h"
+#include "Database.h"
 
 class WSystemCore final : public CppUserModBase
 {
@@ -40,7 +40,7 @@ public:
 
     WSysResearchManager research_manager;
     std::shared_ptr<LuaInterface> lua_interface;
-    ShipDatabase ship_database;
+    Database database;
 
     void on_unreal_init() override;
     // void on_update() override;

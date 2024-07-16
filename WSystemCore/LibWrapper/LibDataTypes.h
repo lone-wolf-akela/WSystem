@@ -1,6 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include <compare>
+
+#include <Unreal/FOutputDevice.hpp>
+#include <Unreal/Core/Containers/Set.hpp>
 
 #include <ThirdParty/UnrealContainers/UnrealContainers.h>
 
@@ -17,13 +21,18 @@ struct TiirCommander
 struct TiirEntity 
 {
     std::uint64_t EntityID;
+
+    friend std::uint32_t GetTypeHash(const TiirEntity& Entity)
+    {
+        return RC::Unreal::GetTypeHash(Entity.EntityID);
+    }
+    friend std::strong_ordering operator<=>(const TiirEntity& lhs, const TiirEntity& rhs) = default;
 };
 
 struct TiirEntityGroup 
 {
-    UC::TSet<TiirEntity> Entities;
+	RC::Unreal::TSet<TiirEntity> Entities;
 };
-
 
 struct TiirModifierHandle 
 {

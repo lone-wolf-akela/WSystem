@@ -89,7 +89,7 @@ protected:
 	) const
 	{
 		const auto func = FindFunction(name, location);
-		return utils::call_unreal_function<Ret, Args...>(lib_class, func, std::forward<Args>(args)...);
+		return utils::call_unreal_function<Ret>(lib_class, func, std::forward<Args>(args)...);
 	}
 
 	template<typename... Args>
@@ -101,5 +101,27 @@ protected:
 	{
 		const auto func = FindFunction(name, location);
 		utils::call_unreal_function_void(lib_class, func, std::forward<Args>(args)...);
+	}
+
+	template<typename Ret, typename... Args>
+	Ret CallFunctionRef(
+		const TCHAR* name,
+		const std::source_location& location,
+		Args&&... args
+	) const
+	{
+		const auto func = FindFunction(name, location);
+		return utils::call_unreal_function_ref<Ret>(lib_class, func, std::forward<Args>(args)...);
+	}
+
+	template<typename... Args>
+	void CallFunctionVoidRef(
+		const TCHAR* name,
+		const std::source_location& location,
+		Args&&... args
+	) const
+	{
+		const auto func = FindFunction(name, location);
+		utils::call_unreal_function_void_ref(lib_class, func, std::forward<Args>(args)...);
 	}
 };

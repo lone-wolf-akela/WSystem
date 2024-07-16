@@ -16,25 +16,21 @@ void LuaInterface::Initialize()
 {
 	auto& lua_state = *this->wsystem_core->lua;
 	rule_manager.BindLuaState(&lua_state);
+	sobgroup_manager.BindLuaState(
+		&lua_state, 
+		&this->wsystem_core->function_libs.EntityGroup,
+		&this->wsystem_core->database
+	);
 
-	sol::usertype<LuaInterface> wsys_t = lua_state.new_usertype<LuaInterface>(
+	auto wsys_t = lua_state.new_usertype<LuaInterface>(
 		// ctor
 		"WSysType",	sol::constructors<LuaInterface(WSystemCore*)>(),
 		// functions
 		"AddResearchCondition", &LuaInterface::AddResearchCondition,
 		// members
-		"Rule", sol::readonly(&LuaInterface::rule_manager)
+		"Rule", sol::readonly(&LuaInterface::rule_manager),
+		"SobGroup", sol::readonly(&LuaInterface::sobgroup_manager)
 	); 
-	
-	sol::usertype<ScriptRuleManager> rule_manager_t = lua_state.new_usertype<ScriptRuleManager>(
-		"Rule",
-		// functions
-		"Add", &ScriptRuleManager::AddRule,
-		"AddInterval", &ScriptRuleManager::AddRuleInterval,
-		"AddIntervalOneTime", &ScriptRuleManager::AddRuleIntervalOneTime,
-		"Remove", &ScriptRuleManager::RemoveRule,
-		"Exists", &ScriptRuleManager::IsRuleExists
-	);
 
 	lua_state["WSys"] = shared_from_this();
 }

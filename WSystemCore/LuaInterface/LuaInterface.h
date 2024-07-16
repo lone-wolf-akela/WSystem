@@ -4,6 +4,7 @@
 #include <string_view>
 
 #include "RuleLib.h"
+#include "SobGroupLib.h"
 
 class WSystemCore;
 
@@ -34,4 +35,5 @@ public:
 private:
 	WSystemCore* wsystem_core;
 	ScriptRuleManager rule_manager;
+	SobGroupManager sobgroup_manager;
 };

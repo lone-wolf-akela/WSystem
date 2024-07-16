@@ -20,7 +20,7 @@ public:
     [[nodiscard]] bool IsValid() const noexcept;
     RC::Unreal::UObject* operator->() const;
     friend std::strong_ordering operator<=>(const UObjWrapper& lhs, const UObjWrapper& rhs) noexcept;
-
+    UObjWrapper* operator&() noexcept = delete;
 protected:
     [[nodiscard]] RC::Unreal::FProperty* FindProperty(
         const TCHAR* name,
@@ -64,7 +64,7 @@ protected:
 	) const
 	{
 		const auto func = FindFunction(name, location);
-		return utils::call_unreal_function<Ret, Args...>(obj, func, std::forward<Args>(args)...);
+		return utils::call_unreal_function<Ret>(obj, func, std::forward<Args>(args)...);
 	}
 
     template<typename... Args>
@@ -77,4 +77,26 @@ protected:
 		const auto func = FindFunction(name, location);
 		utils::call_unreal_function_void(obj, func, std::forward<Args>(args)...);
 	}
+
+    template<typename Ret, typename... Args>
+    Ret CallFunctionRef(
+        const TCHAR* name,
+        const std::source_location& location,
+        Args&&... args
+    ) const
+    {
+        const auto func = FindFunction(name, location);
+        return utils::call_unreal_function_ref<Ret>(obj, func, std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    void CallFunctionVoidRef(
+        const TCHAR* name,
+        const std::source_location& location,
+        Args&&... args
+    ) const
+    {
+        const auto func = FindFunction(name, location);
+        utils::call_unreal_function_void_ref(obj, func, std::forward<Args>(args)...);
+    }
 };

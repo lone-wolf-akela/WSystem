@@ -105,8 +105,8 @@ void WSysResearchManager::Tick() const
 			{
 				continue;
 			}
-			const auto* ship = static_cast<SimShip*>(&entity);
-			const auto ship_static_data = *ship->GetDataAsset();
+			const SimShip ship = entity.obj;
+			const auto ship_static_data = *ship.GetDataAsset();
 
 			// name example: SA_F01_Fighter01 <-- this is hgn scout
 			// name example: SA_F01_Probe <-- this is hgn probe
