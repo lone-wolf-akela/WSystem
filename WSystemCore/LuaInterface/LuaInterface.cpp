@@ -61,6 +61,21 @@ void LuaInterface::LoadRegistration() const
 	{
 		RC::Output::send<LogLevel::Verbose>(STR("WSys_SetupResearchConditions() not found in Lua\n"));
 	}
+
+	RC::Output::send<LogLevel::Verbose>(STR("Loading CustomCode Registration...\n"));
+
+	if (const sol::protected_function scan = lua_state["WSys_RegisterCustomCode"]; scan.valid())
+	{
+		if (const auto result = scan(); !result.valid())
+		{
+			const sol::error err = result;
+			RC::Output::send<LogLevel::Error>(STR("Error in WSys_RegisterCustomCode(): {}\n"), boost::nowide::widen(err.what()));
+		}
+	}
+	else
+	{
+		RC::Output::send<LogLevel::Verbose>(STR("WSys_RegisterCustomCode() not found in Lua\n"));
+	}
 }
 
 void LuaInterface::Rule_OnInit()
