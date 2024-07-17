@@ -95,5 +95,5 @@ private:
 	void AddRuleInterval_Impl(std::string_view name, std::int64_t interval, bool repeat);
 	void AddRuleParamInterval_Impl(std::string_view name, std::string_view param, std::int64_t interval, bool repeat);
 
-	sol::protected_function FindFunc(std::string_view name) const;
+	[[nodiscard]] sol::protected_function FindFunc(std::string_view name) const;
 };

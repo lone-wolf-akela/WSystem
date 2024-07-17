@@ -169,6 +169,10 @@ bool ScriptRuleManager::IsRuleParamExists(std::string_view name, std::string_vie
 void ScriptRuleManager::ResetTickTimer()
 {
 	current_tick = 0;
+	interval_rules.clear();
+	param_interval_rules.clear();
+	normal_rules.clear();
+	param_rules.clear();
 }
 
 void ScriptRuleManager::Tick()

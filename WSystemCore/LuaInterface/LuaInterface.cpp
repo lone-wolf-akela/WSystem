@@ -12,6 +12,25 @@ LuaInterface::LuaInterface(WSystemCore* wsystem_core) :
 {
 }
 
+template <typename EnumType>
+void SolRegisterEnum(sol::state_view* lua, std::string_view name)
+{
+	using index_seq = std::make_index_sequence<magic_enum::enum_count<EnumType>()>;
+	SolRegisterEnumImpl<EnumType>(lua, name, index_seq{});
+}
+
+template <typename EnumType, std::size_t I>
+auto SolRegisterMakePair()
+{
+	return std::make_pair(magic_enum::enum_name<EnumType>(static_cast<EnumType>(I)), static_cast<EnumType>(I));
+}
+
+template <typename EnumType, std::size_t... I>
+void SolRegisterEnumImpl(sol::state_view* lua, std::string_view name, std::index_sequence<I...>)
+{
+	lua->new_enum(name, { SolRegisterMakePair<EnumType, I>()... });
+}
+
 void LuaInterface::Initialize()
 {
 	auto& lua_state = *this->wsystem_core->lua;
@@ -25,6 +44,11 @@ void LuaInterface::Initialize()
 		&lua_state, 
 		&this->wsystem_core->database
 	);
+	entity_lib_interface.BindLuaState(
+		&lua_state, 
+		&this->wsystem_core->function_libs.Entity,
+		&sobgroup_manager
+	);
 
 	auto wsys_t = lua_state.new_usertype<LuaInterface>(
 		// ctor
@@ -34,8 +58,21 @@ void LuaInterface::Initialize()
 		// members
 		"Rule", sol::readonly(&LuaInterface::rule_manager),
 		"SobGroup", sol::readonly(&LuaInterface::sobgroup_manager),
-		"CustomCode", sol::readonly(&LuaInterface::custom_code_manager)
+		"CustomCode", sol::readonly(&LuaInterface::custom_code_manager),
+		"Entity", sol::readonly(&LuaInterface::entity_lib_interface)
 	); 
+
+	SolRegisterEnum<SquadronTactics>(&lua_state, "SquadronStance");
+	SolRegisterEnum<SquadronStance>(&lua_state, "SquadronTactics");
+	SolRegisterEnum<AutoLaunchSetting>(&lua_state, "AutoLaunchSetting");
+	SolRegisterEnum<RetaliationSetting>(&lua_state, "RetaliationSetting");
+	SolRegisterEnum<SobPropertyType>(&lua_state, "SobPropertyType");
+	SolRegisterEnum<MultiplierType>(&lua_state, "MultiplierType");
+	SolRegisterEnum<AbilityType>(&lua_state, "AbilityType");
+	SolRegisterEnum<InfluenceType>(&lua_state, "InfluenceType");
+	SolRegisterEnum<ActivityRelation>(&lua_state, "ActivityRelation");
+	SolRegisterEnum<ParadeMode>(&lua_state, "ParadeMode");
+	SolRegisterEnum<TiirGroupCountFilter>(&lua_state, "TiirGroupCountFilter");
 
 	lua_state["WSys"] = shared_from_this();
 }

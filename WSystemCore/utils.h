@@ -1,5 +1,4 @@
 #pragma once
-
 #include <type_traits>
 
 #include <boost/preprocessor/variadic/to_seq.hpp>

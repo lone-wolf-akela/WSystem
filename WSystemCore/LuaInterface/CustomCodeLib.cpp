@@ -151,6 +151,7 @@ void CustomCodeManager::Tick()
 		if (auto it = custom_code_defs.find(static_data); it != custom_code_defs.end())
 		{
 			auto& def = it->second;
+
 			CustomCodeRecord record
 			{
 				.EntityID = static_cast<std::uint64_t>(*ship.GetSimID()),

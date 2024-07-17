@@ -10,6 +10,7 @@ public:
     static constexpr auto LibPath = STR("/Script/RavenSimulation.TiirPlayerFunctionLibrary");
     WSYS_MEMBER_FUNCTION_VOID(SetResourceUnits, std::int32_t, player_index, std::int32_t, resource_unit_total)
 
+    // todo bound to lua
     // WSYS_MEMBER_FUNCTION_VOID(SetCommanderSupply, std::int32_t, player_index, const TMap<TSoftObjectPtr<UUnitSupplyFamily>, std::int32_t>&, supply_families)
 
     WSYS_MEMBER_FUNCTION_VOID(ResetCommanderSupply, std::int32_t, player_index)
@@ -44,9 +45,11 @@ public:
 
     WSYS_MEMBER_FUNCTION_VOID(GetEnvironmentPlayer, TiirCommander*, player)
 
+    // not bound to lua
     WSYS_MEMBER_FUNCTION(bool, EqualEqual_CommanderCommander, const TiirCommander&, a, const TiirCommander&, b)
 
     WSYS_MEMBER_FUNCTION_VOID(AddResourceUnits, std::int32_t, player_index, std::int32_t, resource_unit_count)
 
+    // todo bound to lua
     //WSYS_MEMBER_FUNCTION_VOID(AddCommanderSupply, std::int32_t, player_index, const TMap<TSoftObjectPtr<UUnitSupplyFamily>, std::int32_t>&, supply_families)
 };

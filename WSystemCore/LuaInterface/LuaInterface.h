@@ -1,11 +1,16 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <utility>
 #include <string_view>
+
+#include <magic_enum_all.hpp>
+#include <sol/sol.hpp>
 
 #include "RuleLib.h"
 #include "SobGroupLib.h"
 #include "CustomCodeLib.h"
+#include "EntityLib.h"
 
 class WSystemCore;
 
@@ -37,4 +42,5 @@ private:
 	ScriptRuleManager rule_manager;
 	SobGroupManager sobgroup_manager;
 	CustomCodeManager custom_code_manager;
+	EntityLibInterface entity_lib_interface;
 };
