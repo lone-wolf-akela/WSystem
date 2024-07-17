@@ -11,6 +11,7 @@
 #include "SobGroupLib.h"
 #include "CustomCodeLib.h"
 #include "EntityLib.h"
+#include "PlayerLib.h"
 
 class WSystemCore;
 
@@ -43,4 +44,5 @@ private:
 	SobGroupManager sobgroup_manager;
 	CustomCodeManager custom_code_manager;
 	EntityLibInterface entity_lib_interface;
+	PlayerLibInterface player_lib_interface;
 };

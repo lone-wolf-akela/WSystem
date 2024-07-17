@@ -58,7 +58,7 @@ private:
 	std::int64_t current_tick = 0;
 
 	std::map<ShipStaticData, CustomCodeDef> custom_code_defs;
-	std::map<SimShip, CustomCodeRecord> custom_code_records;
+	std::map<std::uint64_t, CustomCodeRecord> custom_code_records;
 
-	std::set<SimShip> alive_units;
+	std::set<std::uint64_t> alive_units;
 };

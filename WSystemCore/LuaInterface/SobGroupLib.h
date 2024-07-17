@@ -24,6 +24,8 @@ public:
 
 	void BindLuaState(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database);
 	TiirEntityGroup& FindGroup(std::string_view name);
+	void SetGroup(std::string_view name, TiirEntityGroup&& group);
+	void SetGroup(std::string_view name, const TiirEntityGroup& group);
 
 	bool CreateOrClear(std::string_view name);
 	bool CreateIfNotExists(std::string_view name);

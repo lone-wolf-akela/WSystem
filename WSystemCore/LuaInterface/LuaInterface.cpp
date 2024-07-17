@@ -49,6 +49,11 @@ void LuaInterface::Initialize()
 		&this->wsystem_core->function_libs.Entity,
 		&sobgroup_manager
 	);
+	player_lib_interface.BindLuaState(
+		&lua_state, 
+		&this->wsystem_core->function_libs.Player,
+		&sobgroup_manager
+	);
 
 	auto wsys_t = lua_state.new_usertype<LuaInterface>(
 		// ctor
@@ -59,7 +64,8 @@ void LuaInterface::Initialize()
 		"Rule", sol::readonly(&LuaInterface::rule_manager),
 		"SobGroup", sol::readonly(&LuaInterface::sobgroup_manager),
 		"CustomCode", sol::readonly(&LuaInterface::custom_code_manager),
-		"Entity", sol::readonly(&LuaInterface::entity_lib_interface)
+		"Entity", sol::readonly(&LuaInterface::entity_lib_interface),
+		"Player", sol::readonly(&LuaInterface::player_lib_interface)
 	); 
 
 	SolRegisterEnum<SquadronTactics>(&lua_state, "SquadronStance");

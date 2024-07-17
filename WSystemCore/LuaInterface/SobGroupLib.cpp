@@ -25,6 +25,18 @@ void SobGroupManager::BindLuaState(sol::state_view* lua, TiirEntityGroupFunction
 	);
 }
 
+void SobGroupManager::SetGroup(std::string_view name, const TiirEntityGroup& group)
+{
+	if (const auto found = groups.find(name); found != groups.end())
+	{
+		found->second = group;
+	}
+	else
+	{
+		groups.emplace(name, group);
+	}
+}
+
 bool SobGroupManager::CreateOrClear(std::string_view name)
 {
 	if (const auto found = groups.find(name); found != groups.end())
@@ -155,4 +167,16 @@ TiirEntityGroup& SobGroupManager::FindGroup(std::string_view name)
 		return found->second;
 	}
 	throw std::runtime_error("SobGroup not found");
+}
+
+void SobGroupManager::SetGroup(std::string_view name, TiirEntityGroup&& group)
+{
+	if (const auto found = groups.find(name); found != groups.end())
+	{
+		found->second = std::move(group);
+	}
+	else
+	{
+		groups.emplace(name, std::move(group));
+	}
 }

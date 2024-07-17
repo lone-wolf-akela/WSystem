@@ -29,6 +29,7 @@ public:
 
     WSYS_MEMBER_FUNCTION_NOARGS(std::int32_t, PlayerCount)
 
+    // not bound to lua
     WSYS_MEMBER_FUNCTION(bool, NotEqual_CommanderCommander, const TiirCommander&, a, const TiirCommander&, b)
 
     WSYS_MEMBER_FUNCTION(bool, IsValid, const TiirCommander&, player)

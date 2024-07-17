@@ -125,8 +125,18 @@ void CustomCodeManager::ResetTickTimer(RavenSimulationProxy sim_proxy)
 
 void CustomCodeManager::Tick()
 {
+	static std::set<std::uint64_t> new_alive_units;
+	static std::map<std::uint64_t, SimShip> id_to_ship_map;
+	static std::vector<std::uint64_t> newly_born_units;
+	static std::vector<std::uint64_t> newly_dead_units;
+
+	new_alive_units.clear();
+	id_to_ship_map.clear();
+	newly_born_units.clear();
+	newly_dead_units.clear();
+		
 	current_tick++;
-	std::set<SimShip> new_alive_units;
+
 	auto players = sim_proxy.GetSimPlayers();
 	for (auto& player : *players)
 	{
@@ -134,19 +144,20 @@ void CustomCodeManager::Tick()
 		{
 			if (entity.IsShip() && entity.IsAlive())
 			{
-				new_alive_units.emplace(entity.obj);
+				const auto entity_id = static_cast<std::uint64_t>(*entity.GetSimID());
+				const SimShip ship = entity.obj;
+				new_alive_units.emplace(entity_id);
+				id_to_ship_map.emplace(entity_id, ship);
 			}
 		}
 	}
 
-	std::vector<SimShip> newly_born_units;
-	std::vector<SimShip> newly_dead_units;
-
 	std::ranges::set_difference(new_alive_units, alive_units, std::back_inserter(newly_born_units));
 	std::ranges::set_difference(alive_units, new_alive_units, std::back_inserter(newly_dead_units));
 
-	for (auto& ship : newly_born_units)
+	for (auto& id : newly_born_units)
 	{
+		const auto ship = id_to_ship_map.at(id);
 		const auto static_data = *ship.GetDataAsset();
 		if (auto it = custom_code_defs.find(static_data); it != custom_code_defs.end())
 		{
@@ -154,11 +165,11 @@ void CustomCodeManager::Tick()
 
 			CustomCodeRecord record
 			{
-				.EntityID = static_cast<std::uint64_t>(*ship.GetSimID()),
+				.EntityID = id,
 				.Def = &def,
 				.NextUpdateTick = current_tick + def.UpdateTickInterval
 			};
-			custom_code_records.emplace(ship, record);
+			custom_code_records.emplace(id, record);
 			record.CallCreate();
 		}
 	}
