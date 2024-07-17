@@ -46,12 +46,11 @@ class CustomCodeManager
 {
 public:
 	void Register(std::string_view unit_type, std::string_view on_create, std::string_view on_update, std::string_view on_destroy, std::int64_t update_interval);
-	void ResetTickTimer();
+	void ResetTickTimer(RavenSimulationProxy sim_proxy);
 	void Tick();
 	void BindLuaState(
 		sol::state_view* lua, 
-		Database* database, 
-		RavenSimulationProxy sim_proxy);
+		Database* database);
 private:
 	sol::state_view* lua = nullptr;
 	Database* database = nullptr;

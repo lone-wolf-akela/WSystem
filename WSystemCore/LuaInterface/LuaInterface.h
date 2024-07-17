@@ -22,7 +22,7 @@ public:
 
 	void Initialize();
 	void LoadRegistration() const;
-	void Rule_OnInit();
+	void Rule_OnInit(RavenSimulationProxy sim_proxy);
 	void Rule_Tick();
 	bool EnableTick = false;
 public:

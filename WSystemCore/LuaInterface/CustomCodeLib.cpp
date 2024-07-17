@@ -115,10 +115,12 @@ void CustomCodeManager::Register(
 	custom_code_defs.emplace(ship_data, def);
 }
 
-void CustomCodeManager::ResetTickTimer()
+void CustomCodeManager::ResetTickTimer(RavenSimulationProxy sim_proxy)
 {
 	current_tick = 0;
 	alive_units.clear();
+	custom_code_records.clear();
+	this->sim_proxy = sim_proxy;
 }
 
 void CustomCodeManager::Tick()
@@ -184,12 +186,10 @@ void CustomCodeManager::Tick()
 
 void CustomCodeManager::BindLuaState(
 	sol::state_view* lua, 
-	Database* database, 
-	RavenSimulationProxy sim_proxy)
+	Database* database)
 {
 	this->lua = lua;
 	this->database = database;
-	this->sim_proxy = sim_proxy;
 
 	auto custom_code_manager_t = lua->new_usertype<CustomCodeManager>(
 		"CustomCodeManagerType",

@@ -23,8 +23,7 @@ void LuaInterface::Initialize()
 	);
 	custom_code_manager.BindLuaState(
 		&lua_state, 
-		&this->wsystem_core->database, 
-		this->wsystem_core->raven_simulation_proxy
+		&this->wsystem_core->database
 	);
 
 	auto wsys_t = lua_state.new_usertype<LuaInterface>(
@@ -78,12 +77,12 @@ void LuaInterface::LoadRegistration() const
 	}
 }
 
-void LuaInterface::Rule_OnInit()
+void LuaInterface::Rule_OnInit(RavenSimulationProxy sim_proxy)
 {
 	RC::Output::send<LogLevel::Verbose>(STR("Finding Rule_OnInit()...\n"));
 
 	rule_manager.ResetTickTimer();
-	custom_code_manager.ResetTickTimer();
+	custom_code_manager.ResetTickTimer(sim_proxy);
 
 	auto& lua_state = *this->wsystem_core->lua;
 	if (const sol::protected_function init_func = lua_state["Rule_OnInit"]; init_func.valid())

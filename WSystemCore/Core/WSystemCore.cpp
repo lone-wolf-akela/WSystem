@@ -189,10 +189,10 @@ void WSystemCore::Begin_InGame()
 	}
 
 	research_manager.Bind(raven_simulation_proxy, raven_hud);
+	lua_interface->Rule_OnInit(raven_simulation_proxy);
+	
 	research_manager.EnableTick = true;
-
 	lua_interface->EnableTick = true;
-	lua_interface->Rule_OnInit();
 }
 
 void WSystemCore::on_unreal_init()
