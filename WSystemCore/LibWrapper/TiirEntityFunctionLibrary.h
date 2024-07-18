@@ -68,10 +68,8 @@ public:
 
 	WSYS_MEMBER_FUNCTION_VOID(Repair, const TiirEntity&, entity, const TiirEntityGroup&, targets)
 	
-	// todo bound to lua
 	WSYS_MEMBER_FUNCTION(bool, RemoveStatusEffectByHandle, const TiirStatusEffectHandle&, handle)
 
-	// todo bound to lua
 	WSYS_MEMBER_FUNCTION(bool, RemoveStatusEffect, const TiirEntity&, entity, const StatusEffectStaticData, status)
 
 	WSYS_MEMBER_FUNCTION_VOID(RemoveObtainableArtifactFromShip, const TiirEntity&, entity)
@@ -197,7 +195,6 @@ public:
 	// todo bound to lua
 	WSYS_MEMBER_FUNCTION_VOID(ApplyEntityStatus, const TiirEntity&, entity, const EntityStatus*, status)
 
-	// todo bound to lua
 	WSYS_MEMBER_FUNCTION(TiirStatusEffectHandle, AddStatusEffect, const TiirEntity&, entity, StatusEffectStaticData, status_effect)
 
 	WSYS_MEMBER_FUNCTION(TiirModifierHandle, AddOverrideModifier, const TiirEntity&, entity, const SobPropertyType, property, const float, value, const InfluenceType, influence_type, const float, influence_radius)
@@ -205,7 +202,6 @@ public:
 	// todo bound to lua
 	//WSYS_MEMBER_FUNCTION_VOID(AddObtainableSoftArtifactToShip, const TiirEntity&, entity, const TSoftObjectPtr<UArtifactStaticData>, artifact_static_data)
 
-	// todo bound to lua
 	WSYS_MEMBER_FUNCTION_VOID(AddObtainableArtifactToShip, const TiirEntity&, entity, const ArtifactStaticData, artifact_static_data)
 
 	WSYS_MEMBER_FUNCTION(TiirModifierHandle, AddMultiplierModifier, const TiirEntity&, entity, const MultiplierType, multiplier, const float, multiplier_value, const InfluenceType, influence_type, const float, influence_radius, const ActivityRelation, multiplier_value_relation, const float, multiplier_interp_min_value)

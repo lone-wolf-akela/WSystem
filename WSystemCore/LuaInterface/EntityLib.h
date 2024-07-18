@@ -7,6 +7,7 @@
 #include <sol/sol.hpp>
 
 #include <LibWrapper/TiirEntityFunctionLibrary.h>
+#include <Core/Database.h>
 
 #include "SobGroupLib.h"
 
@@ -22,7 +23,7 @@ public:
 
 	~EntityLibInterface() = default;
 
-	void BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager);
+	void BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database);
 
 	void UndeployTurret(std::uint64_t entity_id, bool instantaneous) const;
 	void Teleport(
@@ -130,9 +131,13 @@ public:
 		bool ability_state, 
 		InfluenceType influence_type, 
 		float influence_radius) const;
-
+	bool RemoveStatusEffectByHandle(const TiirStatusEffectHandle& handle) const;
+	bool RemoveStatusEffect(std::uint64_t entity_id, std::string_view status) const;
+	TiirStatusEffectHandle AddStatusEffect(std::uint64_t entity_id, std::string_view status_effect) const;
+	void AddObtainableArtifactToShip(std::uint64_t entity_id, std::string_view artifact_static_data) const;
 private:
 	sol::state_view* lua = nullptr;
 	SobGroupManager* sob_group_manager = nullptr;
+	Database* database = nullptr;
 	TiirEntityFunctionLibrary* lib = nullptr;
 };

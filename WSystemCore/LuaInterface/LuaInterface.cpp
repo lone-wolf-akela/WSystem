@@ -50,7 +50,8 @@ void LuaInterface::Initialize()
 	entity_lib_interface.BindLuaState(
 		&lua_state, 
 		&this->wsystem_core->function_libs.Entity,
-		&sobgroup_manager
+		&sobgroup_manager,
+		&this->wsystem_core->database
 	);
 	player_lib_interface.BindLuaState(
 		&lua_state, 

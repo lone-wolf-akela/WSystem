@@ -2,11 +2,12 @@
 
 #include "EntityLib.h"
 
-void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager)
+void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database)
 {
 	this->lua = lua;
 	this->lib = lib;
 	this->sob_group_manager = sob_group_manager;
+	this->database = database;
 
 	lua->new_usertype<EntityLibInterface>("EntityLibInterface",
 		"UndeployTurret", &EntityLibInterface::UndeployTurret,
@@ -80,7 +81,11 @@ void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLi
 		"AddOverrideModifier", &EntityLibInterface::AddOverrideModifier,
 		"RemoveModifier", &EntityLibInterface::RemoveModifier,
 		"AddMultiplierModifier", &EntityLibInterface::AddMultiplierModifier,
-		"AddAbilityModifier", &EntityLibInterface::AddAbilityModifier
+		"AddAbilityModifier", &EntityLibInterface::AddAbilityModifier,
+		"RemoveStatusEffectByHandle", &EntityLibInterface::RemoveStatusEffectByHandle,
+		"RemoveStatusEffect", &EntityLibInterface::RemoveStatusEffect,
+		"AddStatusEffect", &EntityLibInterface::AddStatusEffect,
+		"AddObtainableArtifactToShip", &EntityLibInterface::AddObtainableArtifactToShip
 	);
 }
 
@@ -519,4 +524,29 @@ TiirModifierHandle EntityLibInterface::AddAbilityModifier(std::uint64_t entity_i
 		ability_state,
 		influence_type,
 		influence_radius);
+}
+
+bool EntityLibInterface::RemoveStatusEffectByHandle(const TiirStatusEffectHandle& handle) const
+{
+	return this->lib->RemoveStatusEffectByHandle(handle);
+}
+
+bool EntityLibInterface::RemoveStatusEffect(std::uint64_t entity_id, std::string_view status) const
+{
+	const auto status_data = database->GetStatusEffectData(status);
+	return this->lib->RemoveStatusEffect({ entity_id }, status_data);
+}
+
+TiirStatusEffectHandle EntityLibInterface::AddStatusEffect(std::uint64_t entity_id,
+	std::string_view status_effect) const
+{
+	const auto status_data = database->GetStatusEffectData(status_effect);
+	return this->lib->AddStatusEffect({ entity_id }, status_data);
+}
+
+void EntityLibInterface::AddObtainableArtifactToShip(std::uint64_t entity_id,
+	std::string_view artifact_static_data) const
+{
+	const auto artifact_data = database->GetArtifactData(artifact_static_data);
+	this->lib->AddObtainableArtifactToShip({ entity_id }, artifact_data);
 }
