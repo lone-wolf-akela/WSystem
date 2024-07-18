@@ -1,11 +1,5 @@
 #pragma once
-#include <memory>
-#include <string>
-#include <utility>
-#include <string_view>
-
-#include <magic_enum_all.hpp>
-#include <sol/sol.hpp>
+#include <pch.h>
 
 #include "RuleLib.h"
 #include "SobGroupLib.h"

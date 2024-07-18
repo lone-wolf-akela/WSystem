@@ -1,12 +1,5 @@
 #pragma once
-#include <memory>
-#include <optional>
-
-#include <sol/sol.hpp>
-
-#include <Mod/CppUserModBase.hpp>
-#include <Unreal/AGameModeBase.hpp>
-#include <LuaMadeSimple/LuaMadeSimple.hpp>
+#include <pch.h>
 
 #include <DataWrapper/RavenGameMode.h>
 #include <DataWrapper/RavenSimulationProxy.h>

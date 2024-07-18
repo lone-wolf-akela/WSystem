@@ -1,8 +1,5 @@
 #pragma once
-#include <cstdint>
-
-#include <Unreal/Transform.hpp>
-#include <Unreal/Rotator.hpp>
+#include <pch.h>
 
 #include <DataWrapper/ShipStaticData.h>
 #include <DataWrapper/SimEntity.h>

@@ -1,4 +1,5 @@
 #pragma once
+#include <pch.h>
 
 #include "ShipStaticData.h"
 #include "SimEntity.h"

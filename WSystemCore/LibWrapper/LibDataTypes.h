@@ -1,12 +1,5 @@
 #pragma once
-
-#include <cstdint>
-#include <compare>
-
-#include <Unreal/FOutputDevice.hpp>
-#include <Unreal/Core/Containers/Set.hpp>
-
-#include <ThirdParty/UnrealContainers/UnrealContainers.h>
+#include <pch.h>
 
 struct TiirResearch
 {

@@ -1,11 +1,5 @@
 #pragma once
-#include <compare>
-#include <utility>
-#include <source_location>
-
-#include <Unreal/UObject.hpp>
-#include <Unreal/FProperty.hpp>
-#include <Unreal/UFunction.hpp>
+#include <pch.h>
 
 #include <utils.h>
 

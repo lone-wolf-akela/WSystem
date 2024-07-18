@@ -1,7 +1,4 @@
-#include <boost/algorithm/string.hpp>
-
-#include <boost/nowide/convert.hpp>
-#include <sol/sol.hpp>
+#include <pch.h>
 
 #include <Core/WSystemCore.h>
 

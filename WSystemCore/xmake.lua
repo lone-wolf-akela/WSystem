@@ -15,6 +15,10 @@ target(projectName)
 
     add_includedirs(".")
     add_includedirs("./ThirdParty")
+
+    set_pcxxheader("pch.h")
+    add_headerfiles("pch.h")
+
     add_files("dllmain.cpp")
     add_files("utils.cpp")
     add_headerfiles("utils.h")

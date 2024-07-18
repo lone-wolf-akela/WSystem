@@ -1,10 +1,6 @@
-#include <algorithm>
-#include <vector>
-#include <iterator>
-#include <format>
+#include <pch.h>
 
-#include <boost/nowide/convert.hpp>
-
+#include <DataWrapper/SimShip.h>
 #include "CustomCodeLib.h"
 
 void CustomCodeDef::CallCreate(std::uint64_t entity_id) const

@@ -1,4 +1,4 @@
-#include <ThirdParty/UnrealContainers/UnrealContainers.h>
+#include <pch.h>
 
 #include <DataWrapper/SimPlayer.h>
 #include <DataWrapper/ResearchStaticData.h>
@@ -6,8 +6,6 @@
 #include <DataWrapper/SimShip.h>
 
 #include "ResearchManager.h"
-
-#include "Property/FMulticastDelegateProperty.hpp"
 
 ResearchConditionCheckResult ResearchConditionController::CheckResearchCondition(
 	RC::StringViewType target_research,

@@ -1,6 +1,5 @@
 #pragma once
-
-#include <cstdint>
+#include <pch.h>
 
 #include "ResearchStaticData.h"
 #include "ShipStaticData.h"

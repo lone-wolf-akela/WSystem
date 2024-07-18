@@ -1,3 +1,4 @@
+#include <pch.h>
 #include "PlayerLib.h"
 
 void PlayerLibInterface::BindLuaState(sol::state_view* lua, TiirPlayerFunctionLibrary* lib, SobGroupManager* sob_group_manager)

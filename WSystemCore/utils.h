@@ -1,10 +1,5 @@
 #pragma once
-#include <type_traits>
-
-#include <boost/preprocessor/variadic/to_seq.hpp>
-#include <boost/preprocessor/seq/fold_left.hpp>
-
-#include <Unreal/UObject.hpp>
+#include <pch.h>
 
 namespace utils
 {

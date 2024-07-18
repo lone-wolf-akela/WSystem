@@ -1,10 +1,5 @@
 #pragma once
-#include <cstdint>
-#include <string_view>
-#include <string>
-#include <tuple>
-
-#include <sol/sol.hpp>
+#include <pch.h>
 
 #include <LibWrapper/TiirPlayerFunctionLibrary.h>
 

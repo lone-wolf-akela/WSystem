@@ -1,11 +1,5 @@
 #pragma once
-#include <cstdint>
-#include <string>
-#include <string_view>
-#include <map>
-#include <tuple>
-
-#include <sol/sol.hpp>
+#include <pch.h>
 
 #include <Core/Database.h>
 #include <LibWrapper/TiirEntityGroupFunctionLibrary.h>
@@ -55,7 +49,7 @@ public:
 	std::int32_t FillGroupFromFilteredType(
 		std::string_view group,
 		std::string_view source_group,
-		const sol::table& desired_types);
+		sol::table desired_types);
 	[[nodiscard]] std::int32_t GroupCount(std::string_view group);
 	void TakeDamageAbsolute(std::string_view group, float damage_absolute) const;
 	void TakeDamage(std::string_view group, float damage_percentage) const;
@@ -178,6 +172,15 @@ public:
 	void Attack(std::string_view group, std::string_view target_group, bool maintain_guard, bool can_attack_cloaked_units) const;
 	[[nodiscard]] sol::table AddStatusEffect(std::string_view group, std::string_view status) const;
 	void AddObtainableArtifactToShips(std::string_view group, std::string_view artifact_static_data) const;
+
+	void CreateShipSimple(
+		std::string_view group,
+		double x, double y, double z,
+		double pitch, double yaw, double roll,
+		std::int32_t owning_player, bool start_in_hyperspace, bool skip_placement_logic,
+		std::string_view ship_type, std::int32_t ship_count, SquadronStance stance,
+		bool use_retaliation_override, RetaliationSetting retaliation_override,
+		bool do_not_retaliate_against_me);
 private:
 	sol::state_view* lua = nullptr;
 	TiirEntityGroupFunctionLibrary* lib = nullptr;

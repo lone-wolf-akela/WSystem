@@ -1,11 +1,6 @@
-#include <format>
-#include <stdexcept>
+#include <pch.h>
 
 #include "RuleLib.h"
-
-#include <ranges>
-
-#include "DynamicOutput/Output.hpp"
 
 void ScriptRule::Call() const
 {
@@ -17,7 +12,7 @@ void ScriptRule::Call() const
 	{
 		const sol::error err = result;
 		const auto error_msg = std::format("Error in {}: {}", Name, err.what());
-		throw std::runtime_error(error_msg);
+		RC::Output::send<RC::LogLevel::LogLevel::Error>(boost::nowide::widen(error_msg));
 	}
 }
 
@@ -30,8 +25,8 @@ void ScriptParamRule::Call() const
 	if (const auto result = Func(Param); !result.valid())
 	{
 		const sol::error err = result;
-		const auto error_msg = std::format("Error in {}.{}: {}", Name, Param, err.what());
-		throw std::runtime_error(error_msg);
+		const auto error_msg = std::format("Error in {}.{}: {}\n", Name, Param, err.what());
+		RC::Output::send<RC::LogLevel::LogLevel::Error>(boost::nowide::widen(error_msg));
 	}
 }
 

@@ -1,17 +1,8 @@
 #pragma once
-#include <cstdint>
-#include <string>
-#include <string_view>
-#include <map>
-#include <set>
-#include <optional>
-
-#include <sol/sol.hpp>
-#undef check
+#include <pch.h>
 
 #include <Core/Database.h>
 #include <DataWrapper/ShipStaticData.h>
-#include <DataWrapper/SimShip.h>
 #include <DataWrapper/RavenSimulationProxy.h>
 
 #include "SobGroupLib.h"

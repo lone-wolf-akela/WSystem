@@ -1,10 +1,6 @@
-#include <vector>
-#include <optional>
-#include <functional>
+#include <pch.h>
 
 #include <Core/WSystemCore.h>
-#include <Mod/CppUserModBase.hpp>
-
 
 #define W_SYS_MOD_API __declspec(dllexport)
 extern "C"

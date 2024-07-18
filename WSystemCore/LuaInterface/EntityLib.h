@@ -1,10 +1,5 @@
 #pragma once
-#include <cstdint>
-#include <string>
-#include <string_view>
-#include <tuple>
-
-#include <sol/sol.hpp>
+#include <pch.h>
 
 #include <LibWrapper/TiirEntityFunctionLibrary.h>
 #include <Core/Database.h>

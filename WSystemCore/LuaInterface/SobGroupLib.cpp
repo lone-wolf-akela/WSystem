@@ -1,3 +1,5 @@
+#include <pch.h>
+
 #include "SobGroupLib.h"
 
 void SobGroupManager::BindLuaState(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database)
@@ -107,7 +109,8 @@ void SobGroupManager::BindLuaState(sol::state_view* lua, TiirEntityGroupFunction
 		"AttackPlayer", &SobGroupManager::AttackPlayer,
 		"Attack", &SobGroupManager::Attack,
 		"AddStatusEffect", &SobGroupManager::AddStatusEffect,
-		"AddObtainableArtifactToShips", &SobGroupManager::AddObtainableArtifactToShips
+		"AddObtainableArtifactToShips", &SobGroupManager::AddObtainableArtifactToShips,
+		"CreateShipSimple", &SobGroupManager::CreateShipSimple
 	);
 }
 
@@ -217,13 +220,13 @@ void SobGroupManager::Teleport(std::string_view group, double dest_rotation_w, d
 std::int32_t SobGroupManager::FillGroupFromFilteredType(
 	std::string_view group, 
 	std::string_view source_group,
-	const sol::table& desired_types)
+	sol::table desired_types)
 {
 	UC::TArray<EntityStaticData> tarray_desired_types;
 	tarray_desired_types.Reserve(static_cast<std::int32_t>(desired_types.size()));
-	for (const auto& val : desired_types | std::views::values)
+	for (const auto& kv : desired_types)
 	{
-		const auto type = val.as<std::string>();
+		const auto type = kv.second.as<std::string>();
 		auto entity_data = database->GetEntityData(type);
 		tarray_desired_types.Add(entity_data);
 	}
@@ -384,9 +387,9 @@ void SobGroupManager::RemoveStatusEffectsByHandles(sol::table handles) const
 {
 	UC::TArray<TiirStatusEffectHandle> tarray_handles;
 	tarray_handles.Reserve(static_cast<std::int32_t>(handles.size()));
-	for (const auto& v : handles | std::views::values)
+	for (const auto& kv : handles)
 	{
-		const auto handle = v.as<TiirStatusEffectHandle>();
+		const auto handle = kv.second.as<TiirStatusEffectHandle>();
 		tarray_handles.Add(handle);
 	}
 	lib->RemoveStatusEffectsByHandles(tarray_handles);
@@ -630,9 +633,9 @@ std::int32_t SobGroupManager::FillGroupFromFilteredFamily(std::string_view group
 {
 	UC::TArray<AttackFamily> tarray_desired_types;
 	tarray_desired_types.Reserve(static_cast<std::int32_t>(desired_types.size()));
-	for (const auto& val : desired_types | std::views::values)
+	for (const auto& kv : desired_types)
 	{
-		const auto type = val.as<std::string>();
+		const auto type = kv.second.as<std::string>();
 		auto data = database->GetAttackFamily(type);
 		tarray_desired_types.Add(data);
 	}
@@ -709,9 +712,9 @@ std::int32_t SobGroupManager::CountShipTypePresentInGroup(std::string_view group
 {
 	UC::TArray<ShipStaticData> tarray_filter_types;
 	tarray_filter_types.Reserve(static_cast<std::int32_t>(filter_types.size()));
-	for (const auto& val : filter_types | std::views::values)
+	for (const auto& kv : filter_types)
 	{
-		const auto type = val.as<std::string>();
+		const auto type = kv.second.as<std::string>();
 		auto data = database->GetShipData(type);
 		tarray_filter_types.Add(data);
 	}
@@ -722,9 +725,9 @@ std::int32_t SobGroupManager::CountAttackFamilyPresentInGroup(std::string_view g
 {
 	UC::TArray<AttackFamily> tarray_filter_families;
 	tarray_filter_families.Reserve(static_cast<std::int32_t>(filter_families.size()));
-	for (const auto& val : filter_families | std::views::values)
+	for (const auto& kv : filter_families)
 	{
-		const auto type = val.as<std::string>();
+		const auto type = kv.second.as<std::string>();
 		auto data = database->GetAttackFamily(type);
 		tarray_filter_families.Add(data);
 	}
@@ -783,6 +786,38 @@ sol::table SobGroupManager::AddStatusEffect(std::string_view group, std::string_
 void SobGroupManager::AddObtainableArtifactToShips(std::string_view group, std::string_view artifact_static_data) const
 {
 	lib->AddObtainableArtifactToShips(FindGroup(group), database->GetArtifactData(artifact_static_data));
+}
+
+void SobGroupManager::CreateShipSimple(
+	std::string_view group, 
+	double x, double y, double z,
+	double pitch, double yaw, double roll,
+	std::int32_t owning_player, bool start_in_hyperspace,
+	bool skip_placement_logic, std::string_view ship_type, std::int32_t ship_count, SquadronStance stance,
+	bool use_retaliation_override, RetaliationSetting retaliation_override, bool do_not_retaliate_against_me)
+{	
+	auto world = RC::Unreal::Cast<Unreal::UWorld>(Unreal::UObjectGlobals::FindFirstOf(STR("World")));
+	auto spawner_class = RC::Unreal::UObjectGlobals::StaticFindObject<Unreal::UClass*>(
+		nullptr,
+		nullptr,
+		STR("/Game/Assets/Blueprints/BP_TiirUnitSpawner.BP_TiirUnitSpawner_C"));
+
+	Unreal::FVector position{ x, y, z };
+	Unreal::FRotator rotation{ pitch, yaw, roll };
+	auto spawner_actor = world->SpawnActor(spawner_class, &position, &rotation);
+	TiirShipSpawner spawner = spawner_actor;
+
+	*spawner.GetOwningPlayer() = owning_player;
+	*spawner.GetShipType() = database->GetShipData(ship_type);
+	*spawner.GetShipCount() = ship_count;
+	*spawner.GetStance() = stance;
+	*spawner.GetUseRetaliationOverride() = use_retaliation_override;
+	*spawner.GetRetaliationOverride() = retaliation_override;
+	*spawner.GetDoNotRetaliateAgainstMe() = do_not_retaliate_against_me;
+
+	lib->CreateShip(FindGroup(group), spawner, owning_player, start_in_hyperspace, skip_placement_logic);
+
+	spawner_actor->K2_DestroyActor();
 }
 
 TiirEntityGroup& SobGroupManager::FindGroup(std::string_view name)
