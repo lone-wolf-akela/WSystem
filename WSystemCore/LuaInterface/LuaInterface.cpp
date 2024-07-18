@@ -7,28 +7,31 @@
 
 #include "LuaInterface.h"
 
+namespace
+{
+	template <typename EnumType>
+	void SolRegisterEnum(sol::state_view* lua, std::string_view name)
+	{
+		using index_seq = std::make_index_sequence<magic_enum::enum_count<EnumType>()>;
+		SolRegisterEnumImpl<EnumType>(lua, name, index_seq{});
+	}
+
+	template <typename EnumType, std::size_t I>
+	auto SolRegisterMakePair()
+	{
+		return std::make_pair(magic_enum::enum_name<EnumType>(static_cast<EnumType>(I)), static_cast<EnumType>(I));
+	}
+
+	template <typename EnumType, std::size_t... I>
+	void SolRegisterEnumImpl(sol::state_view* lua, std::string_view name, std::index_sequence<I...>)
+	{
+		lua->new_enum(name, { SolRegisterMakePair<EnumType, I>()... });
+	}
+}
+
 LuaInterface::LuaInterface(WSystemCore* wsystem_core) : 
 	wsystem_core(wsystem_core)
 {
-}
-
-template <typename EnumType>
-void SolRegisterEnum(sol::state_view* lua, std::string_view name)
-{
-	using index_seq = std::make_index_sequence<magic_enum::enum_count<EnumType>()>;
-	SolRegisterEnumImpl<EnumType>(lua, name, index_seq{});
-}
-
-template <typename EnumType, std::size_t I>
-auto SolRegisterMakePair()
-{
-	return std::make_pair(magic_enum::enum_name<EnumType>(static_cast<EnumType>(I)), static_cast<EnumType>(I));
-}
-
-template <typename EnumType, std::size_t... I>
-void SolRegisterEnumImpl(sol::state_view* lua, std::string_view name, std::index_sequence<I...>)
-{
-	lua->new_enum(name, { SolRegisterMakePair<EnumType, I>()... });
 }
 
 void LuaInterface::Initialize()

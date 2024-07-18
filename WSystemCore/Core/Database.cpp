@@ -4,6 +4,72 @@
 
 #include "Database.h"
 
+namespace
+{
+	template <typename DataType>
+	void ScanDatabaseFor(
+		std::wstring_view class_name,
+		std::map<std::string, DataType, std::less<>>& map_name_to_data,
+		std::map<DataType, std::string>& map_data_to_name)
+	{
+		map_name_to_data.clear();
+		map_data_to_name.clear();
+
+		std::vector<RC::Unreal::UObject*> objects;
+		RC::Unreal::UObjectGlobals::FindAllOf(class_name, objects);
+		for (const auto obj : objects)
+		{
+			DataType data = obj;
+			auto name = boost::nowide::narrow(data->GetName());
+
+			if (map_name_to_data.contains(name))
+			{
+				RC::Output::send<RC::LogLevel::Error>(
+					STR("Error: Database: Duplicate {} name: {}\n"), class_name, boost::nowide::widen(name));
+				continue;
+			}
+
+			map_name_to_data[name] = data;
+			map_data_to_name[data] = name;
+		}
+	}
+
+	template <typename DataType>
+	DataType GetData(std::string_view name, bool has_inited, const std::map<std::string, DataType, std::less<>>& name_to_data)
+	{
+		if (!has_inited)
+		{
+			RC::Output::send<RC::LogLevel::Error>(STR("Error: Database has not been initialized.\n"), boost::nowide::widen(name));
+			return nullptr;
+		}
+
+		if (const auto found = name_to_data.find(name); found != name_to_data.end())
+		{
+			return found->second;
+		}
+
+		RC::Output::send<RC::LogLevel::Error>(STR("Error: {} not found.\n"), boost::nowide::widen(name));
+		return nullptr;
+	}
+
+	template <typename DataType>
+	std::string GetName(const DataType& data, bool has_inited, const std::map<DataType, std::string>& data_to_name)
+	{
+		if (!has_inited)
+		{
+			RC::Output::send<RC::LogLevel::Error>(STR("Error: Database has not been initialized.\n"));
+			return "";
+		}
+		if (const auto found = data_to_name.find(data); found != data_to_name.end())
+		{
+			return found->second;
+		}
+
+		RC::Output::send<RC::LogLevel::Error>(STR("Error: No data of this type\n"));
+		return "";
+	}
+}
+
 void Database::ScanData()
 {
 	if (has_inited)
@@ -13,115 +79,83 @@ void Database::ScanData()
 
 	RC::Output::send<RC::LogLevel::Verbose>(STR("Scanning data...\n"));
 
-	// ship data
-
-	name_to_shipdata.clear();
-	shipdata_to_name.clear();
-
-	std::vector<RC::Unreal::UObject*> ships;
-	RC::Unreal::UObjectGlobals::FindAllOf(STR("ShipStaticData"), ships);
-	for (const auto ship : ships)
-	{
-		ShipStaticData ship_data = ship;
-		auto name = boost::nowide::narrow(ship_data->GetName());
-
-		if (name_to_shipdata.contains(name))
-		{
-			RC::Output::send<RC::LogLevel::Error>(STR("Error: Database: Duplicate ship name: {}\n"), boost::nowide::widen(name));
-			continue;
-		}
-
-		name_to_shipdata[name] = ship_data;
-		shipdata_to_name[ship_data] = name;
-	}
-
-	// entity data
-	
-	name_to_entitydata.clear();
-	entitydata_to_name.clear();
-
-	std::vector<RC::Unreal::UObject*> entities;
-	RC::Unreal::UObjectGlobals::FindAllOf(STR("EntityStaticData"), entities);
-	for (const auto entity : entities)
-	{
-		EntityStaticData entity_data = entity;
-		auto name = boost::nowide::narrow(entity_data->GetName());
-
-		if (name_to_entitydata.contains(name))
-		{
-			RC::Output::send<RC::LogLevel::Error>(STR("Error: Database: Duplicate entity name: {}\n"), boost::nowide::widen(name));
-			continue;
-		}
-
-		name_to_entitydata[name] = entity_data;
-		entitydata_to_name[entity_data] = name;
-	}
+	ScanDatabaseFor(STR("ShipStaticData"), name_to_shipdata, shipdata_to_name);
+	ScanDatabaseFor(STR("EntityStaticData"), name_to_entitydata, entitydata_to_name);
+	ScanDatabaseFor(STR("StatusEffectStaticData"), name_to_statuseffectdata, statuseffectdata_to_name);
+	ScanDatabaseFor(STR("StrikeGroupFormationStaticData"), name_to_strikegroupformationdata, strikegroupformationdata_to_name);
+	ScanDatabaseFor(STR("ArtifactStaticData"), name_to_artifactdata, artifactdata_to_name);
+	ScanDatabaseFor(STR("WeaponStaticData"), name_to_weapondata, weapondata_to_name);
+	ScanDatabaseFor(STR("AttackFamily"), name_to_attackfamily, attackfamily_to_name);
 
 	has_inited = true;
 }
 
-ShipStaticData Database::GetShipData(std::string_view name)
+ShipStaticData Database::GetShipData(std::string_view name) const
 {
-	if (!has_inited)
-	{
-		RC::Output::send<RC::LogLevel::Error>(STR("Error: Database has not been initialized.\n"), boost::nowide::widen(name));
-		return nullptr;
-	}
-
-	if (const auto found = name_to_shipdata.find(name); found != name_to_shipdata.end())
-	{
-		return found->second;
-	}
-
-	RC::Output::send<RC::LogLevel::Error>(STR("Error: No ship type with name {}\n"), boost::nowide::widen(name));
-	return nullptr;
+	return GetData(name, has_inited, name_to_shipdata);
 }
 
-std::string Database::GetShipName(const ShipStaticData& data)
+std::string Database::GetShipName(const ShipStaticData& data) const
 {
-	if (!has_inited)
-	{
-		RC::Output::send<RC::LogLevel::Error>(STR("Error: Database has not been initialized.\n"));
-		return "";
-	}
-	if (const auto found = shipdata_to_name.find(data); found != shipdata_to_name.end())
-	{
-		return found->second;
-	}
-	
-	RC::Output::send<RC::LogLevel::Error>(STR("Error: No ship of this type\n"));
-	return "";
+	return GetName(data, has_inited, shipdata_to_name);
 }
 
-EntityStaticData Database::GetEntityData(std::string_view name)
+EntityStaticData Database::GetEntityData(std::string_view name) const
 {
-	if (!has_inited)
-	{
-		RC::Output::send<RC::LogLevel::Error>(STR("Error: Database has not been initialized.\n"), boost::nowide::widen(name));
-		return nullptr;
-	}
-
-	if (const auto found = name_to_entitydata.find(name); found != name_to_entitydata.end())
-	{
-		return found->second;
-	}
-
-	RC::Output::send<RC::LogLevel::Error>(STR("Error: No entity type with name {}\n"), boost::nowide::widen(name));
-	return nullptr;
+	return GetData(name, has_inited, name_to_entitydata);
 }
 
-std::string Database::GetEntityName(const EntityStaticData& data)
+std::string Database::GetEntityName(const EntityStaticData& data) const
 {
-	if (!has_inited)
-	{
-		RC::Output::send<RC::LogLevel::Error>(STR("Error: Database has not been initialized.\n"));
-		return "";
-	}
-	if (const auto found = entitydata_to_name.find(data); found != entitydata_to_name.end())
-	{
-		return found->second;
-	}
+	return GetName(data, has_inited, entitydata_to_name);
+}
 
-	RC::Output::send<RC::LogLevel::Error>(STR("Error: No entity of this type\n"));
-	return "";
+StatusEffectStaticData Database::GetStatusEffectData(std::string_view name) const
+{
+	return GetData(name, has_inited, name_to_statuseffectdata);
+}
+
+std::string Database::GetStatusEffectName(const StatusEffectStaticData& data) const
+{
+	return GetName(data, has_inited, statuseffectdata_to_name);
+}
+
+StrikeGroupFormationStaticData Database::GetStrikeGroupFormationData(std::string_view name) const
+{
+	return GetData(name, has_inited, name_to_strikegroupformationdata);
+}
+
+std::string Database::GetStrikeGroupFormationName(const StrikeGroupFormationStaticData& data) const
+{
+	return GetName(data, has_inited, strikegroupformationdata_to_name);
+}
+
+ArtifactStaticData Database::GetArtifactData(std::string_view name) const
+{
+	return GetData(name, has_inited, name_to_artifactdata);
+}
+
+std::string Database::GetArtifactName(const ArtifactStaticData& data) const
+{
+	return GetName(data, has_inited, artifactdata_to_name);
+}
+
+WeaponStaticData Database::GetWeaponData(std::string_view name) const
+{
+	return GetData(name, has_inited, name_to_weapondata);
+}
+
+std::string Database::GetWeaponName(const WeaponStaticData& data) const
+{
+	return GetName(data, has_inited, weapondata_to_name);
+}
+
+AttackFamily Database::GetAttackFamily(std::string_view name) const
+{
+	return GetData(name, has_inited, name_to_attackfamily);
+}
+
+std::string Database::GetAttackFamilyName(const AttackFamily& data) const
+{
+	return GetName(data, has_inited, attackfamily_to_name);
 }

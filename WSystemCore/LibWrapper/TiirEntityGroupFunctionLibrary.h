@@ -6,20 +6,20 @@
 
 #include <DataWrapper/SimEntity.h>
 #include <DataWrapper/ShipStaticData.h>
+#include <DataWrapper/AttackFamily.h>
+#include <DataWrapper/ArtifactStaticData.h>
+#include <DataWrapper/TiirShipSpawner.h>
+#include <DataWrapper/StrikeGroupFormationStaticData.h>
+#include <DataWrapper/WeaponStaticData.h>
+#include <DataWrapper/StatusEffectStaticData.h>
 
 #include "LibBase.h"
 #include "LibDataTypes.h"
 
-class StatusEffectStaticData;
 class EntityStatus;
 class GameplayTagQuery;
-class ArtifactStaticData;
 class TiirScriptInstance;
-class StrikeGroupFormationStaticData;
 class TiirGroupQuery;
-class WeaponStaticData;
-class TiirShipSpawner;
-class AttackFamily;
 
 class TiirEntityGroupFunctionLibrary : public LibBase<TiirEntityGroupFunctionLibrary>
 {
@@ -50,7 +50,7 @@ public:
 
 	WSYS_MEMBER_FUNCTION_VOID(SetTactics, const TiirEntityGroup&, group, const SquadronTactics, tactics)
 
-	WSYS_MEMBER_FUNCTION_VOID(SetStrikeGroupFormation, const TiirEntityGroup&, group, const StrikeGroupFormationStaticData*, formation)
+	WSYS_MEMBER_FUNCTION_VOID(SetStrikeGroupFormation, const TiirEntityGroup&, group, const StrikeGroupFormationStaticData, formation)
 
 	WSYS_MEMBER_FUNCTION_VOID(SetStance, const TiirEntityGroup&, group, const SquadronStance, stance)
 
@@ -88,7 +88,7 @@ public:
 
 	WSYS_MEMBER_FUNCTION_VOID(RemoveStatusEffectsByHandles, const UC::TArray<TiirStatusEffectHandle>&, handles)
 
-	WSYS_MEMBER_FUNCTION_VOID(RemoveStatusEffect, const TiirEntityGroup&, group, const StatusEffectStaticData*, status)
+	WSYS_MEMBER_FUNCTION_VOID(RemoveStatusEffect, const TiirEntityGroup&, group, const StatusEffectStaticData, status)
 
 	WSYS_MEMBER_FUNCTION_VOID(RemoveObtainableArtifactFromShips, const TiirEntityGroup&, group)
 
@@ -138,7 +138,7 @@ public:
 
 	WSYS_MEMBER_FUNCTION_VOID(HyperspaceEnter, const TiirEntityGroup&, group)
 
-	WSYS_MEMBER_FUNCTION(bool, HasStatusEffect, const TiirEntityGroup&, group, const StatusEffectStaticData*, status_effect, const bool, check_for_all)
+	WSYS_MEMBER_FUNCTION(bool, HasStatusEffect, const TiirEntityGroup&, group, const StatusEffectStaticData, status_effect, const bool, check_for_all)
 
 	WSYS_MEMBER_FUNCTION_VOID(Guard, const TiirEntityGroup&, group, const TiirEntityGroup&, targets)
 
@@ -171,9 +171,9 @@ public:
 
 	WSYS_MEMBER_FUNCTION_VOID(GatherResource, const TiirEntityGroup&, group, const TiirEntityGroup&, targets)
 
-	WSYS_MEMBER_FUNCTION(bool, FireAtNoTarget, const TiirEntityGroup&, group, const WeaponStaticData*, weapon_type, const bool, all_sources_fire, const RC::Unreal::FName&, fire_from_socket, const RC::Unreal::FVector&, muzzle_offset)
+	WSYS_MEMBER_FUNCTION(bool, FireAtNoTarget, const TiirEntityGroup&, group, const WeaponStaticData, weapon_type, const bool, all_sources_fire, const RC::Unreal::FName&, fire_from_socket, const RC::Unreal::FVector&, muzzle_offset)
 
-	WSYS_MEMBER_FUNCTION(bool, FireAt, const TiirEntityGroup&, group, const TiirEntityGroup&, target_group, const WeaponStaticData*, weapon_type, const bool, all_sources_fire, const bool, fire_at_all_targets, const RC::Unreal::FName&, fire_from_socket, const RC::Unreal::FVector&, muzzle_offset)
+	WSYS_MEMBER_FUNCTION(bool, FireAt, const TiirEntityGroup&, group, const TiirEntityGroup&, target_group, const WeaponStaticData, weapon_type, const bool, all_sources_fire, const bool, fire_at_all_targets, const RC::Unreal::FName&, fire_from_socket, const RC::Unreal::FVector&, muzzle_offset)
 
 	//WSYS_MEMBER_FUNCTION_REF(std::int32_t, FillGroupWithTagQueryMatches, TiirEntityGroup&, group, const TiirEntityGroup&, source_group, const GameplayTagQuery&, query)
 
@@ -187,7 +187,7 @@ public:
 	// bound to lua
 	WSYS_MEMBER_FUNCTION_REF(std::int32_t, FillGroupFromFilteredType, TiirEntityGroup&, group, const TiirEntityGroup&, source_group, const UC::TArray<EntityStaticData>&, desired_types)
 
-	WSYS_MEMBER_FUNCTION_REF(std::int32_t, FillGroupFromFilteredFamily, TiirEntityGroup&, group, const TiirEntityGroup&, source_group, const UC::TArray<AttackFamily*>&, desired_types)
+	WSYS_MEMBER_FUNCTION_REF(std::int32_t, FillGroupFromFilteredFamily, TiirEntityGroup&, group, const TiirEntityGroup&, source_group, const UC::TArray<AttackFamily>&, desired_types)
 
 	WSYS_MEMBER_FUNCTION_REF(std::int32_t, FillGroupExcludingPlayer, TiirEntityGroup&, group, const TiirEntityGroup&, source_group, const std::int32_t, excluding_player)
 
@@ -211,11 +211,11 @@ public:
 
 	WSYS_MEMBER_FUNCTION_VOID(CustomCommand, const TiirEntityGroup&, group, const TiirEntityGroup&, targets)
 
-	WSYS_MEMBER_FUNCTION_VOID_REF(CreateShip, TiirEntityGroup&, group, const TiirShipSpawner*, ship_spawner, const std::int32_t, owning_player, const bool, start_in_hyperspace, const bool, skip_placement_logic)
+	WSYS_MEMBER_FUNCTION_VOID_REF(CreateShip, TiirEntityGroup&, group, const TiirShipSpawner, ship_spawner, const std::int32_t, owning_player, const bool, start_in_hyperspace, const bool, skip_placement_logic)
 
 	WSYS_MEMBER_FUNCTION(std::int32_t, CountShipTypePresentInGroup, const TiirEntityGroup&, group, const UC::TArray<ShipStaticData>&, filter_types)
 
-	WSYS_MEMBER_FUNCTION(std::int32_t, CountAttackFamilyPresentInGroup, const TiirEntityGroup&, group, const UC::TArray<AttackFamily*>&, filter_types)
+	WSYS_MEMBER_FUNCTION(std::int32_t, CountAttackFamilyPresentInGroup, const TiirEntityGroup&, group, const UC::TArray<AttackFamily>&, filter_types)
 
 	WSYS_MEMBER_FUNCTION_VOID(ClearStatusEffects, const TiirEntityGroup&, group)
 
@@ -233,10 +233,10 @@ public:
 
 	WSYS_MEMBER_FUNCTION_VOID(ApplyEntityStatus, const TiirEntityGroup&, group, const EntityStatus*, status)
 
-	WSYS_MEMBER_FUNCTION_VOID(AddStatusEffect, const TiirEntityGroup&, group, const StatusEffectStaticData*, status, UC::TArray<TiirStatusEffectHandle>*, out_handles)
+	WSYS_MEMBER_FUNCTION_VOID(AddStatusEffect, const TiirEntityGroup&, group, const StatusEffectStaticData, status, UC::TArray<TiirStatusEffectHandle>*, out_handles)
 
 	//WSYS_MEMBER_FUNCTION_VOID(AddObtainableSoftArtifactToShips, const TiirEntityGroup&, group, const TSoftObjectPtr<UArtifactStaticData>, artifact_static_data)
 
-	WSYS_MEMBER_FUNCTION_VOID(AddObtainableArtifactToShips, const TiirEntityGroup&, group, const ArtifactStaticData*, artifact_static_data)
+	WSYS_MEMBER_FUNCTION_VOID(AddObtainableArtifactToShips, const TiirEntityGroup&, group, const ArtifactStaticData, artifact_static_data)
 
 };
