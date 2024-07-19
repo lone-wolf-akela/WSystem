@@ -79,7 +79,6 @@ void LuaInterface::Initialize()
 	SolRegisterEnum<InfluenceType>(&lua_state, "InfluenceType");
 	SolRegisterEnum<ActivityRelation>(&lua_state, "ActivityRelation");
 	SolRegisterEnum<ParadeMode>(&lua_state, "ParadeMode");
-	SolRegisterEnum<TiirGroupCountFilter>(&lua_state, "TiirGroupCountFilter");
 
 	lua_state["WSys"] = shared_from_this();
 }

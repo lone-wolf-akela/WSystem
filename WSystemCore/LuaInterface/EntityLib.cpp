@@ -257,14 +257,14 @@ void EntityLibInterface::MoveAlong(std::uint64_t entity_id, sol::table path, boo
 
 }
 
-void EntityLibInterface::MakeDead(std::uint64_t entity_id, bool Instant, bool NoAoeDamage, bool NoDebris,
-	bool NoZombie) const
+void EntityLibInterface::MakeDead(std::uint64_t entity_id, bool instant, bool no_aoe_damage, bool no_debris,
+	bool no_zombie) const
 {
 	EntityDeathModifiers death_modifiers;
-	death_modifiers.Instant = Instant;
-	death_modifiers.NoAoeDamage = NoAoeDamage;
-	death_modifiers.NoDebris = NoDebris;
-	death_modifiers.NoZombie = NoZombie;
+	death_modifiers.Instant = instant;
+	death_modifiers.NoAoeDamage = no_aoe_damage;
+	death_modifiers.NoDebris = no_debris;
+	death_modifiers.NoZombie = no_zombie;
 	this->lib->MakeDead({ entity_id }, death_modifiers);
 }
 

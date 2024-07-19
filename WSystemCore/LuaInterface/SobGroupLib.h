@@ -95,7 +95,7 @@ public:
 	void MoveTo(std::string_view group, double dest_x, double dest_y, double dest_z, bool attack_move) const;
 	void MovePingPong(std::string_view group, sol::table locations, bool attack_move) const;
 	void MoveAlong(std::string_view group, sol::table path, bool loop, bool attack_move) const;
-	void MakeDead(std::string_view group, const EntityDeathModifiers& death_modifiers) const;
+	void MakeDead(std::string_view group, bool instant, bool no_aoe_damage, bool no_debris, bool no_zombie) const;
 	void LaunchSelf(std::string_view group) const;
 	void LaunchAll(std::string_view group) const;
 	void LatchInstantly(std::string_view group, std::string_view latch_target_group) const;

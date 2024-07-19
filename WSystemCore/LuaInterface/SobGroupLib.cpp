@@ -443,9 +443,14 @@ void SobGroupManager::MoveAlong(std::string_view group, sol::table path, bool lo
 	lib->MoveAlong(FindGroup(group), path_vector, loop, attack_move);
 }
 
-void SobGroupManager::MakeDead(std::string_view group, const EntityDeathModifiers& death_modifiers) const
+void SobGroupManager::MakeDead(std::string_view group, bool instant, bool no_aoe_damage, bool no_debris, bool no_zombie) const
 {
-	lib->MakeDead(FindGroup(group), death_modifiers);
+	EntityDeathModifiers modifiers;
+	modifiers.Instant = instant;
+	modifiers.NoAoeDamage = no_aoe_damage;
+	modifiers.NoDebris = no_debris;
+	modifiers.NoZombie = no_zombie;
+	lib->MakeDead(FindGroup(group), modifiers);
 }
 
 void SobGroupManager::LaunchSelf(std::string_view group) const

@@ -56,7 +56,7 @@ public:
 	void OverrideRetaliationSetting(std::uint64_t entity_id, RetaliationSetting retaliation_setting) const;
 	void MovePingPong(std::uint64_t entity_id, sol::table locations, bool attack_move) const;
 	void MoveAlong(std::uint64_t entity_id, sol::table path, bool loop, bool attack_move) const;
-	void MakeDead(std::uint64_t entity_id, bool Instant, bool NoAoeDamage, bool NoDebris, bool NoZombie) const;
+	void MakeDead(std::uint64_t entity_id, bool instant, bool no_aoe_damage, bool no_debris, bool no_zombie) const;
 	void LaunchSelf(std::uint64_t entity_id) const;
 	void LaunchAll(std::uint64_t entity_id) const;
 	void LatchInstantly(std::uint64_t entity_id, std::uint64_t latch_target_entity) const;
