@@ -181,6 +181,13 @@ public:
 		std::string_view ship_type, std::int32_t ship_count, SquadronStance stance,
 		bool use_retaliation_override, RetaliationSetting retaliation_override,
 		bool do_not_retaliate_against_me);
+
+	void FillGroupAllEntitiesInGame(std::string_view group);
+	void FillGroupAllShipsInGame(std::string_view group);
+	void FillGroupAllNonShipEntitiesInGame(std::string_view group);
+	void FillGroupAllAliveShipsInGame(std::string_view group);
+	void FillGroupAllAliveEntitiesInGame(std::string_view group);
+	void FillGroupAllAliveNonShipEntitiesInGame(std::string_view group);
 private:
 	sol::state_view* lua = nullptr;
 	TiirEntityGroupFunctionLibrary* lib = nullptr;

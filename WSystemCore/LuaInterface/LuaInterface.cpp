@@ -48,7 +48,8 @@ void LuaInterface::Initialize()
 		&lua_state, 
 		&this->wsystem_core->function_libs.Entity,
 		&sobgroup_manager,
-		&this->wsystem_core->database
+		&this->wsystem_core->database,
+		this
 	);
 	player_lib_interface.BindLuaState(
 		&lua_state, 
@@ -124,6 +125,7 @@ void LuaInterface::Rule_OnInit(RavenSimulationProxy sim_proxy)
 {
 	RC::Output::send<LogLevel::Verbose>(STR("Finding Rule_OnInit()...\n"));
 
+	id_to_entity_map.clear();
 	rule_manager.ResetTickTimer();
 	custom_code_manager.ResetTickTimer(sim_proxy);
 
@@ -148,10 +150,31 @@ void LuaInterface::Rule_Tick()
 	{
 		return;
 	}
+	id_to_entity_map.clear();
 	rule_manager.Tick();
 	custom_code_manager.Tick();
 }
 
+
+SimEntity LuaInterface::FindEntity(std::uint64_t entity_id)
+{
+	if (id_to_entity_map.empty())
+	{
+		std::vector<Unreal::UObject*> entities;
+		Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+		for (auto entity : entities)
+		{
+			SimEntity sim_entity = entity;
+			const auto id = static_cast<std::uint64_t>(*sim_entity.GetSimID());
+			id_to_entity_map.emplace(id, sim_entity);
+		}
+	}
+	if (const auto found = id_to_entity_map.find(entity_id); found != id_to_entity_map.end())
+	{
+		return found->second;
+	}
+	return nullptr;
+}
 
 void LuaInterface::AddResearchCondition(
 	std::string_view target_research,

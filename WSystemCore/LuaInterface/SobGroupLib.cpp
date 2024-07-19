@@ -110,7 +110,13 @@ void SobGroupManager::BindLuaState(sol::state_view* lua, TiirEntityGroupFunction
 		"Attack", &SobGroupManager::Attack,
 		"AddStatusEffect", &SobGroupManager::AddStatusEffect,
 		"AddObtainableArtifactToShips", &SobGroupManager::AddObtainableArtifactToShips,
-		"CreateShipSimple", &SobGroupManager::CreateShipSimple
+		"CreateShipSimple", &SobGroupManager::CreateShipSimple,
+		"FillGroupAllEntitiesInGame", &SobGroupManager::FillGroupAllEntitiesInGame,
+		"FillGroupAllShipsInGame", &SobGroupManager::FillGroupAllShipsInGame,
+		"FillGroupAllNonShipEntitiesInGame", &SobGroupManager::FillGroupAllNonShipEntitiesInGame,
+		"FillGroupAllAliveShipsInGame", &SobGroupManager::FillGroupAllAliveShipsInGame,
+		"FillGroupAllAliveEntitiesInGame", &SobGroupManager::FillGroupAllAliveEntitiesInGame,
+		"FillGroupAllAliveNonShipEntitiesInGame", &SobGroupManager::FillGroupAllAliveNonShipEntitiesInGame
 	);
 }
 
@@ -545,10 +551,9 @@ std::int32_t SobGroupManager::GroupPurgeAlive(std::string_view group)
 
 sol::table SobGroupManager::GroupMembers(std::string_view group) const
 {
-	UC::TArray<TiirEntity> members;
-	lib->GroupMembers(FindGroup(group), &members);
+	auto& g = FindGroup(group);
 	auto table = lua->create_table();
-	for (const auto& member : members)
+	for (const auto& member : g.Entities)
 	{
 		table.add(member.EntityID);
 	}
@@ -823,6 +828,104 @@ void SobGroupManager::CreateShipSimple(
 	lib->CreateShip(FindGroup(group), spawner, owning_player, start_in_hyperspace, skip_placement_logic);
 
 	spawner_actor->K2_DestroyActor();
+}
+
+void SobGroupManager::FillGroupAllEntitiesInGame(std::string_view group)
+{
+	std::vector<Unreal::UObject*> entities;
+	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& g = FindGroup(group);
+	for (auto& entity : entities)
+	{
+		SimEntity entity_obj = entity;
+		const auto id = *entity_obj.GetSimID();
+		g.Entities.Add({ static_cast<std::uint64_t>(id) });
+	}
+}
+
+void SobGroupManager::FillGroupAllShipsInGame(std::string_view group)
+{
+	std::vector<Unreal::UObject*> entities;
+	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& g = FindGroup(group);
+	for (auto& entity : entities)
+	{
+		SimEntity entity_obj = entity;
+		if (!entity_obj.IsShip())
+		{
+			continue;
+		}
+		const auto id = *entity_obj.GetSimID();
+		g.Entities.Add({ static_cast<std::uint64_t>(id) });
+	}
+}
+
+void SobGroupManager::FillGroupAllNonShipEntitiesInGame(std::string_view group)
+{
+	std::vector<Unreal::UObject*> entities;
+	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& g = FindGroup(group);
+	for (auto& entity : entities)
+	{
+		SimEntity entity_obj = entity;
+		if (entity_obj.IsShip())
+		{
+			continue;
+		}
+		const auto id = *entity_obj.GetSimID();
+		g.Entities.Add({ static_cast<std::uint64_t>(id) });
+	}
+}
+
+void SobGroupManager::FillGroupAllAliveShipsInGame(std::string_view group)
+{
+	std::vector<Unreal::UObject*> entities;
+	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& g = FindGroup(group);
+	for (auto& entity : entities)
+	{
+		SimEntity entity_obj = entity;
+		if (!entity_obj.IsShip() || !entity_obj.IsAlive())
+		{
+			continue;
+		}
+		const auto id = *entity_obj.GetSimID();
+		g.Entities.Add({ static_cast<std::uint64_t>(id) });
+	}
+}
+
+void SobGroupManager::FillGroupAllAliveEntitiesInGame(std::string_view group)
+{
+	std::vector<Unreal::UObject*> entities;
+	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& g = FindGroup(group);
+	for (auto& entity : entities)
+	{
+		SimEntity entity_obj = entity;
+		if (!entity_obj.IsAlive())
+		{
+			continue;
+		}
+		const auto id = *entity_obj.GetSimID();
+		g.Entities.Add({ static_cast<std::uint64_t>(id) });
+	}
+}
+
+void SobGroupManager::FillGroupAllAliveNonShipEntitiesInGame(std::string_view group)
+{
+	std::vector<Unreal::UObject*> entities;
+	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& g = FindGroup(group);
+	for (auto& entity : entities)
+	{
+		SimEntity entity_obj = entity;
+		if (entity_obj.IsShip() || !entity_obj.IsAlive())
+		{
+			continue;
+		}
+		const auto id = *entity_obj.GetSimID();
+		g.Entities.Add({ static_cast<std::uint64_t>(id) });
+	}
 }
 
 TiirEntityGroup& SobGroupManager::FindGroup(std::string_view name)

@@ -145,6 +145,7 @@ public:
 
 	WSYS_MEMBER_FUNCTION_REF(std::int32_t, GroupPurgeAlive, TiirEntityGroup&, group)
 
+	// replace by native implementation
 	WSYS_MEMBER_FUNCTION_VOID(GroupMembers, const TiirEntityGroup&, group, UC::TArray<TiirEntity>*, members)
 
 	WSYS_MEMBER_FUNCTION_REF(std::int32_t, GroupCountFiltered, TiirEntityGroup&, group, const TiirGroupCountFilter&, filter)

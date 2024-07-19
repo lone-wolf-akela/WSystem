@@ -1,13 +1,16 @@
 #include <pch.h>
 
+#include "LuaInterface.h"
+
 #include "EntityLib.h"
 
-void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database)
+void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database, LuaInterface* lua_interface)
 {
 	this->lua = lua;
 	this->lib = lib;
 	this->sob_group_manager = sob_group_manager;
 	this->database = database;
+	this->lua_interface = lua_interface;
 
 	lua->new_usertype<EntityLibInterface>("EntityLibInterface",
 		"UndeployTurret", &EntityLibInterface::UndeployTurret,
@@ -85,7 +88,16 @@ void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLi
 		"RemoveStatusEffectByHandle", &EntityLibInterface::RemoveStatusEffectByHandle,
 		"RemoveStatusEffect", &EntityLibInterface::RemoveStatusEffect,
 		"AddStatusEffect", &EntityLibInterface::AddStatusEffect,
-		"AddObtainableArtifactToShip", &EntityLibInterface::AddObtainableArtifactToShip
+		"AddObtainableArtifactToShip", &EntityLibInterface::AddObtainableArtifactToShip,
+		"IsShip", &EntityLibInterface::IsShip,
+		"IsMilitary", &EntityLibInterface::IsMilitary,
+		"IsDamaged", &EntityLibInterface::IsDamaged,
+		"IsAliveAndVisibleEntity", &EntityLibInterface::IsAliveAndVisibleEntity,
+		"CanHeal", &EntityLibInterface::CanHeal,
+		"CanBeFocused", &EntityLibInterface::CanBeFocused,
+		"IsResource", &EntityLibInterface::IsResource,
+		"IsMissile", &EntityLibInterface::IsMissile,
+		"GetEntityInternalName", &EntityLibInterface::GetEntityInternalName
 	);
 }
 
@@ -549,4 +561,116 @@ void EntityLibInterface::AddObtainableArtifactToShip(std::uint64_t entity_id,
 {
 	const auto artifact_data = database->GetArtifactData(artifact_static_data);
 	this->lib->AddObtainableArtifactToShip({ entity_id }, artifact_data);
+}
+
+bool EntityLibInterface::IsShip(std::uint64_t entity_id) const
+{
+	auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	return entity.IsShip();
+}
+
+bool EntityLibInterface::IsMilitary(std::uint64_t entity_id) const
+{
+	auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	return entity.IsMilitary();
+}
+
+bool EntityLibInterface::IsDamaged(std::uint64_t entity_id) const
+{
+	auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	return entity.IsDamaged();
+}
+
+bool EntityLibInterface::IsAliveAndVisibleEntity(std::uint64_t entity_id) const
+{
+	auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	return entity.IsAliveAndVisibleEntity();
+}
+
+bool EntityLibInterface::CanHeal(std::uint64_t entity_id) const
+{
+	auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	return entity.CanHeal();
+}
+
+bool EntityLibInterface::CanBeFocused(std::uint64_t entity_id) const
+{
+	auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	return entity.CanBeFocused();
+}
+
+namespace
+{
+	bool object_is_of_type(Unreal::UObject* object, StringViewType type)
+	{
+		const auto class_name = Unreal::FName(type);
+		const auto class_obj = object->GetClassPrivate();
+
+		if (class_obj->GetNamePrivate().Equals(class_name))
+		{
+			return true;
+		}
+		for (const auto super_struct : class_obj->ForEachSuperStruct())
+		{
+			if (super_struct->GetNamePrivate().Equals(class_name))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+bool EntityLibInterface::IsResource(std::uint64_t entity_id) const
+{
+	const auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	return object_is_of_type(entity.obj, STR("SimResource"));
+}
+
+bool EntityLibInterface::IsMissile(std::uint64_t entity_id) const
+{
+	const auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	return object_is_of_type(entity.obj, STR("SimMissile"));
+}
+
+std::string EntityLibInterface::GetEntityInternalName(std::uint64_t entity_id) const
+{
+	const auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	return boost::nowide::narrow(entity->GetName());
 }

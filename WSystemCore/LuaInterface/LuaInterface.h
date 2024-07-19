@@ -25,6 +25,8 @@ public:
 	void Rule_OnInit(RavenSimulationProxy sim_proxy);
 	void Rule_Tick();
 	bool EnableTick = false;
+
+	SimEntity FindEntity(std::uint64_t entity_id);
 public:
 	void AddResearchCondition(
 		std::string_view target_research, 
@@ -39,4 +41,6 @@ private:
 	CustomCodeManager custom_code_manager;
 	EntityLibInterface entity_lib_interface;
 	PlayerLibInterface player_lib_interface;
+
+	std::map<std::uint64_t, SimEntity> id_to_entity_map;
 };

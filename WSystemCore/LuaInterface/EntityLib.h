@@ -6,6 +6,8 @@
 
 #include "SobGroupLib.h"
 
+class LuaInterface;
+
 class EntityLibInterface
 {
 public:
@@ -18,7 +20,7 @@ public:
 
 	~EntityLibInterface() = default;
 
-	void BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database);
+	void BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database, LuaInterface* lua_interface);
 
 	void UndeployTurret(std::uint64_t entity_id, bool instantaneous) const;
 	void Teleport(
@@ -61,15 +63,15 @@ public:
 	void LaunchAll(std::uint64_t entity_id) const;
 	void LatchInstantly(std::uint64_t entity_id, std::uint64_t latch_target_entity) const;
 	void Kamikaze(std::uint64_t entity_id, std::string_view target_group) const;
-	bool IsValid_OnPres(std::uint64_t entity_id) const;
-	bool IsValid(std::uint64_t entity_id) const;
-	bool IsInHyperspace(std::uint64_t entity_id) const;
-	bool IsInCombat(std::uint64_t entity_id) const;
-	bool IsCloaking(std::uint64_t entity_id) const;
-	bool IsBeingCaptured(std::uint64_t entity_id) const;
-	bool IsBeingAttacked(std::uint64_t entity_id) const;
-	bool IsAttacking(std::uint64_t entity_id) const;
-	bool IsAlive(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsValid_OnPres(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsValid(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsInHyperspace(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsInCombat(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsCloaking(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsBeingCaptured(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsBeingAttacked(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsAttacking(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsAlive(std::uint64_t entity_id) const;
 	void Guard(std::uint64_t entity_id, std::string_view target_group) const;
 	float GetVisualRange(std::uint64_t entity_id) const;
 	float GetSecondarySensorRange(std::uint64_t entity_id) const;
@@ -130,9 +132,20 @@ public:
 	bool RemoveStatusEffect(std::uint64_t entity_id, std::string_view status) const;
 	TiirStatusEffectHandle AddStatusEffect(std::uint64_t entity_id, std::string_view status_effect) const;
 	void AddObtainableArtifactToShip(std::uint64_t entity_id, std::string_view artifact_static_data) const;
+
+	[[nodiscard]] bool IsShip(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsMilitary(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsDamaged(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsAliveAndVisibleEntity(std::uint64_t entity_id) const;
+	[[nodiscard]] bool CanHeal(std::uint64_t entity_id) const;
+	[[nodiscard]] bool CanBeFocused(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsResource(std::uint64_t entity_id) const;
+	[[nodiscard]] bool IsMissile(std::uint64_t entity_id) const;
+	[[nodiscard]] std::string GetEntityInternalName(std::uint64_t entity_id) const;
 private:
 	sol::state_view* lua = nullptr;
 	SobGroupManager* sob_group_manager = nullptr;
 	Database* database = nullptr;
+	LuaInterface* lua_interface = nullptr;
 	TiirEntityFunctionLibrary* lib = nullptr;
 };

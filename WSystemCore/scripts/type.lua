@@ -795,6 +795,25 @@ function SobGroupManagerType:CreateShipSimple(group, x, y, z, pitch, yaw, roll, 
                                               skip_placement_logic, ship_type, ship_count, stance,
                                               use_retaliation_override, retaliation_override, do_not_retaliate_against_me) end
 
+--- @param group string
+function SobGroupManagerType:FillGroupAllEntitiesInGame(group) end
+
+--- @param group string
+function SobGroupManagerType:FillGroupAllShipsInGame(group) end
+
+--- @param group string
+function SobGroupManagerType:FillGroupAllNonShipEntitiesInGame(group) end
+
+--- @param group string
+function SobGroupManagerType:FillGroupAllAliveShipsInGame(group) end
+
+--- @param group string
+function SobGroupManagerType:FillGroupAllAliveEntitiesInGame(group) end
+
+--- @param group string
+function SobGroupManagerType:FillGroupAllAliveNonShipEntitiesInGame(group) end
+
+
 --- @class CustomCodeManagerType
 CustomCodeManagerType = {}
 
@@ -1178,6 +1197,42 @@ function EntityLibInterface:AddStatusEffect(entity_id, status) return TiirStatus
 --- @param entity_id integer
 --- @param artifact_static_data string
 function EntityLibInterface:AddObtainableArtifactToShip(entity_id, artifact_static_data) end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsShip(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsMilitary(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsDamaged(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsAliveAndVisibleEntity(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:CanHeal(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:CanBeFocused(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsResource(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsMissile(entity_id) return false end
+
+--- @param entity_id integer
+--- @return string
+function EntityLibInterface:GetEntityInternalName(entity_id) return "" end
 
 --- @class PlayerLibInterface
 PlayerLibInterface = {}

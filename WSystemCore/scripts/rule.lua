@@ -61,7 +61,24 @@ function SpawnFighter()
   print("find " .. n .. " fighters.\n")
 end
 
+function FindResource()
+  WSys.SobGroup:CreateOrClear("all_nonship_entities")
+  WSys.SobGroup:FillGroupAllAliveNonShipEntitiesInGame("all_nonship_entities")
+  local n = WSys.SobGroup:GroupCount("all_nonship_entities")
+  print("find " .. n .. " nonship entities.\n")
+
+  local t = WSys.SobGroup:GroupMembers("all_nonship_entities")
+  for i, entity in pairs(t) do
+    if WSys.Entity:IsResource(entity) then
+      print(string.format("entity [%d] = %s\n", i, WSys.Entity:GetEntityInternalName(entity)))
+    end
+  end
+
+  -- WSys.SobGroup:MakeDead("all_nonship_entities", true, true, true, true)
+end
+
 function Rule_OnInit()
   WSys.Rule:AddIntervalOneTime("FindPlayer0Scouts", 5 * 20)
   WSys.Rule:AddInterval("SpawnFighter", 10 * 20)
+  WSys.Rule:AddIntervalOneTime("FindResource", 5 * 20)
 end
