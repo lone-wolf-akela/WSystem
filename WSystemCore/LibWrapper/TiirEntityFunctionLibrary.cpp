@@ -2,9 +2,9 @@
 #include "TiirEntityFunctionLibrary.h"
 
 bool TiirEntityFunctionLibrary::GetMetaDataValue(const TiirEntity& entity, const Unreal::FString& key,
-	std::int32_t& value) const
+	std::int32_t& value, const std::source_location& location) const
 {
-	const auto func = FindFunction(STR("GetMetaDataValue"));
+	const auto func = FindFunction(STR("GetMetaDataValue"), location);
 	struct {
 		TiirEntity entity;
 		Unreal::FString key;

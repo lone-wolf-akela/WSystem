@@ -1,9 +1,9 @@
 #include <pch.h>
 #include "TiirPlayerFunctionLibrary.h"
 
-bool TiirPlayerFunctionLibrary::GetPlayerFromIndex(std::int32_t player_index, TiirCommander& player) const
+bool TiirPlayerFunctionLibrary::GetPlayerFromIndex(std::int32_t player_index, TiirCommander& player, const std::source_location& location) const
 {
-	const auto func = FindFunction(STR("GetPlayerFromIndex"));
+	const auto func = FindFunction(STR("GetPlayerFromIndex"), location);
 	struct {
 		std::int32_t player_index;
 		TiirCommander player;

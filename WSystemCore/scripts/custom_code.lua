@@ -24,7 +24,7 @@ function Ion_OnUpdate(ShipID)
   else
     stance_str = "Unknown"
   end
-  print(string.format("ion frigate %d @ stance `%s` @ formation `%s`\n", ShipID, stance_str, formation))
+  print(string.format("ion frigate %d @ stance `%s`(%d) @ formation `%s`\n", ShipID, stance_str, stance, formation))
 end
 
 function Probe_OnCreate(ShipID)

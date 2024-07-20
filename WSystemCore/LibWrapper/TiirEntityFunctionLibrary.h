@@ -135,7 +135,7 @@ public:
 
 	WSYS_MEMBER_FUNCTION(std::int32_t, GetNumberOfQueuedOrders, const TiirEntity&, entity)
 
-	bool GetMetaDataValue(const TiirEntity& entity, const Unreal::FString& key, std::int32_t& value) const;
+	bool GetMetaDataValue(const TiirEntity& entity, const Unreal::FString& key, std::int32_t& value, const std::source_location& location = std::source_location::current()) const;
 
 	WSYS_MEMBER_FUNCTION(float, GetHealthAbsolute, const TiirEntity&, entity)
 

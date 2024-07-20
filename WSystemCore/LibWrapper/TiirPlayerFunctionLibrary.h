@@ -42,7 +42,7 @@ public:
 
     WSYS_MEMBER_FUNCTION(std::int32_t, GetPlayerIndex, const TiirCommander&, player)
 
-    bool GetPlayerFromIndex(std::int32_t player_index, TiirCommander& player) const;
+    bool GetPlayerFromIndex(std::int32_t player_index, TiirCommander& player, const std::source_location& location = std::source_location::current()) const;
 
     WSYS_MEMBER_FUNCTION_VOID_REF(GetEnvironmentPlayer, TiirCommander&, player)
 

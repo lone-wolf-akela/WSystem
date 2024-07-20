@@ -1,9 +1,9 @@
 #include <pch.h>
 #include "TiirEntityGroupFunctionLibrary.h"
 
-void TiirEntityGroupFunctionLibrary::GroupMembers(const TiirEntityGroup& Group, UC::TArray<TiirEntity>& members) const
+void TiirEntityGroupFunctionLibrary::GroupMembers(const TiirEntityGroup& Group, UC::TArray<TiirEntity>& members, const std::source_location& location) const
 {
-	const auto func = FindFunction(STR("GroupMembers"));
+	const auto func = FindFunction(STR("GroupMembers"), location);
 	struct {
 		TiirEntityGroup Group;
 		UC::TArray<TiirEntity> members;
@@ -16,9 +16,9 @@ void TiirEntityGroupFunctionLibrary::GroupMembers(const TiirEntityGroup& Group, 
 }
 
 void TiirEntityGroupFunctionLibrary::AddStatusEffect(const TiirEntityGroup& group, const StatusEffectStaticData status,
-	UC::TArray<TiirStatusEffectHandle>& out_handles) const
+	UC::TArray<TiirStatusEffectHandle>& out_handles, const std::source_location& location) const
 {
-	const auto func = FindFunction(STR("AddStatusEffect"));
+	const auto func = FindFunction(STR("AddStatusEffect"), location);
 	struct {
 		TiirEntityGroup group;
 		StatusEffectStaticData status;
