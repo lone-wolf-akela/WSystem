@@ -3,14 +3,17 @@ function WSys_RegisterCustomCode()
   WSys.CustomCode:Register("SA_F01_Frigate01", "Ion_OnCreate", "Ion_OnUpdate", "Ion_OnDestroy", 5 * 20)
 end
 
+--- @param ShipID integer
 function Ion_OnCreate(ShipID)
   print(string.format("ion frigate %d created\n", ShipID))
 end
 
+--- @param ShipID integer
 function Ion_OnDestroy(ShipID)
   print(string.format("ion frigate %d destroyed\n", ShipID))
 end
 
+--- @param ShipID integer
 function Ion_OnUpdate(ShipID)
   local stance = WSys.Entity:GetStance(ShipID)
   local formation = WSys.Entity:GetFormation(ShipID)
@@ -27,10 +30,12 @@ function Ion_OnUpdate(ShipID)
   print(string.format("ion frigate %d @ stance `%s`(%d) @ formation `%s`\n", ShipID, stance_str, stance, formation))
 end
 
+--- @param ShipID integer
 function Probe_OnCreate(ShipID)
   print(string.format("probe %d created\n", ShipID))
 end
 
+--- @param ShipID integer
 function Probe_OnDestroy(ShipID)
   print(string.format("probe %d destroyed\n", ShipID))
 end
@@ -41,6 +46,7 @@ Probe_HyperspaceDest = {
   { 0, 0,     10000 }
 }
 
+--- @param ShipID integer
 function Probe_OnUpdate(ShipID)
   LastProbeJumpTarget = LastProbeJumpTarget or {}
   LastProbeJumpTarget[ShipID] = LastProbeJumpTarget[ShipID] or -1
