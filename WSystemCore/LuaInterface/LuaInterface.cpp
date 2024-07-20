@@ -70,8 +70,8 @@ void LuaInterface::Initialize()
 		"Player", sol::readonly(&LuaInterface::player_lib_interface)
 	); 
 
-	SolRegisterEnum<SquadronTactics>(&lua_state, "SquadronStance");
-	SolRegisterEnum<SquadronStance>(&lua_state, "SquadronTactics");
+	SolRegisterEnum<SquadronTactics>(&lua_state, "SquadronTactics");
+	SolRegisterEnum<SquadronStance>(&lua_state, "SquadronStance");
 	SolRegisterEnum<AutoLaunchSetting>(&lua_state, "AutoLaunchSetting");
 	SolRegisterEnum<RetaliationSetting>(&lua_state, "RetaliationSetting");
 	SolRegisterEnum<SobPropertyType>(&lua_state, "SobPropertyType");
