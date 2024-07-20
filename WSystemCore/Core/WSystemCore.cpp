@@ -125,7 +125,7 @@ void WSystemCore::Post_TiirTick(
 	[[maybe_unused]] void* custom_data)
 {
 	research_manager.Tick();
-	lua_interface->Rule_Tick();
+	lua_interface->Tick();
 }
 
 void WSystemCore::Begin_InitScenario()
@@ -164,7 +164,13 @@ void WSystemCore::Begin_InitScenario()
 		std::bind_front(&WSystemCore::Post_TiirTick, this),
 		nullptr);
 
-	lua_interface->LoadRegistration();
+	units_info_subsystem = Unreal::UObjectGlobals::FindFirstOf(STR("UnitsInfoSubsystem"));
+	if (!units_info_subsystem.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("UnitsInfoSubsystem not found!\n"));
+	}
+
+	lua_interface->Begin_InitScenario();
 }
 
 void WSystemCore::Begin_InGame()
@@ -182,8 +188,8 @@ void WSystemCore::Begin_InGame()
 		return;
 	}
 
-	research_manager.Bind(raven_simulation_proxy, raven_hud);
-	lua_interface->Rule_OnInit(raven_simulation_proxy);
+	research_manager.Begin_InGame(raven_simulation_proxy, raven_hud);
+	lua_interface->Begin_InGame(raven_simulation_proxy);
 	
 	research_manager.EnableTick = true;
 	lua_interface->EnableTick = true;

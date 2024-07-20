@@ -111,7 +111,7 @@ void CustomCodeManager::Register(
 	custom_code_defs.emplace(ship_data, def);
 }
 
-void CustomCodeManager::ResetTickTimer(RavenSimulationProxy sim_proxy)
+void CustomCodeManager::Begin_InGame(RavenSimulationProxy sim_proxy)
 {
 	current_tick = 0;
 	alive_units.clear();
@@ -192,7 +192,7 @@ void CustomCodeManager::Tick()
 	}
 }
 
-void CustomCodeManager::BindLuaState(
+void CustomCodeManager::Initialize(
 	sol::state_view* lua, 
 	Database* database)
 {

@@ -6,7 +6,7 @@
 
 #include "EntityLib.h"
 
-void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database, LuaInterface* lua_interface)
+void EntityLibInterface::Initialize(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database, LuaInterface* lua_interface)
 {
 	this->lua = lua;
 	this->lib = lib;
@@ -103,6 +103,11 @@ void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLi
 		"GetStance", &EntityLibInterface::GetStance,
 		"GetFormation", &EntityLibInterface::GetFormation
 	);
+}
+
+void EntityLibInterface::Begin_InitScenario(UnitsInfoSubsystem* units_info_subsystem)
+{
+	this->units_info_subsystem = units_info_subsystem;
 }
 
 void EntityLibInterface::UndeployTurret(std::uint64_t entity_id, bool instantaneous) const
@@ -682,7 +687,6 @@ std::string EntityLibInterface::GetEntityInternalName(std::uint64_t entity_id) c
 
 SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 {
-	UnitsInfoSubsystem units_info_subsystem = Unreal::UObjectGlobals::FindFirstOf(STR("UnitsInfoSubsystem"));
 	const auto entity = lua_interface->FindEntity(entity_id);
 	if (!entity.IsValid())
 	{
@@ -701,7 +705,7 @@ SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 	bool single_stance;
 	std::int32_t stance_order_index;
 	UnitOrderStaticData stance_order;
-	units_info_subsystem.GetShipsFormationAndStance(
+	units_info_subsystem->GetShipsFormationAndStance(
 		ships,
 		single_formation, formation_order_index, formation_order,
 		single_stance, stance_order_index, stance_order);
@@ -710,7 +714,6 @@ SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 
 std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
 {
-	UnitsInfoSubsystem units_info_subsystem = Unreal::UObjectGlobals::FindFirstOf(STR("UnitsInfoSubsystem"));
 	const auto entity = lua_interface->FindEntity(entity_id);
 	if (!entity.IsValid())
 	{
@@ -729,7 +732,7 @@ std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
 	bool single_stance;
 	std::int32_t stance_order_index;
 	UnitOrderStaticData stance_order;
-	units_info_subsystem.GetShipsFormationAndStance(
+	units_info_subsystem->GetShipsFormationAndStance(
 		ships, 
 		single_formation, formation_order_index, formation_order,
 		single_stance, stance_order_index, stance_order);

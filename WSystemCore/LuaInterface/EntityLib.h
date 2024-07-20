@@ -1,6 +1,7 @@
 #pragma once
 #include <pch.h>
 
+#include <DataWrapper/UnitsInfoSubsystem.h>
 #include <LibWrapper/TiirEntityFunctionLibrary.h>
 #include <Core/Database.h>
 
@@ -20,7 +21,8 @@ public:
 
 	~EntityLibInterface() = default;
 
-	void BindLuaState(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database, LuaInterface* lua_interface);
+	void Initialize(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database, LuaInterface* lua_interface);
+	void Begin_InitScenario(UnitsInfoSubsystem* units_info_subsystem);
 
 	void UndeployTurret(std::uint64_t entity_id, bool instantaneous) const;
 	void Teleport(
@@ -150,5 +152,6 @@ private:
 	SobGroupManager* sob_group_manager = nullptr;
 	Database* database = nullptr;
 	LuaInterface* lua_interface = nullptr;
+	UnitsInfoSubsystem* units_info_subsystem = nullptr;
 	TiirEntityFunctionLibrary* lib = nullptr;
 };

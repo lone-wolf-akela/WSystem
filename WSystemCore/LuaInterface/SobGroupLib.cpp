@@ -2,7 +2,7 @@
 
 #include "SobGroupLib.h"
 
-void SobGroupManager::BindLuaState(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database)
+void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database)
 {
 	this->lua = lua;
 	this->lib = lib;
@@ -241,7 +241,7 @@ std::int32_t SobGroupManager::FillGroupFromFilteredType(
 
 std::int32_t SobGroupManager::GroupCount(std::string_view group)
 {
-	return lib->GroupCount(FindGroup(group));
+	return FindGroup(group).Entities.Num();
 }
 
 void SobGroupManager::TakeDamageAbsolute(std::string_view group, float damage_absolute) const

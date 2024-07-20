@@ -16,7 +16,7 @@ public:
 
 	~SobGroupManager() = default;
 
-	void BindLuaState(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database);
+	void Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database);
 	[[nodiscard]] TiirEntityGroup& FindGroup(std::string_view name);
 	[[nodiscard]] const TiirEntityGroup& FindGroup(std::string_view name) const;
 	void SetGroup(std::string_view name, TiirEntityGroup&& group);

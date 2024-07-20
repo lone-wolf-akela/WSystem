@@ -75,9 +75,9 @@ public:
 	[[nodiscard]] bool IsRuleParamExists(std::string_view name, std::string_view param) const;
 	
 	
-	void ResetTickTimer();
+	void Begin_InGame();
 	void Tick();
-	void BindLuaState(sol::state_view* lua);
+	void Initialize(sol::state_view* lua);
 private:
 	sol::state_view* lua = nullptr;
 	std::int64_t current_tick = 0;

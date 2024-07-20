@@ -150,6 +150,7 @@ public:
 
 	WSYS_MEMBER_FUNCTION_REF(std::int32_t, GroupCountFiltered, TiirEntityGroup&, group, const TiirGroupCountFilter&, filter)
 
+	// Has native implementation alternative
 	WSYS_MEMBER_FUNCTION_REF(std::int32_t, GroupCount, TiirEntityGroup&, group)
 
 	WSYS_MEMBER_FUNCTION_VOID_REF(GroupClear, TiirEntityGroup&, group)

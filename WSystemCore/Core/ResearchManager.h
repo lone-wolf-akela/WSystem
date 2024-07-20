@@ -43,7 +43,7 @@ class WSysResearchManager
 public:
 	explicit WSysResearchManager(TiirResearchFunctionLibrary* tiir_research_function_library);
 
-	void Bind(RavenSimulationProxy sim_proxy, RavenHUD hud);
+	void Begin_InGame(RavenSimulationProxy sim_proxy, RavenHUD hud);
 	void Tick() const;
 	bool EnableTick = false;
 	ResearchConditionController ConditionController;

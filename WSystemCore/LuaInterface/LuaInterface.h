@@ -21,9 +21,9 @@ public:
 	~LuaInterface() = default;
 
 	void Initialize();
-	void LoadRegistration() const;
-	void Rule_OnInit(RavenSimulationProxy sim_proxy);
-	void Rule_Tick();
+	void Begin_InitScenario();
+	void Begin_InGame(RavenSimulationProxy sim_proxy);
+	void Tick();
 	bool EnableTick = false;
 
 	SimEntity FindEntity(std::uint64_t entity_id);

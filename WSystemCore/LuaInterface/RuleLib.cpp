@@ -161,7 +161,7 @@ bool ScriptRuleManager::IsRuleParamExists(std::string_view name, std::string_vie
 	return param_rules.contains(NameParamPairView{ name, param }) || param_interval_rules.contains(NameParamPairView{ name, param });
 }
 
-void ScriptRuleManager::ResetTickTimer()
+void ScriptRuleManager::Begin_InGame()
 {
 	current_tick = 0;
 	interval_rules.clear();
@@ -224,7 +224,7 @@ void ScriptRuleManager::Tick()
 	}
 }
 
-void ScriptRuleManager::BindLuaState(sol::state_view* lua)
+void ScriptRuleManager::Initialize(sol::state_view* lua)
 {
 	this->lua = lua;
 

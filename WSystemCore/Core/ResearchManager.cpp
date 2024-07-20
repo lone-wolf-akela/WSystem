@@ -59,14 +59,9 @@ ResearchConditionCheckResult ResearchConditionController::CheckResearchCondition
 WSysResearchManager::WSysResearchManager(TiirResearchFunctionLibrary* tiir_research_function_library) : 
 	tiir_research_function_library(tiir_research_function_library)
 {
-	/*ConditionController.ResearchConditions[STR("Skirmish_F01_Fighter02_Research")] = {};
-	ConditionController.ResearchConditions[STR("Skirmish_F01_Fighter02_Research")]
-		.RequiredAnyOf.emplace_back();
-	ConditionController.ResearchConditions[STR("Skirmish_F01_Fighter02_Research")]
-		.RequiredAnyOf.back().RequiredAllOf.Researches.emplace_back(STR("SA_F01_Fighter01"));*/
 }
 
-void WSysResearchManager::Bind(RavenSimulationProxy sim_proxy, RavenHUD hud)
+void WSysResearchManager::Begin_InGame(RavenSimulationProxy sim_proxy, RavenHUD hud)
 {
 	this->sim_proxy = sim_proxy;
 	this->hud = hud;
@@ -141,7 +136,7 @@ void WSysResearchManager::Tick() const
 				std::ignore = tiir_research_function_library->UnlockResearchForPlayer(player_idx, research_static_data);
 				research.State = ResearchState::Done;
 				NotifyResearchChanged(player, research);
-				RC::Output::send<RC::LogLevel::Verbose>(STR("[Player {}] Unlock Research: {}\n"), player_idx, name);
+				// RC::Output::send<RC::LogLevel::Verbose>(STR("[Player {}] Unlock Research: {}\n"), player_idx, name);
 				break;
 			}
 			case ResearchConditionCheckResult::Locked:
@@ -153,7 +148,7 @@ void WSysResearchManager::Tick() const
 
 				research.State = ResearchState::Locked;
 				NotifyResearchChanged(player, research);
-				RC::Output::send<RC::LogLevel::Verbose>(STR("[Player {}] Lock Research: {}\n"), player_idx, name);
+				// RC::Output::send<RC::LogLevel::Verbose>(STR("[Player {}] Lock Research: {}\n"), player_idx, name);
 				break;
 			}
 			case ResearchConditionCheckResult::DoNotCare:

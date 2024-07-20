@@ -34,24 +34,24 @@ LuaInterface::LuaInterface(WSystemCore* wsystem_core) :
 void LuaInterface::Initialize()
 {
 	auto& lua_state = *this->wsystem_core->lua;
-	rule_manager.BindLuaState(&lua_state);
-	sobgroup_manager.BindLuaState(
+	rule_manager.Initialize(&lua_state);
+	sobgroup_manager.Initialize(
 		&lua_state, 
 		&this->wsystem_core->function_libs.EntityGroup,
 		&this->wsystem_core->database
 	);
-	custom_code_manager.BindLuaState(
+	custom_code_manager.Initialize(
 		&lua_state, 
 		&this->wsystem_core->database
 	);
-	entity_lib_interface.BindLuaState(
+	entity_lib_interface.Initialize(
 		&lua_state, 
 		&this->wsystem_core->function_libs.Entity,
 		&sobgroup_manager,
 		&this->wsystem_core->database,
 		this
 	);
-	player_lib_interface.BindLuaState(
+	player_lib_interface.Initialize(
 		&lua_state, 
 		&this->wsystem_core->function_libs.Player,
 		&sobgroup_manager
@@ -84,8 +84,10 @@ void LuaInterface::Initialize()
 	lua_state["WSys"] = shared_from_this();
 }
 
-void LuaInterface::LoadRegistration() const
+void LuaInterface::Begin_InitScenario()
 {
+	entity_lib_interface.Begin_InitScenario(std::addressof(this->wsystem_core->units_info_subsystem));
+	
 	RC::Output::send<LogLevel::Verbose>(STR("Loading Research Conditions...\n"));
 
 	auto& research_manager = this->wsystem_core->research_manager;
@@ -121,13 +123,13 @@ void LuaInterface::LoadRegistration() const
 	}
 }
 
-void LuaInterface::Rule_OnInit(RavenSimulationProxy sim_proxy)
+void LuaInterface::Begin_InGame(RavenSimulationProxy sim_proxy)
 {
 	RC::Output::send<LogLevel::Verbose>(STR("Finding Rule_OnInit()...\n"));
 
 	id_to_entity_map.clear();
-	rule_manager.ResetTickTimer();
-	custom_code_manager.ResetTickTimer(sim_proxy);
+	rule_manager.Begin_InGame();
+	custom_code_manager.Begin_InGame(sim_proxy);
 
 	auto& lua_state = *this->wsystem_core->lua;
 	if (const sol::protected_function init_func = lua_state["Rule_OnInit"]; init_func.valid())
@@ -144,7 +146,7 @@ void LuaInterface::Rule_OnInit(RavenSimulationProxy sim_proxy)
 	}
 }
 
-void LuaInterface::Rule_Tick()
+void LuaInterface::Tick()
 {
 	if (!EnableTick)
 	{

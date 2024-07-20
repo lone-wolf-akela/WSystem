@@ -5,6 +5,7 @@
 #include <DataWrapper/RavenSimulationProxy.h>
 #include <DataWrapper/RTSLevelScriptActor.h>
 #include <DataWrapper/RavenHUD.h>
+#include <DataWrapper/UnitsInfoSubsystem.h>
 
 #include <LibWrapper/Libs.h>
 
@@ -28,6 +29,7 @@ public:
     RavenSimulationProxy raven_simulation_proxy = nullptr;
     RTSLevelScriptActor rts_level_script_actor = nullptr;
     RavenHUD raven_hud = nullptr;
+    UnitsInfoSubsystem units_info_subsystem = nullptr;
 
     FunctionLibs function_libs;
 

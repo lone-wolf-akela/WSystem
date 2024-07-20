@@ -17,7 +17,7 @@ public:
 
 	~PlayerLibInterface() = default;
 
-	void BindLuaState(sol::state_view* lua, TiirPlayerFunctionLibrary* lib, SobGroupManager* sob_group_manager);
+	void Initialize(sol::state_view* lua, TiirPlayerFunctionLibrary* lib, SobGroupManager* sob_group_manager);
 
 	void SetResourceUnits(std::int32_t player_index, std::int32_t resource_unit_total) const;
 	void ResetCommanderSupply(std::int32_t player_index) const;
