@@ -395,7 +395,7 @@ void SobGroupManager::RemoveStatusEffectsByHandles(sol::table handles) const
 	tarray_handles.Reserve(static_cast<std::int32_t>(handles.size()));
 	for (const auto& kv : handles)
 	{
-		const auto handle = kv.second.as<TiirStatusEffectHandle>();
+		const auto& handle = kv.second.as<TiirStatusEffectHandle>();
 		tarray_handles.Add(handle);
 	}
 	lib->RemoveStatusEffectsByHandles(tarray_handles);
@@ -451,11 +451,12 @@ void SobGroupManager::MoveAlong(std::string_view group, sol::table path, bool lo
 
 void SobGroupManager::MakeDead(std::string_view group, bool instant, bool no_aoe_damage, bool no_debris, bool no_zombie) const
 {
-	EntityDeathModifiers modifiers;
-	modifiers.Instant = instant;
-	modifiers.NoAoeDamage = no_aoe_damage;
-	modifiers.NoDebris = no_debris;
-	modifiers.NoZombie = no_zombie;
+	const EntityDeathModifiers modifiers{
+		.Instant = instant,
+		.NoAoeDamage = no_aoe_damage,
+		.NoDebris = no_debris,
+		.NoZombie = no_zombie
+	};
 	lib->MakeDead(FindGroup(group), modifiers);
 }
 

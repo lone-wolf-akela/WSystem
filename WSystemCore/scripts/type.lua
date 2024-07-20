@@ -277,7 +277,9 @@ function SobGroupManagerType:Delete(name) return false end
 --- @param include_dead boolean
 --- @return integer
 function SobGroupManagerType:FillGroupFromPlayer(group, owning_player, include_docked, include_in_hyperspace,
-                                                 include_dead) return 0 end
+                                                 include_dead)
+    return 0
+end
 
 --- @param group string
 --- @param dest_rotation_w number
@@ -293,7 +295,8 @@ function SobGroupManagerType:FillGroupFromPlayer(group, owning_player, include_d
 --- @param skip_placement_logic boolean
 function SobGroupManagerType:HyperspaceToDestination(group, dest_rotation_w, dest_rotation_x, dest_rotation_y,
                                                      dest_rotation_z, dest_position_x, dest_position_y, dest_position_z,
-                                                     scale_x, scale_y, scale_z, skip_placement_logic) end
+                                                     scale_x, scale_y, scale_z, skip_placement_logic)
+end
 
 --- @param group string
 --- @param dest_rotation_w number
@@ -309,7 +312,8 @@ function SobGroupManagerType:HyperspaceToDestination(group, dest_rotation_w, des
 --- @param skip_placement_logic boolean
 function SobGroupManagerType:Teleport(group, dest_rotation_w, dest_rotation_x, dest_rotation_y, dest_rotation_z,
                                       dest_position_x, dest_position_y, dest_position_z, scale_x, scale_y, scale_z,
-                                      skip_placement_logic) end
+                                      skip_placement_logic)
+end
 
 --- @param group string
 --- @param source_group string
@@ -358,7 +362,8 @@ function SobGroupManagerType:ToggleAlternativeShipOrientation(group) end
 --- @param scale_z number
 --- @param skip_placement_logic boolean
 function SobGroupManagerType:Spawn(group, rotation_w, rotation_x, rotation_y, rotation_z, translation_x, translation_y,
-                                   translation_z, scale_x, scale_y, scale_z, skip_placement_logic) end
+                                   translation_z, scale_x, scale_y, scale_z, skip_placement_logic)
+end
 
 --- @param group string
 --- @param rotation_w number
@@ -372,7 +377,8 @@ function SobGroupManagerType:Spawn(group, rotation_w, rotation_x, rotation_y, ro
 --- @param scale_y number
 --- @param scale_z number
 function SobGroupManagerType:SetTransform(group, rotation_w, rotation_x, rotation_y, rotation_z, translation_x,
-                                          translation_y, translation_z, scale_x, scale_y, scale_z) end
+                                          translation_y, translation_z, scale_x, scale_y, scale_z)
+end
 
 --- @param group string
 --- @param tactics SquadronTactics
@@ -543,7 +549,8 @@ function SobGroupManagerType:IsCloaking(group, require_all) return false end
 --- @param skip_placement_logic boolean
 function SobGroupManagerType:HyperspaceExit(group, dest_rotation_w, dest_rotation_x, dest_rotation_y, dest_rotation_z,
                                             dest_position_x, dest_position_y, dest_position_z, scale_x, scale_y, scale_z,
-                                            skip_placement_logic) end
+                                            skip_placement_logic)
+end
 
 --- @param group string
 function SobGroupManagerType:HyperspaceEnter(group) end
@@ -626,7 +633,9 @@ function SobGroupManagerType:GatherResource(group, targets) end
 --- @param muzzle_offset_z number
 --- @return boolean
 function SobGroupManagerType:FireAtNoTarget(group, weapon_type, all_sources_fire, fire_from_socket, muzzle_offset_x,
-                                            muzzle_offset_y, muzzle_offset_z) return false end
+                                            muzzle_offset_y, muzzle_offset_z)
+    return false
+end
 
 --- @param group string
 --- @param target_group string
@@ -639,7 +648,9 @@ function SobGroupManagerType:FireAtNoTarget(group, weapon_type, all_sources_fire
 --- @param muzzle_offset_z number
 --- @return boolean
 function SobGroupManagerType:FireAt(group, target_group, weapon_type, all_sources_fire, fire_at_all_targets,
-                                    fire_from_socket, muzzle_offset_x, muzzle_offset_y, muzzle_offset_z) return false end
+                                    fire_from_socket, muzzle_offset_x, muzzle_offset_y, muzzle_offset_z)
+    return false
+end
 
 --- @param group string
 --- @param source_group string
@@ -669,7 +680,9 @@ function SobGroupManagerType:FillGroupFromFilteredFamily(group, source_group, de
 --- @param distance_z number
 --- @return integer
 function SobGroupManagerType:FillGroupByProximityToLocation(group, source_group, location_x, location_y, location_z,
-                                                            distance_x, distance_y, distance_z) return 0 end
+                                                            distance_x, distance_y, distance_z)
+    return 0
+end
 
 --- @param group string
 --- @param source_group string
@@ -679,7 +692,9 @@ function SobGroupManagerType:FillGroupByProximityToLocation(group, source_group,
 --- @param distance_z number
 --- @return integer
 function SobGroupManagerType:FillGroupByProximityToGroup(group, source_group, near_group, distance_x, distance_y,
-                                                         distance_z) return 0 end
+                                                         distance_z)
+    return 0
+end
 
 --- @param group string
 --- @param dock_target_entity_group string
@@ -707,7 +722,8 @@ function SobGroupManagerType:Despawn(group, ignore_active_commands) end
 --- @param roll number
 --- @param instantaneous boolean
 function SobGroupManagerType:DeployTurretAtPositionAndOrientation(group, position_x, position_y, position_z, pitch, yaw,
-                                                                  roll, instantaneous) end
+                                                                  roll, instantaneous)
+end
 
 --- @param group string
 --- @param position_x number
@@ -718,7 +734,8 @@ function SobGroupManagerType:DeployTurretAtPositionAndOrientation(group, positio
 --- @param normal_z number
 --- @param instantaneous boolean
 function SobGroupManagerType:DeployTurretAtPositionAndNormal(group, position_x, position_y, position_z, normal_x,
-                                                             normal_y, normal_z, instantaneous) end
+                                                             normal_y, normal_z, instantaneous)
+end
 
 --- @param group string
 --- @param instantaneous boolean
@@ -793,7 +810,8 @@ function SobGroupManagerType:AddObtainableArtifactToShips(group, artifact_static
 --- @param do_not_retaliate_against_me boolean
 function SobGroupManagerType:CreateShipSimple(group, x, y, z, pitch, yaw, roll, owning_player, start_in_hyperspace,
                                               skip_placement_logic, ship_type, ship_count, stance,
-                                              use_retaliation_override, retaliation_override, do_not_retaliate_against_me) end
+                                              use_retaliation_override, retaliation_override, do_not_retaliate_against_me)
+end
 
 --- @param group string
 function SobGroupManagerType:FillGroupAllEntitiesInGame(group) end
@@ -812,7 +830,6 @@ function SobGroupManagerType:FillGroupAllAliveEntitiesInGame(group) end
 
 --- @param group string
 function SobGroupManagerType:FillGroupAllAliveNonShipEntitiesInGame(group) end
-
 
 --- @class CustomCodeManagerType
 CustomCodeManagerType = {}
@@ -845,7 +862,8 @@ function EntityLibInterface:UndeployTurret(entity_id, instantaneous) end
 --- @param teleport_ships_in_parade boolean
 function EntityLibInterface:Teleport(entity_id, dest_rotation_w, dest_rotation_x, dest_rotation_y, dest_rotation_z,
                                      dest_position_x, dest_position_y, dest_position_z, scale_x, scale_y, scale_z,
-                                     teleport_ships_in_parade) end
+                                     teleport_ships_in_parade)
+end
 
 --- @param entity_id integer
 --- @param x number
@@ -865,7 +883,8 @@ function EntityLibInterface:SetVelocity(entity_id, x, y, z) end
 --- @param scale_y number
 --- @param scale_z number
 function EntityLibInterface:SetTransform(entity_id, rotation_w, rotation_x, rotation_y, rotation_z, position_x,
-                                         position_y, position_z, scale_x, scale_y, scale_z) end
+                                         position_y, position_z, scale_x, scale_y, scale_z)
+end
 
 --- @param entity_id integer
 --- @param tactics SquadronTactics
@@ -1109,7 +1128,8 @@ function EntityLibInterface:DeployTurretAtPositionAndOrientation(entity_id, x, y
 --- @param normal_z number
 --- @param instantaneous boolean
 function EntityLibInterface:DeployTurretAtPositionAndNormal(entity_id, position_x, position_y, position_z, normal_x,
-                                                            normal_y, normal_z, instantaneous) end
+                                                            normal_y, normal_z, instantaneous)
+end
 
 --- @param entity_id integer
 --- @param instantaneous boolean
@@ -1152,8 +1172,9 @@ function EntityLibInterface:Attack(entity_id, target_group) end
 --- @param influence_type InfluenceType
 --- @param influence_radius number
 --- @return TiirModifierHandle
-function EntityLibInterface:AddOverrideModifier(entity_id, property, value, influence_type, influence_radius) return
-    TiirModifierHandle end
+function EntityLibInterface:AddOverrideModifier(entity_id, property, value, influence_type, influence_radius)
+    return TiirModifierHandle
+end
 
 --- @param modifier TiirModifierHandle
 --- @return boolean
@@ -1169,7 +1190,9 @@ function EntityLibInterface:RemoveModifier(modifier) return false end
 --- @return TiirModifierHandle
 function EntityLibInterface:AddMultiplierModifier(entity_id, multiplier, multiplier_value, influence_type,
                                                   influence_radius, multiplier_value_relation,
-                                                  multiplier_interp_min_value) return TiirModifierHandle end
+                                                  multiplier_interp_min_value)
+    return TiirModifierHandle
+end
 
 --- @param entity_id integer
 --- @param ability AbilityType
@@ -1177,8 +1200,9 @@ function EntityLibInterface:AddMultiplierModifier(entity_id, multiplier, multipl
 --- @param influence_type InfluenceType
 --- @param influence_radius number
 --- @return TiirModifierHandle
-function EntityLibInterface:AddAbilityModifier(entity_id, ability, ability_state, influence_type, influence_radius) return
-    TiirModifierHandle end
+function EntityLibInterface:AddAbilityModifier(entity_id, ability, ability_state, influence_type, influence_radius)
+    return TiirModifierHandle
+end
 
 --- @param handle TiirStatusEffectHandle
 --- @return boolean
@@ -1233,6 +1257,15 @@ function EntityLibInterface:IsMissile(entity_id) return false end
 --- @param entity_id integer
 --- @return string
 function EntityLibInterface:GetEntityInternalName(entity_id) return "" end
+
+-- --- @param entity_id integer
+-- --- @return SquadronStance
+-- function EntityLibInterface:GetStance(entity_id) return SquadronStance end
+
+-- --- @param entity_id integer
+-- --- @return string
+-- function EntityLibInterface:GetFormation(entity_id) return "" end
+
 
 --- @class PlayerLibInterface
 PlayerLibInterface = {}
@@ -1315,7 +1348,8 @@ WSysType = {}
 --- @param all_of_researches string @ Comma separated list of research types
 --- @param none_of_researches string @ Comma separated list of research types
 function WSysType:AddResearchCondition(target_research, all_of_units, none_of_units, all_of_researches,
-                                       none_of_researches) end
+                                       none_of_researches)
+end
 
 --- @type WSysType
 WSys = WSysType()

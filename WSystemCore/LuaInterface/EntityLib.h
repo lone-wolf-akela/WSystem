@@ -142,6 +142,10 @@ public:
 	[[nodiscard]] bool IsResource(std::uint64_t entity_id) const;
 	[[nodiscard]] bool IsMissile(std::uint64_t entity_id) const;
 	[[nodiscard]] std::string GetEntityInternalName(std::uint64_t entity_id) const;
+
+	// not work
+	//[[nodiscard]] SquadronStance GetStance(std::uint64_t entity_id) const;
+	//[[nodiscard]] std::string GetFormation(std::uint64_t entity_id) const;
 private:
 	sol::state_view* lua = nullptr;
 	SobGroupManager* sob_group_manager = nullptr;

@@ -1,5 +1,19 @@
 function WSys_RegisterCustomCode()
   WSys.CustomCode:Register("SA_F01_Probe", "Probe_OnCreate", "Probe_OnUpdate", "Probe_OnDestroy", 2 * 20)
+  WSys.CustomCode:Register("SA_F01_Frigate01", "Ion_OnCreate", "Ion_OnUpdate", "Ion_OnDestroy", 5 * 20)
+end
+
+function Ion_OnCreate(ShipID)
+  print(string.format("ion frigate %d created\n", ShipID))
+end
+
+function Ion_OnDestroy(ShipID)
+  print(string.format("ion frigate %d destroyed\n", ShipID))
+end
+
+function Ion_OnUpdate(ShipID)
+  local stance = WSys.Entity:GetStance(ShipID)
+  print(string.format("ion frigate %d @ stance %d\n", ShipID, stance))
 end
 
 function Probe_OnCreate(ShipID)

@@ -1,5 +1,7 @@
 #include <pch.h>
 
+#include <DataWrapper/UnitsInfoSubsystem.h>
+
 #include "LuaInterface.h"
 
 #include "EntityLib.h"
@@ -98,6 +100,8 @@ void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLi
 		"IsResource", &EntityLibInterface::IsResource,
 		"IsMissile", &EntityLibInterface::IsMissile,
 		"GetEntityInternalName", &EntityLibInterface::GetEntityInternalName
+		//"GetStance", &EntityLibInterface::GetStance,
+		//"GetFormation", &EntityLibInterface::GetFormation
 	);
 }
 
@@ -212,7 +216,7 @@ void EntityLibInterface::Scuttle(std::uint64_t entity_id) const
 
 void EntityLibInterface::SalvageCapture(std::uint64_t entity_id, std::string_view target_group) const
 {
-	const auto targets = sob_group_manager->FindGroup(target_group);
+	const auto& targets = sob_group_manager->FindGroup(target_group);
 	this->lib->SalvageCapture({ entity_id }, targets);
 }
 
@@ -233,7 +237,7 @@ void EntityLibInterface::Retire(std::uint64_t entity_id) const
 
 void EntityLibInterface::Repair(std::uint64_t entity_id, std::string_view target_group) const
 {
-	const auto targets = sob_group_manager->FindGroup(target_group);
+	const auto& targets = sob_group_manager->FindGroup(target_group);
 	this->lib->Repair({ entity_id }, targets);
 }
 
@@ -272,11 +276,12 @@ void EntityLibInterface::MoveAlong(std::uint64_t entity_id, sol::table path, boo
 void EntityLibInterface::MakeDead(std::uint64_t entity_id, bool instant, bool no_aoe_damage, bool no_debris,
 	bool no_zombie) const
 {
-	EntityDeathModifiers death_modifiers;
-	death_modifiers.Instant = instant;
-	death_modifiers.NoAoeDamage = no_aoe_damage;
-	death_modifiers.NoDebris = no_debris;
-	death_modifiers.NoZombie = no_zombie;
+	const EntityDeathModifiers death_modifiers{
+		.Instant = instant,
+		.NoAoeDamage = no_aoe_damage,
+		.NoDebris = no_debris,
+		.NoZombie = no_zombie
+	};
 	this->lib->MakeDead({ entity_id }, death_modifiers);
 }
 
@@ -297,7 +302,7 @@ void EntityLibInterface::LatchInstantly(std::uint64_t entity_id, std::uint64_t l
 
 void EntityLibInterface::Kamikaze(std::uint64_t entity_id, std::string_view target_group) const
 {
-	const auto targets = sob_group_manager->FindGroup(target_group);
+	const auto& targets = sob_group_manager->FindGroup(target_group);
 	this->lib->Kamikaze({ entity_id }, targets);
 }
 
@@ -348,7 +353,7 @@ bool EntityLibInterface::IsAlive(std::uint64_t entity_id) const
 
 void EntityLibInterface::Guard(std::uint64_t entity_id, std::string_view target_group) const
 {
-	const auto targets = sob_group_manager->FindGroup(target_group);
+	const auto& targets = sob_group_manager->FindGroup(target_group);
 	this->lib->Guard({ entity_id }, targets);
 }
 
@@ -414,7 +419,7 @@ std::int32_t EntityLibInterface::GetBuildTime(std::uint64_t entity_id) const
 
 void EntityLibInterface::GatherResource(std::uint64_t entity_id, std::string_view target_group) const
 {
-	const auto targets = sob_group_manager->FindGroup(target_group);
+	const auto& targets = sob_group_manager->FindGroup(target_group);
 	this->lib->GatherResource({ entity_id }, targets);
 }
 
@@ -462,7 +467,7 @@ void EntityLibInterface::DeployTurret(std::uint64_t entity_id, bool instantaneou
 
 void EntityLibInterface::CustomCommand(std::uint64_t entity_id, std::string_view target_group) const
 {
-	const auto targets = sob_group_manager->FindGroup(target_group);
+	const auto& targets = sob_group_manager->FindGroup(target_group);
 	this->lib->CustomCommand({ entity_id }, targets);
 }
 
@@ -498,7 +503,7 @@ void EntityLibInterface::BindInstantly(std::uint64_t entity_id, std::uint64_t bi
 
 void EntityLibInterface::Attack(std::uint64_t entity_id, std::string_view target_group, bool maintain_guard) const
 {
-	const auto targets = sob_group_manager->FindGroup(target_group);
+	const auto& targets = sob_group_manager->FindGroup(target_group);
 	this->lib->Attack({ entity_id }, targets, maintain_guard);
 }
 
@@ -674,3 +679,77 @@ std::string EntityLibInterface::GetEntityInternalName(std::uint64_t entity_id) c
 	}
 	return boost::nowide::narrow(entity->GetName());
 }
+
+// not work
+/*SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
+{
+	UnitsInfoSubsystem units_info_subsystem = Unreal::UObjectGlobals::FindFirstOf(STR("UnitsInfoSubsystem"));
+	const auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	if (!entity.IsShip())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} is not a ship\n"), entity_id);
+	}
+	const SimShip ship = entity.obj;
+	UC::TArray<SimShip> ships;
+	ships.Add(ship);
+	bool single_formation;
+	UnitOrderStaticData formation_order;
+	std::int32_t formation_order_index;
+	bool single_stance;
+	std::int32_t stance_order_index;
+	UnitOrderStaticData stance_order;
+	units_info_subsystem.GetShipsFormationAndStance(
+		ships,
+		&single_formation, &formation_order_index, std::addressof(formation_order),
+		&single_stance, &stance_order_index, std::addressof(stance_order));
+	RC::Output::send<LogLevel::Error>(STR("single_formation is {}\n"), single_formation);
+	RC::Output::send<LogLevel::Error>(STR("single_stance is {}\n"), single_stance);
+	RC::Output::send<LogLevel::Error>(STR("formation_order_index is {}\n"), formation_order_index);
+	RC::Output::send<LogLevel::Error>(STR("stance_order_index is {}\n"), stance_order_index);
+	if (!formation_order.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("formation order is not valid\n"));
+	}
+	else
+	{
+		RC::Output::send<LogLevel::Error>(STR("formation order is {}\n"), formation_order.GetStrikeGroupFormationData()->obj->GetName());
+	}
+	if (!stance_order.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Stance order is not valid\n"));
+		return SquadronStance::Aggressive;
+	}
+	return *stance_order.GetSquadronStance();
+}
+
+std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
+{
+	UnitsInfoSubsystem units_info_subsystem = Unreal::UObjectGlobals::FindFirstOf(STR("UnitsInfoSubsystem"));
+	const auto entity = lua_interface->FindEntity(entity_id);
+	if (!entity.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
+	}
+	if (!entity.IsShip())
+	{
+		RC::Output::send<LogLevel::Error>(STR("Entity with id {} is not a ship\n"), entity_id);
+	}
+	const SimShip ship = entity.obj;
+	UC::TArray<SimShip> ships;
+	ships.Add(ship);
+	bool single_formation;
+	UnitOrderStaticData formation_order;
+	std::int32_t formation_order_index;
+	bool single_stance;
+	std::int32_t stance_order_index;
+	UnitOrderStaticData stance_order;
+	units_info_subsystem.GetShipsFormationAndStance(
+		ships, 
+		&single_formation, &formation_order_index, std::addressof(formation_order),
+		&single_stance, &stance_order_index, std::addressof(stance_order));
+	return boost::nowide::narrow(formation_order.GetStrikeGroupFormationData()->obj->GetName());
+}*/
