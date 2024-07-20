@@ -53,7 +53,7 @@ function Probe_OnUpdate(ShipID)
   LastProbeJumpTarget[ShipID] = (LastProbeJumpTarget[ShipID] + 1) % 3
   local dest = Probe_HyperspaceDest[LastProbeJumpTarget[ShipID] + 1]
 
-  print(string.format("probe %d jump to (%f, %f, %f)\n", ShipID, dest[1], dest[2], dest[3]))
+  -- print(string.format("probe %d jump to (%f, %f, %f)\n", ShipID, dest[1], dest[2], dest[3]))
   WSys.Entity:Teleport(
     ShipID,
     0, 0, 0, 0,                -- rotate

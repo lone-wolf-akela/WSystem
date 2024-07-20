@@ -6,6 +6,7 @@
 #include "CustomCodeLib.h"
 #include "EntityLib.h"
 #include "PlayerLib.h"
+#include "UniverseLib.h"
 
 class WSystemCore;
 
@@ -22,11 +23,11 @@ public:
 
 	void Initialize();
 	void Begin_InitScenario();
-	void Begin_InGame(RavenSimulationProxy sim_proxy);
+	void Begin_InGame();
 	void Tick();
 	bool EnableTick = false;
 
-	SimEntity FindEntity(std::uint64_t entity_id);
+	SimEntity FindEntity(std::uint64_t entity_id) const;
 public:
 	void AddResearchCondition(
 		std::string_view target_research, 
@@ -41,6 +42,5 @@ private:
 	CustomCodeManager custom_code_manager;
 	EntityLibInterface entity_lib_interface;
 	PlayerLibInterface player_lib_interface;
-
-	std::map<std::uint64_t, SimEntity> id_to_entity_map;
+	UniverseLib universe_lib;
 };

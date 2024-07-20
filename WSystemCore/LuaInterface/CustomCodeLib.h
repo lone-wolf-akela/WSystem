@@ -46,7 +46,6 @@ private:
 	sol::state_view* lua = nullptr;
 	Database* database = nullptr;
 	RavenSimulationProxy sim_proxy = nullptr;
-	std::int64_t current_tick = 0;
 
 	std::map<ShipStaticData, CustomCodeDef> custom_code_defs;
 	std::map<std::uint64_t, CustomCodeRecord> custom_code_records;

@@ -21,7 +21,7 @@ function JumpScouts()
   JumpTarget = JumpTarget or -1
   JumpTarget = (JumpTarget + 1) % 3
   local dest = HyperspaceDest[JumpTarget + 1]
-  print("jump to [" .. JumpTarget .. "]: " .. dest[1] .. ", " .. dest[2] .. ", " .. dest[3] .. "\n")
+  -- print("jump to [" .. JumpTarget .. "]: " .. dest[1] .. ", " .. dest[2] .. ", " .. dest[3] .. "\n")
   WSys.SobGroup:Teleport(
     "player_0_scouts",
     0, 0, 0, 0,                -- rotate
@@ -58,7 +58,7 @@ function SpawnFighter()
     true                     -- bool do_not_retaliate_against_me
   )
   local n = WSys.SobGroup:GroupCount("create_fighter_group")
-  print("find " .. n .. " fighters.\n")
+  -- print("find " .. n .. " fighters.\n")
 end
 
 function FindResource()
@@ -81,4 +81,7 @@ function Rule_OnInit()
   WSys.Rule:AddIntervalOneTime("FindPlayer0Scouts", 5 * 20)
   WSys.Rule:AddInterval("SpawnFighter", 10 * 20)
   WSys.Rule:AddIntervalOneTime("FindResource", 5 * 20)
+
+  local tick = WSys.Universe:GameFrame()
+  print(string.format("Rule_OnInit: tick = %d\n", tick))
 end

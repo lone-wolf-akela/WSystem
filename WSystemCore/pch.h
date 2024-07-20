@@ -47,6 +47,7 @@
 #include <Unreal/Rotator.hpp>
 #include <Unreal/FOutputDevice.hpp>
 #include <Unreal/Core/Containers/Set.hpp>
+#include <Unreal/Core/Containers/Map.hpp>
 #include <Unreal/Property/FMulticastDelegateProperty.hpp>
 
 #include <LuaMadeSimple/LuaMadeSimple.hpp>

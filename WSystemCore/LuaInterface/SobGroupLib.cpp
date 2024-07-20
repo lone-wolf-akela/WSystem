@@ -120,6 +120,11 @@ void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLi
 	);
 }
 
+void SobGroupManager::Begin_InGame(RavenSimulationProxy sim_proxy)
+{
+	this->sim_proxy = sim_proxy;
+}
+
 void SobGroupManager::SetGroup(std::string_view name, const TiirEntityGroup& group)
 {
 	if (const auto found = groups.find(name); found != groups.end())
@@ -833,98 +838,86 @@ void SobGroupManager::CreateShipSimple(
 
 void SobGroupManager::FillGroupAllEntitiesInGame(std::string_view group)
 {
-	std::vector<Unreal::UObject*> entities;
-	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& entity_map = *this->sim_proxy.GetEntityMap();
 	auto& g = FindGroup(group);
-	for (auto& entity : entities)
+	for (auto& kv : entity_map)
 	{
-		SimEntity entity_obj = entity;
-		const auto id = *entity_obj.GetSimID();
+		const auto id = kv.Key();
 		g.Entities.Add({ static_cast<std::uint64_t>(id) });
 	}
 }
 
 void SobGroupManager::FillGroupAllShipsInGame(std::string_view group)
 {
-	std::vector<Unreal::UObject*> entities;
-	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& entity_map = *this->sim_proxy.GetEntityMap();
 	auto& g = FindGroup(group);
-	for (auto& entity : entities)
+	for (auto& kv : entity_map)
 	{
-		SimEntity entity_obj = entity;
-		if (!entity_obj.IsShip())
+		if (auto entity_obj = kv.Value(); !entity_obj.IsShip())
 		{
 			continue;
 		}
-		const auto id = *entity_obj.GetSimID();
+		const auto id = kv.Key();
 		g.Entities.Add({ static_cast<std::uint64_t>(id) });
 	}
 }
 
 void SobGroupManager::FillGroupAllNonShipEntitiesInGame(std::string_view group)
 {
-	std::vector<Unreal::UObject*> entities;
-	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& entity_map = *this->sim_proxy.GetEntityMap();
 	auto& g = FindGroup(group);
-	for (auto& entity : entities)
+	for (auto& kv : entity_map)
 	{
-		SimEntity entity_obj = entity;
-		if (entity_obj.IsShip())
+		if (auto entity_obj = kv.Value(); entity_obj.IsShip())
 		{
 			continue;
 		}
-		const auto id = *entity_obj.GetSimID();
+		const auto id = kv.Key();
 		g.Entities.Add({ static_cast<std::uint64_t>(id) });
 	}
 }
 
 void SobGroupManager::FillGroupAllAliveShipsInGame(std::string_view group)
 {
-	std::vector<Unreal::UObject*> entities;
-	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& entity_map = *this->sim_proxy.GetEntityMap();
 	auto& g = FindGroup(group);
-	for (auto& entity : entities)
+	for (auto& kv : entity_map)
 	{
-		SimEntity entity_obj = entity;
-		if (!entity_obj.IsShip() || !entity_obj.IsAlive())
+		if (auto entity_obj = kv.Value(); !entity_obj.IsShip() || !entity_obj.IsAlive())
 		{
 			continue;
 		}
-		const auto id = *entity_obj.GetSimID();
+		const auto id = kv.Key();
 		g.Entities.Add({ static_cast<std::uint64_t>(id) });
 	}
 }
 
 void SobGroupManager::FillGroupAllAliveEntitiesInGame(std::string_view group)
 {
-	std::vector<Unreal::UObject*> entities;
-	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& entity_map = *this->sim_proxy.GetEntityMap();
 	auto& g = FindGroup(group);
-	for (auto& entity : entities)
+	for (auto& kv : entity_map)
 	{
-		SimEntity entity_obj = entity;
-		if (!entity_obj.IsAlive())
+		if (auto entity_obj = kv.Value(); !entity_obj.IsAlive())
 		{
 			continue;
 		}
-		const auto id = *entity_obj.GetSimID();
+		const auto id = kv.Key();
 		g.Entities.Add({ static_cast<std::uint64_t>(id) });
 	}
 }
 
 void SobGroupManager::FillGroupAllAliveNonShipEntitiesInGame(std::string_view group)
 {
-	std::vector<Unreal::UObject*> entities;
-	Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
+	auto& entity_map = *this->sim_proxy.GetEntityMap();
 	auto& g = FindGroup(group);
-	for (auto& entity : entities)
+	for (auto& kv : entity_map)
 	{
-		SimEntity entity_obj = entity;
-		if (entity_obj.IsShip() || !entity_obj.IsAlive())
+		if (auto entity_obj = kv.Value(); entity_obj.IsShip() || !entity_obj.IsAlive())
 		{
 			continue;
 		}
-		const auto id = *entity_obj.GetSimID();
+		const auto id = kv.Key();
 		g.Entities.Add({ static_cast<std::uint64_t>(id) });
 	}
 }

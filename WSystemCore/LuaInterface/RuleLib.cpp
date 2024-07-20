@@ -92,7 +92,7 @@ void ScriptRuleManager::AddRuleInterval_Impl(std::string_view name, std::int64_t
 	rule.Name = name;
 	rule.Func = FindFunc(name);
 	rule.TickInterval = interval;
-	rule.NextTick = current_tick + interval;
+	rule.NextTick = *sim_proxy.GetSimulatingFrame() + interval;
 	rule.Repeat = repeat;
 
 	interval_rules.emplace(name, std::move(rule));
@@ -111,7 +111,7 @@ void ScriptRuleManager::AddRuleParamInterval_Impl(std::string_view name, std::st
 	rule.Param = param;
 	rule.Func = FindFunc(name);
 	rule.TickInterval = interval;
-	rule.NextTick = current_tick + interval;
+	rule.NextTick = *sim_proxy.GetSimulatingFrame() + interval;
 	rule.Repeat = repeat;
 
 	param_interval_rules.emplace(NameParamPair{ std::string(name), std::string(param) }, std::move(rule));
@@ -161,9 +161,9 @@ bool ScriptRuleManager::IsRuleParamExists(std::string_view name, std::string_vie
 	return param_rules.contains(NameParamPairView{ name, param }) || param_interval_rules.contains(NameParamPairView{ name, param });
 }
 
-void ScriptRuleManager::Begin_InGame()
+void ScriptRuleManager::Begin_InGame(RavenSimulationProxy sim_proxy)
 {
-	current_tick = 0;
+	this->sim_proxy = sim_proxy;
 	interval_rules.clear();
 	param_interval_rules.clear();
 	normal_rules.clear();
@@ -172,7 +172,6 @@ void ScriptRuleManager::Begin_InGame()
 
 void ScriptRuleManager::Tick()
 {
-	current_tick++;
 	for(auto& rule : normal_rules | std::views::values)
 	{
 		rule.Call();
@@ -184,7 +183,7 @@ void ScriptRuleManager::Tick()
 	std::vector<std::string> to_remove_names;
 	for(auto& [name, rule] : interval_rules)
 	{
-		if (rule.NextTick <= current_tick)
+		if (rule.NextTick <= *sim_proxy.GetSimulatingFrame())
 		{
 			rule.Call();
 			if (rule.Repeat)
@@ -205,7 +204,7 @@ void ScriptRuleManager::Tick()
 	std::vector<NameParamPair> to_remove_name_params;
 	for(auto& [name_param, rule] : param_interval_rules)
 	{
-		if (rule.NextTick <= current_tick)
+		if (rule.NextTick <= *sim_proxy.GetSimulatingFrame())
 		{
 			rule.Call();
 			if (rule.Repeat)

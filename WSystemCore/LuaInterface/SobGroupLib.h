@@ -3,6 +3,7 @@
 
 #include <Core/Database.h>
 #include <LibWrapper/TiirEntityGroupFunctionLibrary.h>
+#include <DataWrapper/RavenSimulationProxy.h>
 
 class SobGroupManager
 {
@@ -17,6 +18,8 @@ public:
 	~SobGroupManager() = default;
 
 	void Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database);
+	void Begin_InGame(RavenSimulationProxy sim_proxy);
+
 	[[nodiscard]] TiirEntityGroup& FindGroup(std::string_view name);
 	[[nodiscard]] const TiirEntityGroup& FindGroup(std::string_view name) const;
 	void SetGroup(std::string_view name, TiirEntityGroup&& group);
@@ -192,5 +195,6 @@ private:
 	sol::state_view* lua = nullptr;
 	TiirEntityGroupFunctionLibrary* lib = nullptr;
 	Database* database = nullptr;
+	RavenSimulationProxy sim_proxy;
 	std::map<std::string, TiirEntityGroup, std::less<>> groups;
 };

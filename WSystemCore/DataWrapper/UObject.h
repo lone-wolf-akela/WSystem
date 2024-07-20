@@ -15,6 +15,7 @@ public:
     RC::Unreal::UObject* operator->() const;
     friend std::strong_ordering operator<=>(const UObjWrapper& lhs, const UObjWrapper& rhs) noexcept;
     friend bool operator==(const UObjWrapper& lhs, const UObjWrapper& rhs) noexcept;
+
     UObjWrapper* operator&() noexcept = delete;  // NOLINT(google-runtime-operator)
 protected:
     [[nodiscard]] RC::Unreal::FProperty* FindProperty(
@@ -93,5 +94,5 @@ protected:
     {
         const auto func = FindFunction(name, location);
         utils::call_unreal_function_void_ref(obj, func, std::forward<Args>(args)...);
-    }
+    }    
 };

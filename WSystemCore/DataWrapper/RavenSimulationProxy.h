@@ -1,13 +1,11 @@
 #pragma once
 #include <pch.h>
 
+#include "SimulationProxy.h"
 #include "UObject.h"
-#include "SimPlayer.h"
 
-class RavenSimulationProxy : public UObjWrapper
+class RavenSimulationProxy : public SimulationProxy
 {
 public:
-	using UObjWrapper::UObjWrapper;
-
-	WSYS_DATA_PROPERTY(UC::TArray<SimPlayer>, SimPlayers)
+	using SimulationProxy::SimulationProxy;
 };

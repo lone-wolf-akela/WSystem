@@ -1334,12 +1334,26 @@ function PlayerLibInterface:GetEnvironmentPlayer() return TiirCommander end
 --- @param resource_unit_count integer
 function PlayerLibInterface:AddResourceUnits(player_index, resource_unit_count) end
 
+--- @class UniverseLibType
+UniverseLibType = {}
+
+--- @return number
+function UniverseLibType:GameTime() return 0 end
+
+--- @return integer
+function UniverseLibType:GameFrame() return 0 end
+
+--- @return number
+function UniverseLibType:FrameDeltaTime() return 0 end
+
+
 --- @class WSysType
 --- @field public Rule ScriptRuleManagerType
 --- @field public SobGroup SobGroupManagerType
 --- @field public CustomCode CustomCodeManagerType
 --- @field public Entity EntityLibInterface
 --- @field public Player PlayerLibInterface
+--- @field public Universe UniverseLibType
 WSysType = {}
 
 --- @param target_research string

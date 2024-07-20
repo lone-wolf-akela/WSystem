@@ -1,6 +1,8 @@
 #pragma once
 #include <pch.h>
 
+#include <DataWrapper/RavenSimulationProxy.h>
+
 struct ScriptRule
 {
 	std::string Name;
@@ -75,16 +77,16 @@ public:
 	[[nodiscard]] bool IsRuleParamExists(std::string_view name, std::string_view param) const;
 	
 	
-	void Begin_InGame();
+	void Begin_InGame(RavenSimulationProxy sim_proxy);
 	void Tick();
 	void Initialize(sol::state_view* lua);
 private:
 	sol::state_view* lua = nullptr;
-	std::int64_t current_tick = 0;
 	std::map<std::string, ScriptIntervalRule, std::less<>> interval_rules;
 	std::map<NameParamPair, ScriptParamIntervalRule, std::less<>> param_interval_rules;
 	std::map<std::string, ScriptRule, std::less<>> normal_rules;
 	std::map<NameParamPair, ScriptParamRule, std::less<>> param_rules;
+	RavenSimulationProxy sim_proxy;
 
 	void AddRuleInterval_Impl(std::string_view name, std::int64_t interval, bool repeat);
 	void AddRuleParamInterval_Impl(std::string_view name, std::string_view param, std::int64_t interval, bool repeat);

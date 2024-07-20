@@ -105,7 +105,7 @@ void EntityLibInterface::Initialize(sol::state_view* lua, TiirEntityFunctionLibr
 	);
 }
 
-void EntityLibInterface::Begin_InitScenario(UnitsInfoSubsystem* units_info_subsystem)
+void EntityLibInterface::Begin_InitScenario(UnitsInfoSubsystem units_info_subsystem)
 {
 	this->units_info_subsystem = units_info_subsystem;
 }
@@ -705,7 +705,7 @@ SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 	bool single_stance;
 	std::int32_t stance_order_index;
 	UnitOrderStaticData stance_order;
-	units_info_subsystem->GetShipsFormationAndStance(
+	units_info_subsystem.GetShipsFormationAndStance(
 		ships,
 		single_formation, formation_order_index, formation_order,
 		single_stance, stance_order_index, stance_order);
@@ -732,7 +732,7 @@ std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
 	bool single_stance;
 	std::int32_t stance_order_index;
 	UnitOrderStaticData stance_order;
-	units_info_subsystem->GetShipsFormationAndStance(
+	units_info_subsystem.GetShipsFormationAndStance(
 		ships, 
 		single_formation, formation_order_index, formation_order,
 		single_stance, stance_order_index, stance_order);

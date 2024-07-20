@@ -56,6 +56,7 @@ void LuaInterface::Initialize()
 		&this->wsystem_core->function_libs.Player,
 		&sobgroup_manager
 	);
+	universe_lib.Initialize(&lua_state);
 
 	auto wsys_t = lua_state.new_usertype<LuaInterface>(
 		// ctor
@@ -67,7 +68,8 @@ void LuaInterface::Initialize()
 		"SobGroup", sol::readonly(&LuaInterface::sobgroup_manager),
 		"CustomCode", sol::readonly(&LuaInterface::custom_code_manager),
 		"Entity", sol::readonly(&LuaInterface::entity_lib_interface),
-		"Player", sol::readonly(&LuaInterface::player_lib_interface)
+		"Player", sol::readonly(&LuaInterface::player_lib_interface),
+		"Universe", sol::readonly(&LuaInterface::universe_lib)
 	); 
 
 	SolRegisterEnum<SquadronTactics>(&lua_state, "SquadronTactics");
@@ -86,7 +88,7 @@ void LuaInterface::Initialize()
 
 void LuaInterface::Begin_InitScenario()
 {
-	entity_lib_interface.Begin_InitScenario(std::addressof(this->wsystem_core->units_info_subsystem));
+	entity_lib_interface.Begin_InitScenario(this->wsystem_core->units_info_subsystem);
 	
 	RC::Output::send<LogLevel::Verbose>(STR("Loading Research Conditions...\n"));
 
@@ -123,13 +125,14 @@ void LuaInterface::Begin_InitScenario()
 	}
 }
 
-void LuaInterface::Begin_InGame(RavenSimulationProxy sim_proxy)
+void LuaInterface::Begin_InGame()
 {
 	RC::Output::send<LogLevel::Verbose>(STR("Finding Rule_OnInit()...\n"));
 
-	id_to_entity_map.clear();
-	rule_manager.Begin_InGame();
-	custom_code_manager.Begin_InGame(sim_proxy);
+	rule_manager.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
+	custom_code_manager.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
+	universe_lib.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
+	sobgroup_manager.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
 
 	auto& lua_state = *this->wsystem_core->lua;
 	if (const sol::protected_function init_func = lua_state["Rule_OnInit"]; init_func.valid())
@@ -152,30 +155,25 @@ void LuaInterface::Tick()
 	{
 		return;
 	}
-	id_to_entity_map.clear();
 	rule_manager.Tick();
 	custom_code_manager.Tick();
 }
 
 
-SimEntity LuaInterface::FindEntity(std::uint64_t entity_id)
+SimEntity LuaInterface::FindEntity(std::uint64_t entity_id) const
 {
-	if (id_to_entity_map.empty())
+	auto& entity_map = *this->wsystem_core->raven_simulation_proxy.GetEntityMap();
+	if (const auto found = entity_map.Find(
+		static_cast<std::uint32_t>(entity_id), 
+		[](const auto& a, const auto& b) {return a == b;});
+		found != end(entity_map))
 	{
-		std::vector<Unreal::UObject*> entities;
-		Unreal::UObjectGlobals::FindAllOf(STR("SimEntity"), entities);
-		for (auto entity : entities)
-		{
-			SimEntity sim_entity = entity;
-			const auto id = static_cast<std::uint64_t>(*sim_entity.GetSimID());
-			id_to_entity_map.emplace(id, sim_entity);
-		}
+		return found->Value();
 	}
-	if (const auto found = id_to_entity_map.find(entity_id); found != id_to_entity_map.end())
+	else
 	{
-		return found->second;
+		return nullptr;
 	}
-	return nullptr;
 }
 
 void LuaInterface::AddResearchCondition(

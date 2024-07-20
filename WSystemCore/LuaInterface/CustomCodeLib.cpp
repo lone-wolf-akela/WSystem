@@ -113,7 +113,6 @@ void CustomCodeManager::Register(
 
 void CustomCodeManager::Begin_InGame(RavenSimulationProxy sim_proxy)
 {
-	current_tick = 0;
 	alive_units.clear();
 	custom_code_records.clear();
 	this->sim_proxy = sim_proxy;
@@ -122,29 +121,23 @@ void CustomCodeManager::Begin_InGame(RavenSimulationProxy sim_proxy)
 void CustomCodeManager::Tick()
 {
 	static std::set<std::uint64_t> new_alive_units;
-	static std::map<std::uint64_t, SimShip> id_to_ship_map;
+	static std::map<std::uint64_t, SimEntity> id_to_entity_map;
 	static std::vector<std::uint64_t> newly_born_units;
 	static std::vector<std::uint64_t> newly_dead_units;
 
 	new_alive_units.clear();
-	id_to_ship_map.clear();
+	id_to_entity_map.clear();
 	newly_born_units.clear();
 	newly_dead_units.clear();
-		
-	current_tick++;
 
-	auto players = sim_proxy.GetSimPlayers();
-	for (auto& player : *players)
+	auto& entity_map = *this->sim_proxy.GetEntityMap();
+	for (auto& kv : entity_map)
 	{
-		for (auto& entity : *player.GetOwnedSimObjects())
+		if (auto entity = kv.Value(); entity.IsValid() && entity.IsShip() && entity.IsAlive())
 		{
-			if (entity.IsShip() && entity.IsAlive())
-			{
-				const auto entity_id = static_cast<std::uint64_t>(*entity.GetSimID());
-				const SimShip ship = entity.obj;
-				new_alive_units.emplace(entity_id);
-				id_to_ship_map.emplace(entity_id, ship);
-			}
+			const auto entity_id = static_cast<std::uint64_t>(kv.Key());
+			new_alive_units.emplace(entity_id);
+			id_to_entity_map.emplace(entity_id, entity);
 		}
 	}
 
@@ -153,7 +146,7 @@ void CustomCodeManager::Tick()
 
 	for (auto& id : newly_born_units)
 	{
-		const auto ship = id_to_ship_map.at(id);
+		SimShip ship = id_to_entity_map.at(id).obj;
 		const auto static_data = *ship.GetDataAsset();
 		if (auto it = custom_code_defs.find(static_data); it != custom_code_defs.end())
 		{
@@ -163,7 +156,7 @@ void CustomCodeManager::Tick()
 			{
 				.EntityID = id,
 				.Def = &def,
-				.NextUpdateTick = current_tick + def.UpdateTickInterval
+				.NextUpdateTick = *sim_proxy.GetSimulatingFrame() + def.UpdateTickInterval
 			};
 			custom_code_records.emplace(id, record);
 			record.CallCreate();
@@ -184,7 +177,7 @@ void CustomCodeManager::Tick()
 
 	for (auto& record : custom_code_records | std::views::values)
 	{
-		if (record.NextUpdateTick <= current_tick)
+		if (record.NextUpdateTick <= *sim_proxy.GetSimulatingFrame())
 		{
 			record.CallUpdate();
 			record.NextUpdateTick += record.Def->UpdateTickInterval;

@@ -830,7 +830,7 @@ namespace UC
 			inline bool operator!=(const FSetBitIterator& Rhs) const { return CurrentBitIndex != Rhs.CurrentBitIndex || &Array != &Rhs.Array; }
 
 		public:
-			inline int32 GetIndex() { return CurrentBitIndex; }
+			inline int32 GetIndex() const { return CurrentBitIndex; }
 
 			void FindFirstSetBit()
 			{
@@ -910,7 +910,7 @@ namespace UC
 			}
 
 		public:
-			inline int32 GetIndex() { return BitIterator.GetIndex(); }
+			inline int32 GetIndex() const { return BitIterator.GetIndex(); }
 
 			inline int32 IsValid() { return IteratedContainer.IsValidIndex(GetIndex()); }
 
