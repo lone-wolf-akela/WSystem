@@ -99,9 +99,9 @@ void EntityLibInterface::BindLuaState(sol::state_view* lua, TiirEntityFunctionLi
 		"CanBeFocused", &EntityLibInterface::CanBeFocused,
 		"IsResource", &EntityLibInterface::IsResource,
 		"IsMissile", &EntityLibInterface::IsMissile,
-		"GetEntityInternalName", &EntityLibInterface::GetEntityInternalName
-		//"GetStance", &EntityLibInterface::GetStance,
-		//"GetFormation", &EntityLibInterface::GetFormation
+		"GetEntityInternalName", &EntityLibInterface::GetEntityInternalName,
+		"GetStance", &EntityLibInterface::GetStance,
+		"GetFormation", &EntityLibInterface::GetFormation
 	);
 }
 
@@ -397,8 +397,8 @@ std::int32_t EntityLibInterface::GetNumberOfQueuedOrders(std::uint64_t entity_id
 std::tuple<bool, std::int32_t> EntityLibInterface::GetMetaDataValue(std::uint64_t entity_id, std::string_view key) const
 {
 	std::int32_t data;
-	const RC::Unreal::FString key_fstring(boost::nowide::widen(key).c_str());
-	const auto result = this->lib->GetMetaDataValue({ entity_id }, key_fstring, &data);
+	const Unreal::FString key_fstring(boost::nowide::widen(key).c_str());
+	const auto result = this->lib->GetMetaDataValue({ entity_id }, key_fstring, data);
 	return { result, data };
 }
 
@@ -680,8 +680,7 @@ std::string EntityLibInterface::GetEntityInternalName(std::uint64_t entity_id) c
 	return boost::nowide::narrow(entity->GetName());
 }
 
-// not work
-/*SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
+SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 {
 	UnitsInfoSubsystem units_info_subsystem = Unreal::UObjectGlobals::FindFirstOf(STR("UnitsInfoSubsystem"));
 	const auto entity = lua_interface->FindEntity(entity_id);
@@ -704,25 +703,8 @@ std::string EntityLibInterface::GetEntityInternalName(std::uint64_t entity_id) c
 	UnitOrderStaticData stance_order;
 	units_info_subsystem.GetShipsFormationAndStance(
 		ships,
-		&single_formation, &formation_order_index, std::addressof(formation_order),
-		&single_stance, &stance_order_index, std::addressof(stance_order));
-	RC::Output::send<LogLevel::Error>(STR("single_formation is {}\n"), single_formation);
-	RC::Output::send<LogLevel::Error>(STR("single_stance is {}\n"), single_stance);
-	RC::Output::send<LogLevel::Error>(STR("formation_order_index is {}\n"), formation_order_index);
-	RC::Output::send<LogLevel::Error>(STR("stance_order_index is {}\n"), stance_order_index);
-	if (!formation_order.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("formation order is not valid\n"));
-	}
-	else
-	{
-		RC::Output::send<LogLevel::Error>(STR("formation order is {}\n"), formation_order.GetStrikeGroupFormationData()->obj->GetName());
-	}
-	if (!stance_order.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Stance order is not valid\n"));
-		return SquadronStance::Aggressive;
-	}
+		single_formation, formation_order_index, formation_order,
+		single_stance, stance_order_index, stance_order);
 	return *stance_order.GetSquadronStance();
 }
 
@@ -749,7 +731,7 @@ std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
 	UnitOrderStaticData stance_order;
 	units_info_subsystem.GetShipsFormationAndStance(
 		ships, 
-		&single_formation, &formation_order_index, std::addressof(formation_order),
-		&single_stance, &stance_order_index, std::addressof(stance_order));
+		single_formation, formation_order_index, formation_order,
+		single_stance, stance_order_index, stance_order);
 	return boost::nowide::narrow(formation_order.GetStrikeGroupFormationData()->obj->GetName());
-}*/
+}

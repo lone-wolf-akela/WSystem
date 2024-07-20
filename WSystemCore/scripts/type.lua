@@ -1258,13 +1258,13 @@ function EntityLibInterface:IsMissile(entity_id) return false end
 --- @return string
 function EntityLibInterface:GetEntityInternalName(entity_id) return "" end
 
--- --- @param entity_id integer
--- --- @return SquadronStance
--- function EntityLibInterface:GetStance(entity_id) return SquadronStance end
+--- @param entity_id integer
+--- @return SquadronStance
+function EntityLibInterface:GetStance(entity_id) return SquadronStance end
 
--- --- @param entity_id integer
--- --- @return string
--- function EntityLibInterface:GetFormation(entity_id) return "" end
+--- @param entity_id integer
+--- @return string
+function EntityLibInterface:GetFormation(entity_id) return "" end
 
 
 --- @class PlayerLibInterface

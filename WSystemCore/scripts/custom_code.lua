@@ -13,7 +13,18 @@ end
 
 function Ion_OnUpdate(ShipID)
   local stance = WSys.Entity:GetStance(ShipID)
-  print(string.format("ion frigate %d @ stance %d\n", ShipID, stance))
+  local formation = WSys.Entity:GetFormation(ShipID)
+  local stance_str
+  if stance == SquadronStance.Aggressive then
+    stance_str = "Aggressive"
+  elseif stance == SquadronStance.Evasive then
+    stance_str = "Evasive"
+  elseif stance == SquadronStance.Neutral then
+    stance_str = "Neutral"
+  else
+    stance_str = "Unknown"
+  end
+  print(string.format("ion frigate %d @ stance `%s` @ formation `%s`\n", ShipID, stance_str, formation))
 end
 
 function Probe_OnCreate(ShipID)

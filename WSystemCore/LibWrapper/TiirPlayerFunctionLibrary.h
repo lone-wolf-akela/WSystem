@@ -42,9 +42,9 @@ public:
 
     WSYS_MEMBER_FUNCTION(std::int32_t, GetPlayerIndex, const TiirCommander&, player)
 
-    WSYS_MEMBER_FUNCTION(bool, GetPlayerFromIndex, std::int32_t, player_index, TiirCommander*, player)
+    bool GetPlayerFromIndex(std::int32_t player_index, TiirCommander& player) const;
 
-    WSYS_MEMBER_FUNCTION_VOID(GetEnvironmentPlayer, TiirCommander*, player)
+    WSYS_MEMBER_FUNCTION_VOID_REF(GetEnvironmentPlayer, TiirCommander&, player)
 
     // not bound to lua
     WSYS_MEMBER_FUNCTION(bool, EqualEqual_CommanderCommander, const TiirCommander&, a, const TiirCommander&, b)

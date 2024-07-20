@@ -145,8 +145,8 @@ public:
 
 	WSYS_MEMBER_FUNCTION_REF(std::int32_t, GroupPurgeAlive, TiirEntityGroup&, group)
 
-	// replace by native implementation
-	WSYS_MEMBER_FUNCTION_VOID(GroupMembers, const TiirEntityGroup&, group, UC::TArray<TiirEntity>*, members)
+	// Has native implementation alternative
+	void GroupMembers(const TiirEntityGroup& Group, UC::TArray<TiirEntity>& members) const;
 
 	WSYS_MEMBER_FUNCTION_REF(std::int32_t, GroupCountFiltered, TiirEntityGroup&, group, const TiirGroupCountFilter&, filter)
 
@@ -230,7 +230,7 @@ public:
 	// todo: bound to lua
 	WSYS_MEMBER_FUNCTION_VOID(ApplyEntityStatus, const TiirEntityGroup&, group, const EntityStatus*, status)
 
-	WSYS_MEMBER_FUNCTION_VOID(AddStatusEffect, const TiirEntityGroup&, group, const StatusEffectStaticData, status, UC::TArray<TiirStatusEffectHandle>*, out_handles)
+	void AddStatusEffect(const TiirEntityGroup& group, const StatusEffectStaticData status, UC::TArray<TiirStatusEffectHandle>& out_handles) const;
 
 	// todo: bound to lua
 	//WSYS_MEMBER_FUNCTION_VOID(AddObtainableSoftArtifactToShips, const TiirEntityGroup&, group, const TSoftObjectPtr<UArtifactStaticData>, artifact_static_data)

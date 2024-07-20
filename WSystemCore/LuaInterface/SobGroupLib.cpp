@@ -785,7 +785,7 @@ void SobGroupManager::Attack(std::string_view group, std::string_view target_gro
 sol::table SobGroupManager::AddStatusEffect(std::string_view group, std::string_view status) const
 {
 	UC::TArray<TiirStatusEffectHandle> handles;
-	lib->AddStatusEffect(FindGroup(group), database->GetStatusEffectData(status), &handles);
+	lib->AddStatusEffect(FindGroup(group), database->GetStatusEffectData(status), handles);
 	auto table = lua->create_table();
 	for (const auto& handle : handles)
 	{

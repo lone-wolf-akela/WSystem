@@ -101,14 +101,14 @@ std::int32_t PlayerLibInterface::GetPlayerIndex(const TiirCommander& player) con
 std::tuple<bool, TiirCommander> PlayerLibInterface::GetPlayerFromIndex(std::int32_t player_index) const
 {
 	TiirCommander player;
-	const bool result = lib->GetPlayerFromIndex(player_index, &player);
+	const bool result = lib->GetPlayerFromIndex(player_index, player);
 	return { result, player };
 }
 
 TiirCommander PlayerLibInterface::GetEnvironmentPlayer() const
 {
 	TiirCommander player;
-	lib->GetEnvironmentPlayer(&player);
+	lib->GetEnvironmentPlayer(player);
 	return player;
 }
 
