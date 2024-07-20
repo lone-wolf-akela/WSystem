@@ -146,6 +146,7 @@ void WSysResearchManager::Tick() const
 					break;
 				}
 
+				tiir_research_function_library->CancelResearchForPlayer(player_idx, research_static_data);
 				research.State = ResearchState::Locked;
 				NotifyResearchChanged(player, research);
 				// RC::Output::send<RC::LogLevel::Verbose>(STR("[Player {}] Lock Research: {}\n"), player_idx, name);
