@@ -63,6 +63,7 @@ We currently have bindings for 214 functions, and the number is continuously ris
 - AI players may not understand the tech tree defined by WSystem.
 - When a build option changes from unlocked to locked (e.g., if the player loses their "production module ship"), ongoing build tasks are not canceled.
 - Not all functions in our function libraries have been tested. Some of them may not work, return wrong results, or even crash the game.
+- Multiplayer games have not been tested.
 
 ## How to Use
 
