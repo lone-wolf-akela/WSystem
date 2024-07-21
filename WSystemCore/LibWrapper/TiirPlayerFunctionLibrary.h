@@ -34,6 +34,7 @@ public:
 
     WSYS_MEMBER_FUNCTION(bool, IsValid, const TiirCommander&, player)
 
+    // seems not work. has native implementation alternative
     WSYS_MEMBER_FUNCTION(bool, IsHuman, const TiirCommander&, player)
 
     WSYS_MEMBER_FUNCTION(bool, IsEnvironment, const TiirCommander&, player)

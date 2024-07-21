@@ -1307,9 +1307,9 @@ function PlayerLibInterface:PlayerCount() return 0 end
 --- @return boolean
 function PlayerLibInterface:IsValid(player) return false end
 
---- @param player TiirCommander
+--- @param player_index integer
 --- @return boolean
-function PlayerLibInterface:IsHuman(player) return false end
+function PlayerLibInterface:IsHuman(player_index) return false end
 
 --- @param player TiirCommander
 --- @return boolean
@@ -1333,6 +1333,18 @@ function PlayerLibInterface:GetEnvironmentPlayer() return TiirCommander end
 --- @param player_index integer
 --- @param resource_unit_count integer
 function PlayerLibInterface:AddResourceUnits(player_index, resource_unit_count) end
+
+--- @param player_index integer
+--- @param name string
+function PlayerLibInterface:SetPlayerName(player_index, name) end
+
+--- @param player_index integer
+--- @return string
+function PlayerLibInterface:GetPlayerName(player_index) return "" end
+
+--- @param player_index integer
+--- @return integer
+function PlayerLibInterface:GetPlayerTeamID(player_index) return 0 end
 
 --- @class UniverseLibType
 UniverseLibType = {}

@@ -24,8 +24,16 @@ void PlayerLibInterface::Initialize(sol::state_view* lua, TiirPlayerFunctionLibr
 		"GetPlayerIndex", &PlayerLibInterface::GetPlayerIndex,
 		"GetPlayerFromIndex", &PlayerLibInterface::GetPlayerFromIndex,
 		"GetEnvironmentPlayer", &PlayerLibInterface::GetEnvironmentPlayer,
-		"AddResourceUnits", &PlayerLibInterface::AddResourceUnits
+		"AddResourceUnits", &PlayerLibInterface::AddResourceUnits,
+		"SetPlayerName", &PlayerLibInterface::SetPlayerName,
+		"GetPlayerName", &PlayerLibInterface::GetPlayerName,
+		"GetPlayerTeamID", &PlayerLibInterface::GetPlayerTeamID
 	);
+}
+
+void PlayerLibInterface::Begin_InGame(RavenSimulationProxy sim_proxy)
+{
+	this->sim_proxy = sim_proxy;
 }
 
 void PlayerLibInterface::SetResourceUnits(std::int32_t player_index, std::int32_t resource_unit_total) const
@@ -78,11 +86,6 @@ bool PlayerLibInterface::IsValid(const TiirCommander& player) const
 	return lib->IsValid(player);
 }
 
-bool PlayerLibInterface::IsHuman(const TiirCommander& player) const
-{
-	return lib->IsHuman(player);
-}
-
 bool PlayerLibInterface::IsEnvironment(const TiirCommander& player) const
 {
 	return lib->IsEnvironment(player);
@@ -115,4 +118,45 @@ TiirCommander PlayerLibInterface::GetEnvironmentPlayer() const
 void PlayerLibInterface::AddResourceUnits(std::int32_t player_index, std::int32_t resource_unit_count) const
 {
 	lib->AddResourceUnits(player_index, resource_unit_count);
+}
+
+namespace
+{
+	SimPlayer find_player_by_index(RavenSimulationProxy proxy, std::int32_t player_index)
+	{
+		if (player_index == -1)
+		{
+			return *proxy.GetGalaxyPlayer();
+		}
+		auto& players = *proxy.GetSimPlayers();
+		if (player_index < 0 || player_index >= players.Num())
+		{
+			throw std::runtime_error("Invalid player index");
+		}
+		return players[player_index];
+	}
+}
+
+void PlayerLibInterface::SetPlayerName(std::int32_t player_index, std::string_view name) const
+{
+	const auto& player = find_player_by_index(sim_proxy, player_index);
+	*player.GetPlayerName() = Unreal::FString(boost::nowide::widen(name).c_str());
+}
+
+std::string PlayerLibInterface::GetPlayerName(std::int32_t player_index) const
+{
+	const auto& player = find_player_by_index(sim_proxy, player_index);
+	return boost::nowide::narrow(player.GetPlayerName()->GetCharArray());
+}
+
+std::int32_t PlayerLibInterface::GetPlayerTeamID(std::int32_t player_index) const
+{
+	const auto& player = find_player_by_index(sim_proxy, player_index);
+	return *player.GetTeamID();
+}
+
+bool PlayerLibInterface::IsHuman(std::int32_t player_index) const
+{
+	const auto& player = find_player_by_index(sim_proxy, player_index);
+	return *player.GetIsHuman();
 }

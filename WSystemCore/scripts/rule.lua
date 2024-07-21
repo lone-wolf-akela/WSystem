@@ -1,3 +1,17 @@
+function Rule_OnInit()
+  WSys.Rule:AddIntervalOneTime("FindPlayer0Scouts", 5 * 20)
+  WSys.Rule:AddInterval("SpawnFighter", 10 * 20)
+  WSys.Rule:AddIntervalOneTime("FindResource", 5 * 20)
+
+  local tick = WSys.Universe:GameFrame()
+  print(string.format("Rule_OnInit: tick = %d\n", tick))
+
+  -- At tick 0, players are not yet initialized.
+  -- So we need to wait a bit before we can fix the CPU player names.
+  WSys.Rule:AddIntervalOneTime("FixCpuPlayerName", 1)
+end
+
+
 function FindPlayer0Scouts()
   WSys.SobGroup:CreateOrClear("player_0_allships")
   WSys.SobGroup:FillGroupFromPlayer("player_0_allships", 0, true, true, false)
@@ -73,15 +87,18 @@ function FindResource()
       print(string.format("entity [%d] = %s\n", i, WSys.Entity:GetEntityInternalName(entity)))
     end
   end
-
-  -- WSys.SobGroup:MakeDead("all_nonship_entities", true, true, true, true)
 end
 
-function Rule_OnInit()
-  WSys.Rule:AddIntervalOneTime("FindPlayer0Scouts", 5 * 20)
-  WSys.Rule:AddInterval("SpawnFighter", 10 * 20)
-  WSys.Rule:AddIntervalOneTime("FindResource", 5 * 20)
-
-  local tick = WSys.Universe:GameFrame()
-  print(string.format("Rule_OnInit: tick = %d\n", tick))
+function FixCpuPlayerName()
+  local count = WSys.Player:PlayerCount()
+  print(string.format("Found %d players.\n", count))
+  for i = 0, count - 1 do
+    local name = WSys.Player:GetPlayerName(i)
+    local team = WSys.Player:GetPlayerTeamID(i)
+    local is_human = WSys.Player:IsHuman(i)
+    print(string.format("Player %d: name = %s, team = %d, is_human = %s\n", i, name, team, is_human))
+    if not is_human then
+      WSys.Player:SetPlayerName(i, string.format("CPU %d", i))
+    end
+  end
 end

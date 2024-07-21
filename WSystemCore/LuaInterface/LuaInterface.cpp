@@ -133,6 +133,7 @@ void LuaInterface::Begin_InGame()
 	custom_code_manager.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
 	universe_lib.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
 	sobgroup_manager.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
+	player_lib_interface.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
 
 	auto& lua_state = *this->wsystem_core->lua;
 	if (const sol::protected_function init_func = lua_state["Rule_OnInit"]; init_func.valid())

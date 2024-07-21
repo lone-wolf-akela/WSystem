@@ -13,4 +13,6 @@ public:
 	WSYS_DATA_PROPERTY(RC::Unreal::FString, PlayerName)
 	WSYS_DATA_PROPERTY(SimResearchManager, ResearchManager)
 	WSYS_DATA_PROPERTY(UC::TArray<SimEntity>, OwnedSimObjects)
+	WSYS_DATA_PROPERTY(std::int32_t, TeamID)
+	WSYS_DATA_PROPERTY(bool, IsHuman)
 };
