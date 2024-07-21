@@ -106,9 +106,7 @@ void CustomCodeManager::Register(
 		}
 	}
 
-	auto ship_data = database->GetShipData(unit_type);
-
-	custom_code_defs.emplace(ship_data, def);
+	custom_code_defs.emplace(unit_type, def);
 }
 
 void CustomCodeManager::Begin_InGame(RavenSimulationProxy sim_proxy)
@@ -116,6 +114,19 @@ void CustomCodeManager::Begin_InGame(RavenSimulationProxy sim_proxy)
 	alive_units.clear();
 	custom_code_records.clear();
 	this->sim_proxy = sim_proxy;
+}
+
+namespace
+{
+	auto extract_entity_type(SimEntity entity)
+	{
+		auto name = entity->GetName();
+		if (const auto pos = name.rfind('_'); pos != decltype(name)::npos)
+		{
+			return name.substr(0, pos);
+		}
+		return name;
+	}
 }
 
 void CustomCodeManager::Tick()
@@ -133,7 +144,7 @@ void CustomCodeManager::Tick()
 	auto& entity_map = *this->sim_proxy.GetEntityMap();
 	for (auto& kv : entity_map)
 	{
-		if (auto entity = kv.Value(); entity.IsValid() && entity.IsShip() && entity.IsAlive())
+		if (auto entity = kv.Value(); entity.IsValid() && entity.IsAlive())
 		{
 			const auto entity_id = static_cast<std::uint64_t>(kv.Key());
 			new_alive_units.emplace(entity_id);
@@ -146,9 +157,9 @@ void CustomCodeManager::Tick()
 
 	for (auto& id : newly_born_units)
 	{
-		SimShip ship = id_to_entity_map.at(id).obj;
-		const auto static_data = *ship.GetDataAsset();
-		if (auto it = custom_code_defs.find(static_data); it != custom_code_defs.end())
+		SimEntity entity = id_to_entity_map.at(id).obj;
+		const auto entity_name = boost::nowide::narrow(extract_entity_type(entity));
+		if (auto it = custom_code_defs.find(entity_name); it != custom_code_defs.end())
 		{
 			auto& def = it->second;
 

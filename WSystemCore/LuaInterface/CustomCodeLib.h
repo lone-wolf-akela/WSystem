@@ -47,7 +47,7 @@ private:
 	Database* database = nullptr;
 	RavenSimulationProxy sim_proxy = nullptr;
 
-	std::map<ShipStaticData, CustomCodeDef> custom_code_defs;
+	std::map<std::string, CustomCodeDef> custom_code_defs;
 	std::map<std::uint64_t, CustomCodeRecord> custom_code_records;
 
 	std::set<std::uint64_t> alive_units;
