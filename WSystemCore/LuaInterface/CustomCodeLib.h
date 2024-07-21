@@ -2,10 +2,7 @@
 #include <pch.h>
 
 #include <Core/Database.h>
-#include <DataWrapper/ShipStaticData.h>
 #include <DataWrapper/RavenSimulationProxy.h>
-
-#include "SobGroupLib.h"
 
 struct CustomCodeDef
 {

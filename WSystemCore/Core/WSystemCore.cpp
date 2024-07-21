@@ -10,7 +10,7 @@ WSystemCore::WSystemCore() :
 	lua_interface(std::make_shared<LuaInterface>(this))
 {
 	ModName = STR("WSystem");
-	ModVersion = STR("0.0.2");
+	ModVersion = STR("0.0.3");
 	ModDescription = STR("A Lua scripting system for Homeworld 3.");
 	ModAuthors = STR("Lone Wolf Akela");
 	// Do not change this unless you want to target a UE4SS version

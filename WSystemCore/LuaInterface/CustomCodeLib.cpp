@@ -1,6 +1,5 @@
 #include <pch.h>
 
-#include <DataWrapper/SimShip.h>
 #include "CustomCodeLib.h"
 
 void CustomCodeDef::CallCreate(std::uint64_t entity_id) const
