@@ -36,6 +36,7 @@ function JumpScouts()
   JumpTarget = (JumpTarget + 1) % 3
   local dest = HyperspaceDest[JumpTarget + 1]
   -- print("jump to [" .. JumpTarget .. "]: " .. dest[1] .. ", " .. dest[2] .. ", " .. dest[3] .. "\n")
+  WSys.SobGroup:GroupPurgeDead("player_0_scouts")
   WSys.SobGroup:Teleport(
     "player_0_scouts",
     0, 0, 0, 0,                -- rotate

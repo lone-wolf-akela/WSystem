@@ -1,12 +1,14 @@
 #include <pch.h>
 
+#include "LuaInterface.h"
 #include "SobGroupLib.h"
 
-void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database)
+void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, LuaInterface* lua_interface)
 {
 	this->lua = lua;
 	this->lib = lib;
 	this->database = database;
+	this->lua_interface = lua_interface;
 
 	auto sobgroup_manager_t = lua->new_usertype<SobGroupManager>(
 		"SobGroupManagerType",
@@ -116,8 +118,16 @@ void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLi
 		"FillGroupAllNonShipEntitiesInGame", &SobGroupManager::FillGroupAllNonShipEntitiesInGame,
 		"FillGroupAllAliveShipsInGame", &SobGroupManager::FillGroupAllAliveShipsInGame,
 		"FillGroupAllAliveEntitiesInGame", &SobGroupManager::FillGroupAllAliveEntitiesInGame,
-		"FillGroupAllAliveNonShipEntitiesInGame", &SobGroupManager::FillGroupAllAliveNonShipEntitiesInGame
+		"FillGroupAllAliveNonShipEntitiesInGame", &SobGroupManager::FillGroupAllAliveNonShipEntitiesInGame,
+		"GroupCountAliveEntities", &SobGroupManager::GroupCountAliveEntities,
+		"GetStance", &SobGroupManager::GetStance,
+		"GetFormation", &SobGroupManager::GetFormation
 	);
+}
+
+void SobGroupManager::Begin_InitScenario(UnitsInfoSubsystem units_info_subsystem)
+{
+	this->units_info_subsystem = units_info_subsystem;
 }
 
 void SobGroupManager::Begin_InGame(RavenSimulationProxy sim_proxy)
@@ -244,7 +254,7 @@ std::int32_t SobGroupManager::FillGroupFromFilteredType(
 	return lib->FillGroupFromFilteredType(FindGroup(group), FindGroup(source_group), tarray_desired_types);
 }
 
-std::int32_t SobGroupManager::GroupCount(std::string_view group)
+std::int32_t SobGroupManager::GroupCount(std::string_view group) const
 {
 	return FindGroup(group).Entities.Num();
 }
@@ -920,6 +930,98 @@ void SobGroupManager::FillGroupAllAliveNonShipEntitiesInGame(std::string_view gr
 		const auto id = kv.Key();
 		g.Entities.Add({ static_cast<std::uint64_t>(id) });
 	}
+}
+
+std::int32_t SobGroupManager::GroupCountAliveEntities(std::string_view group) const
+{
+	std::int32_t n = 0;
+	const auto& g = FindGroup(group);
+	for (auto& e : g.Entities)
+	{
+		if (const auto entity = lua_interface->FindEntity(e.EntityID); entity.IsValid() && entity.IsAlive())
+		{
+			n += 1;
+		}
+	}
+	return n;
+}
+
+namespace
+{
+	SimEntity find_check_entity(const LuaInterface* interface, std::uint64_t entity_id)
+	{
+		const auto entity = interface->FindEntity(entity_id);
+		if (!entity.IsValid())
+		{
+			const auto err_msg = std::format("Entity with id {} not found\n", entity_id);
+			throw std::runtime_error(err_msg);
+		}
+		return entity;
+	}
+
+	SimShip find_check_ship(const LuaInterface* interface, std::uint64_t entity_id)
+	{
+		const auto entity = find_check_entity(interface, entity_id);
+		if (!entity.IsShip())
+		{
+			const auto err_msg = std::format("Entity with id {} is not a ship\n", entity_id);
+			throw std::runtime_error(err_msg);
+		}
+		return entity.obj;
+	}
+}
+
+std::tuple<bool, SquadronStance> SobGroupManager::GetStance(std::string_view group) const
+{
+	UC::TArray<SimShip> ships;
+	const auto& g = FindGroup(group);
+	for (auto& e : g.Entities)
+	{
+		const auto ship = find_check_ship(lua_interface, e.EntityID);
+		ships.Add(ship);
+	}
+
+	bool single_formation;
+	UnitOrderStaticData formation_order;
+	std::int32_t formation_order_index;
+	bool single_stance;
+	std::int32_t stance_order_index;
+	UnitOrderStaticData stance_order;
+	units_info_subsystem.GetShipsFormationAndStance(
+		ships,
+		single_formation, formation_order_index, formation_order,
+		single_stance, stance_order_index, stance_order);
+
+	const auto stance = stance_order.IsValid() ? *stance_order.GetSquadronStance() : SquadronStance{};
+
+	return { single_stance, stance };
+}
+
+std::tuple<bool, std::string> SobGroupManager::GetFormation(std::string_view group) const
+{
+	UC::TArray<SimShip> ships;
+	const auto& g = FindGroup(group);
+	for (auto& e : g.Entities)
+	{
+		const auto ship = find_check_ship(lua_interface, e.EntityID);
+		ships.Add(ship);
+	}
+
+	bool single_formation;
+	UnitOrderStaticData formation_order;
+	std::int32_t formation_order_index;
+	bool single_stance;
+	std::int32_t stance_order_index;
+	UnitOrderStaticData stance_order;
+	units_info_subsystem.GetShipsFormationAndStance(
+		ships,
+		single_formation, formation_order_index, formation_order,
+		single_stance, stance_order_index, stance_order);
+
+	auto formation = formation_order.IsValid() ? 
+		boost::nowide::narrow(formation_order.GetStrikeGroupFormationData()->obj->GetName()) : "";
+
+	return { single_formation, std::move(formation) };
 }
 
 TiirEntityGroup& SobGroupManager::FindGroup(std::string_view name)

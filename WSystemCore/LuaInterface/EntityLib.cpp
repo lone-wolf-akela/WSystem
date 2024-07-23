@@ -14,95 +14,141 @@ void EntityLibInterface::Initialize(sol::state_view* lua, TiirEntityFunctionLibr
 	this->database = database;
 	this->lua_interface = lua_interface;
 
-	lua->new_usertype<EntityLibInterface>("EntityLibInterface",
-		"UndeployTurret", &EntityLibInterface::UndeployTurret,
-		"Teleport", &EntityLibInterface::Teleport,
-		"SetVelocity", &EntityLibInterface::SetVelocity,
-		"SetTransform", &EntityLibInterface::SetTransform,
-		"SetTactics", &EntityLibInterface::SetTactics,
-		"SetStance", &EntityLibInterface::SetStance,
-		"SetRotation", &EntityLibInterface::SetRotation,
-		"SetNoRetaliate", &EntityLibInterface::SetNoRetaliate,
-		"SetMetaDataValue", &EntityLibInterface::SetMetaDataValue,
-		"SetLocation", &EntityLibInterface::SetLocation,
-		"SetInvincible", &EntityLibInterface::SetInvincible,
-		"SetIgnoreForPersistentFleet", &EntityLibInterface::SetIgnoreForPersistentFleet,
-		"SetIgnoreDamage", &EntityLibInterface::SetIgnoreDamage,
-		"SetGhost", &EntityLibInterface::SetGhost,
-		"SetCloaking", &EntityLibInterface::SetCloaking,
-		"SetAutoLaunch", &EntityLibInterface::SetAutoLaunch,
-		"SetAngularVelocity", &EntityLibInterface::SetAngularVelocity,
-		"Scuttle", &EntityLibInterface::Scuttle,
-		"SalvageCapture", &EntityLibInterface::SalvageCapture,
-		"RevealInFow", &EntityLibInterface::RevealInFow,
-		"RetireTo", &EntityLibInterface::RetireTo,
-		"Retire", &EntityLibInterface::Retire,
-		"Repair", &EntityLibInterface::Repair,
-		"RemoveObtainableArtifactFromShip", &EntityLibInterface::RemoveObtainableArtifactFromShip,
-		"OverrideRetaliationSetting", &EntityLibInterface::OverrideRetaliationSetting,
-		"MovePingPong", &EntityLibInterface::MovePingPong,
-		"MoveAlong", &EntityLibInterface::MoveAlong,
-		"MakeDead", &EntityLibInterface::MakeDead,
-		"LaunchSelf", &EntityLibInterface::LaunchSelf,
-		"LaunchAll", &EntityLibInterface::LaunchAll,
-		"LatchInstantly", &EntityLibInterface::LatchInstantly,
-		"Kamikaze", &EntityLibInterface::Kamikaze,
-		"IsValid_OnPres", &EntityLibInterface::IsValid_OnPres,
-		"IsValid", &EntityLibInterface::IsValid,
-		"IsInHyperspace", &EntityLibInterface::IsInHyperspace,
-		"IsInCombat", &EntityLibInterface::IsInCombat,
-		"IsCloaking", &EntityLibInterface::IsCloaking,
-		"IsBeingCaptured", &EntityLibInterface::IsBeingCaptured,
-		"IsBeingAttacked", &EntityLibInterface::IsBeingAttacked,
-		"IsAttacking", &EntityLibInterface::IsAttacking,
-		"IsAlive", &EntityLibInterface::IsAlive,
-		"Guard", &EntityLibInterface::Guard,
-		"GetVisualRange", &EntityLibInterface::GetVisualRange,
-		"GetSecondarySensorRange", &EntityLibInterface::GetSecondarySensorRange,
-		"GetPrimarySensorRange", &EntityLibInterface::GetPrimarySensorRange,
-		"GetPosition", &EntityLibInterface::GetPosition,
-		"GetOwningPlayer", &EntityLibInterface::GetOwningPlayer,
-		"GetOrientation", &EntityLibInterface::GetOrientation,
-		"GetNumberOfQueuedOrders", &EntityLibInterface::GetNumberOfQueuedOrders,
-		"GetMetaDataValue", &EntityLibInterface::GetMetaDataValue,
-		"GetHealthAbsolute", &EntityLibInterface::GetHealthAbsolute,
-		"GetHealth", &EntityLibInterface::GetHealth,
-		"GetBuildTime", &EntityLibInterface::GetBuildTime,
-		"GatherResource", &EntityLibInterface::GatherResource,
-		"FindShipType", &EntityLibInterface::FindShipType,
-		"DockInstantly", &EntityLibInterface::DockInstantly,
-		"Dock", &EntityLibInterface::Dock,
-		"DeployTurretAtPositionAndOrientation", &EntityLibInterface::DeployTurretAtPositionAndOrientation,
-		"DeployTurretAtPositionAndNormal", &EntityLibInterface::DeployTurretAtPositionAndNormal,
-		"DeployTurret", &EntityLibInterface::DeployTurret,
-		"CustomCommand", &EntityLibInterface::CustomCommand,
-		"ClearStatusEffects", &EntityLibInterface::ClearStatusEffects,
-		"ClearRetaliationSetting", &EntityLibInterface::ClearRetaliationSetting,
-		"ClearModifiers", &EntityLibInterface::ClearModifiers,
-		"ChangeOwner", &EntityLibInterface::ChangeOwner,
-		"ChangeCommander", &EntityLibInterface::ChangeCommander,
-		"BindInstantly", &EntityLibInterface::BindInstantly,
-		"Attack", &EntityLibInterface::Attack,
-		"AddOverrideModifier", &EntityLibInterface::AddOverrideModifier,
-		"RemoveModifier", &EntityLibInterface::RemoveModifier,
-		"AddMultiplierModifier", &EntityLibInterface::AddMultiplierModifier,
-		"AddAbilityModifier", &EntityLibInterface::AddAbilityModifier,
-		"RemoveStatusEffectByHandle", &EntityLibInterface::RemoveStatusEffectByHandle,
-		"RemoveStatusEffect", &EntityLibInterface::RemoveStatusEffect,
-		"AddStatusEffect", &EntityLibInterface::AddStatusEffect,
-		"AddObtainableArtifactToShip", &EntityLibInterface::AddObtainableArtifactToShip,
-		"IsShip", &EntityLibInterface::IsShip,
-		"IsMilitary", &EntityLibInterface::IsMilitary,
-		"IsDamaged", &EntityLibInterface::IsDamaged,
-		"IsAliveAndVisibleEntity", &EntityLibInterface::IsAliveAndVisibleEntity,
-		"CanHeal", &EntityLibInterface::CanHeal,
-		"CanBeFocused", &EntityLibInterface::CanBeFocused,
-		"IsResource", &EntityLibInterface::IsResource,
-		"IsMissile", &EntityLibInterface::IsMissile,
-		"GetEntityInternalName", &EntityLibInterface::GetEntityInternalName,
-		"GetStance", &EntityLibInterface::GetStance,
-		"GetFormation", &EntityLibInterface::GetFormation
-	);
+	auto EntityLibType = lua->new_usertype<EntityLibInterface>("EntityLibInterface");
+	EntityLibType["UndeployTurret"] = &EntityLibInterface::UndeployTurret;
+	EntityLibType["Teleport"] = &EntityLibInterface::Teleport;
+	EntityLibType["SetVelocity"] = &EntityLibInterface::SetVelocity;
+	EntityLibType["SetTransform"] = &EntityLibInterface::SetTransform;
+	EntityLibType["SetTactics"] = &EntityLibInterface::SetTactics;
+	EntityLibType["SetStance"] = &EntityLibInterface::SetStance;
+	EntityLibType["SetRotation"] = &EntityLibInterface::SetRotation;
+	EntityLibType["SetNoRetaliate"] = &EntityLibInterface::SetNoRetaliate;
+	EntityLibType["SetMetaDataValue"] = &EntityLibInterface::SetMetaDataValue;
+	EntityLibType["SetLocation"] = &EntityLibInterface::SetLocation;
+	EntityLibType["SetInvincible"] = &EntityLibInterface::SetInvincible;
+	EntityLibType["SetIgnoreForPersistentFleet"] = &EntityLibInterface::SetIgnoreForPersistentFleet;
+	EntityLibType["SetIgnoreDamage"] = &EntityLibInterface::SetIgnoreDamage;
+	EntityLibType["SetGhost"] = &EntityLibInterface::SetGhost;
+	EntityLibType["SetCloaking"] = &EntityLibInterface::SetCloaking;
+	EntityLibType["SetAutoLaunch"] = &EntityLibInterface::SetAutoLaunch;
+	EntityLibType["SetAngularVelocity"] = &EntityLibInterface::SetAngularVelocity;
+	EntityLibType["Scuttle"] = &EntityLibInterface::Scuttle;
+	EntityLibType["SalvageCapture"] = &EntityLibInterface::SalvageCapture;
+	EntityLibType["RevealInFow"] = &EntityLibInterface::RevealInFow;
+	EntityLibType["RetireTo"] = &EntityLibInterface::RetireTo;
+	EntityLibType["Retire"] = &EntityLibInterface::Retire;
+	EntityLibType["Repair"] = &EntityLibInterface::Repair;
+	EntityLibType["RemoveObtainableArtifactFromShip"] = &EntityLibInterface::RemoveObtainableArtifactFromShip;
+	EntityLibType["OverrideRetaliationSetting"] = &EntityLibInterface::OverrideRetaliationSetting;
+	EntityLibType["MovePingPong"] = &EntityLibInterface::MovePingPong;
+	EntityLibType["MoveAlong"] = &EntityLibInterface::MoveAlong;
+	EntityLibType["MakeDead"] = &EntityLibInterface::MakeDead;
+	EntityLibType["LaunchSelf"] = &EntityLibInterface::LaunchSelf;
+	EntityLibType["LaunchAll"] = &EntityLibInterface::LaunchAll;
+	EntityLibType["LatchInstantly"] = &EntityLibInterface::LatchInstantly;
+	EntityLibType["Kamikaze"] = &EntityLibInterface::Kamikaze;
+	EntityLibType["IsValid_OnPres"] = &EntityLibInterface::IsValid_OnPres;
+	EntityLibType["IsValid"] = &EntityLibInterface::IsValid;
+	EntityLibType["IsInHyperspace"] = &EntityLibInterface::IsInHyperspace;
+	EntityLibType["IsInCombat"] = &EntityLibInterface::IsInCombat;
+	EntityLibType["IsCloaking"] = &EntityLibInterface::IsCloaking;
+	EntityLibType["IsBeingCaptured"] = &EntityLibInterface::IsBeingCaptured;
+	EntityLibType["IsBeingAttacked"] = &EntityLibInterface::IsBeingAttacked;
+	EntityLibType["IsAttacking"] = &EntityLibInterface::IsAttacking;
+	EntityLibType["IsAlive"] = &EntityLibInterface::IsAlive;
+	EntityLibType["Guard"] = &EntityLibInterface::Guard;
+	EntityLibType["GetVisualRange"] = &EntityLibInterface::GetVisualRange;
+	EntityLibType["GetSecondarySensorRange"] = &EntityLibInterface::GetSecondarySensorRange;
+	EntityLibType["GetPrimarySensorRange"] = &EntityLibInterface::GetPrimarySensorRange;
+	EntityLibType["GetPosition"] = &EntityLibInterface::GetPosition;
+	EntityLibType["GetOwningPlayer"] = &EntityLibInterface::GetOwningPlayer;
+	EntityLibType["GetOrientation"] = &EntityLibInterface::GetOrientation;
+	EntityLibType["GetNumberOfQueuedOrders"] = &EntityLibInterface::GetNumberOfQueuedOrders;
+	EntityLibType["GetMetaDataValue"] = &EntityLibInterface::GetMetaDataValue;
+	EntityLibType["GetHealthAbsolute"] = &EntityLibInterface::GetHealthAbsolute;
+	EntityLibType["GetHealth"] = &EntityLibInterface::GetHealth;
+	EntityLibType["GetBuildTime"] = &EntityLibInterface::GetBuildTime;
+	EntityLibType["GatherResource"] = &EntityLibInterface::GatherResource;
+	EntityLibType["FindShipType"] = &EntityLibInterface::FindShipType;
+	EntityLibType["DockInstantly"] = &EntityLibInterface::DockInstantly;
+	EntityLibType["Dock"] = &EntityLibInterface::Dock;
+	EntityLibType["DeployTurretAtPositionAndOrientation"] = &EntityLibInterface::DeployTurretAtPositionAndOrientation;
+	EntityLibType["DeployTurretAtPositionAndNormal"] = &EntityLibInterface::DeployTurretAtPositionAndNormal;
+	EntityLibType["DeployTurret"] = &EntityLibInterface::DeployTurret;
+	EntityLibType["CustomCommand"] = &EntityLibInterface::CustomCommand;
+	EntityLibType["ClearStatusEffects"] = &EntityLibInterface::ClearStatusEffects;
+	EntityLibType["ClearRetaliationSetting"] = &EntityLibInterface::ClearRetaliationSetting;
+	EntityLibType["ClearModifiers"] = &EntityLibInterface::ClearModifiers;
+	EntityLibType["ChangeOwner"] = &EntityLibInterface::ChangeOwner;
+	EntityLibType["ChangeCommander"] = &EntityLibInterface::ChangeCommander;
+	EntityLibType["BindInstantly"] = &EntityLibInterface::BindInstantly;
+	EntityLibType["Attack"] = &EntityLibInterface::Attack;
+	EntityLibType["AddOverrideModifier"] = &EntityLibInterface::AddOverrideModifier;
+	EntityLibType["RemoveModifier"] = &EntityLibInterface::RemoveModifier;
+	EntityLibType["AddMultiplierModifier"] = &EntityLibInterface::AddMultiplierModifier;
+	EntityLibType["AddAbilityModifier"] = &EntityLibInterface::AddAbilityModifier;
+	EntityLibType["RemoveStatusEffectByHandle"] = &EntityLibInterface::RemoveStatusEffectByHandle;
+	EntityLibType["RemoveStatusEffect"] = &EntityLibInterface::RemoveStatusEffect;
+	EntityLibType["AddStatusEffect"] = &EntityLibInterface::AddStatusEffect;
+	EntityLibType["AddObtainableArtifactToShip"] = &EntityLibInterface::AddObtainableArtifactToShip;
+	EntityLibType["IsShip"] = &EntityLibInterface::IsShip;
+	EntityLibType["IsMilitary"] = &EntityLibInterface::IsMilitary;
+	EntityLibType["IsDamaged"] = &EntityLibInterface::IsDamaged;
+	EntityLibType["IsAliveAndVisibleEntity"] = &EntityLibInterface::IsAliveAndVisibleEntity;
+	EntityLibType["CanHeal"] = &EntityLibInterface::CanHeal;
+	EntityLibType["CanBeFocused"] = &EntityLibInterface::CanBeFocused;
+	EntityLibType["IsResource"] = &EntityLibInterface::IsResource;
+	EntityLibType["IsMissile"] = &EntityLibInterface::IsMissile;
+	EntityLibType["GetEntityInternalName"] = &EntityLibInterface::GetEntityInternalName;
+	EntityLibType["GetStance"] = &EntityLibInterface::GetStance;
+	EntityLibType["GetFormation"] = &EntityLibInterface::GetFormation;
+	EntityLibType["IsNis"] = &EntityLibInterface::IsNis;
+	EntityLibType["GetShipScreenSize"] = &EntityLibInterface::GetShipScreenSize;
+	EntityLibType["GetShipNormalizedScreenSize"] = &EntityLibInterface::GetShipNormalizedScreenSize;
+	EntityLibType["GetShipAudioSignificance"] = &EntityLibInterface::GetShipAudioSignificance;
+	EntityLibType["GetSquadronID"] = &EntityLibInterface::GetSquadronID;
+	EntityLibType["IsSquadronLeader"] = &EntityLibInterface::IsSquadronLeader;
+	EntityLibType["GetSquadronLeader"] = &EntityLibInterface::GetSquadronLeader;
+	EntityLibType["GetPilotName"] = &EntityLibInterface::GetPilotName;
+	EntityLibType["GetLocalizedUnitName"] = &EntityLibInterface::GetLocalizedUnitName;
+	EntityLibType["GetLocalizedUnitDescription"] = &EntityLibInterface::GetLocalizedUnitDescription;
+	EntityLibType["GetLocalizedUnitFlavourText"] = &EntityLibInterface::GetLocalizedUnitFlavourText;
+	EntityLibType["GetCreationMap"] = &EntityLibInterface::GetCreationMap;
+	EntityLibType["GetAudioFocusWeight"] = &EntityLibInterface::GetAudioFocusWeight;
+	EntityLibType["GetAudioFocusWeightContextualMultiplier"] = &EntityLibInterface::GetAudioFocusWeightContextualMultiplier;
+	EntityLibType["GetAudioFocusRank"] = &EntityLibInterface::GetAudioFocusRank;
+	EntityLibType["GetAudioFocusRankNormalized"] = &EntityLibInterface::GetAudioFocusRankNormalized;
+	EntityLibType["GetControlGroupsFlags"] = &EntityLibInterface::GetControlGroupsFlags;
+	EntityLibType["IsCenterFocused"] = &EntityLibInterface::IsCenterFocused;
+	EntityLibType["GetDeployState"] = &EntityLibInterface::GetDeployState;
+	EntityLibType["GetDeployLocation"] = &EntityLibInterface::GetDeployLocation;
+	EntityLibType["GetDeployNormal"] = &EntityLibInterface::GetDeployNormal;
+	EntityLibType["IsDeployedInTacticalPause"] = &EntityLibInterface::IsDeployedInTacticalPause;
+	EntityLibType["IsLatched"] = &EntityLibInterface::IsLatched;
+	EntityLibType["GetWeaponRange"] = &EntityLibInterface::GetWeaponRange;
+	EntityLibType["GetSpecialWeaponRange"] = &EntityLibInterface::GetSpecialWeaponRange;
+	EntityLibType["GetHealWeaponRange"] = &EntityLibInterface::GetHealWeaponRange;
+	EntityLibType["GetHealSpecialWeaponRange"] = &EntityLibInterface::GetHealSpecialWeaponRange;
+	EntityLibType["GetHyperspaceProgress"] = &EntityLibInterface::GetHyperspaceProgress;
+	EntityLibType["GetOpposingShip"] = &EntityLibInterface::GetOpposingShip;
+	EntityLibType["GetZombieTime"] = &EntityLibInterface::GetZombieTime;
+	EntityLibType["GetDeathModifiers"] = &EntityLibInterface::GetDeathModifiers;
+	EntityLibType["GetSignificance"] = &EntityLibInterface::GetSignificance;
+	EntityLibType["GetDistanceToCamera"] = &EntityLibInterface::GetDistanceToCamera;
+	EntityLibType["GetBackstageEffectiveness"] = &EntityLibInterface::GetBackstageEffectiveness;
+	EntityLibType["GetDockWith"] = &EntityLibInterface::GetDockWith;
+	EntityLibType["GetDockingStage"] = &EntityLibInterface::GetDockingStage;
+	EntityLibType["IsDocked"] = &EntityLibInterface::IsDocked;
+	EntityLibType["IsDocking"] = &EntityLibInterface::IsDocking;
+	EntityLibType["HasPower"] = &EntityLibInterface::HasPower;
+	EntityLibType["IsHandlingExternalMove"] = &EntityLibInterface::IsHandlingExternalMove;
+	EntityLibType["CanRally"] = &EntityLibInterface::CanRally;
+	EntityLibType["GetHyperspaceStatus"] = &EntityLibInterface::GetHyperspaceStatus;
+	EntityLibType["GetParent"] = &EntityLibInterface::GetParent;
+	EntityLibType["GetCollectors"] = &EntityLibInterface::GetCollectors;
+	EntityLibType["GetAnimationStates"] = &EntityLibInterface::GetAnimationStates;
+	EntityLibType["GetActiveCommandType"] = &EntityLibInterface::GetActiveCommandType;
+	EntityLibType["GetShipVelocity"] = &EntityLibInterface::GetShipVelocity;
 }
 
 void EntityLibInterface::Begin_InitScenario(UnitsInfoSubsystem units_info_subsystem)
@@ -573,63 +619,53 @@ void EntityLibInterface::AddObtainableArtifactToShip(std::uint64_t entity_id,
 	this->lib->AddObtainableArtifactToShip({ entity_id }, artifact_data);
 }
 
+namespace 
+{
+	SimEntity find_check_entity(const LuaInterface* interface, std::uint64_t entity_id)
+	{
+		const auto entity = interface->FindEntity(entity_id);
+		if (!entity.IsValid())
+		{
+			const auto err_msg = std::format("Entity with id {} not found\n", entity_id);
+			throw std::runtime_error(err_msg);
+		}
+		return entity;
+	}
+}
+
 bool EntityLibInterface::IsShip(std::uint64_t entity_id) const
 {
-	auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
+	const auto entity = find_check_entity(lua_interface, entity_id);
 	return entity.IsShip();
 }
 
 bool EntityLibInterface::IsMilitary(std::uint64_t entity_id) const
 {
-	auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
+	const auto entity = find_check_entity(lua_interface, entity_id);
 	return entity.IsMilitary();
 }
 
 bool EntityLibInterface::IsDamaged(std::uint64_t entity_id) const
 {
-	auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
+	const auto entity = find_check_entity(lua_interface, entity_id);
 	return entity.IsDamaged();
 }
 
 bool EntityLibInterface::IsAliveAndVisibleEntity(std::uint64_t entity_id) const
 {
-	auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
+	const auto entity = find_check_entity(lua_interface, entity_id);
 	return entity.IsAliveAndVisibleEntity();
 }
 
 bool EntityLibInterface::CanHeal(std::uint64_t entity_id) const
 {
-	auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
+	const auto entity = find_check_entity(lua_interface, entity_id);
 	return entity.CanHeal();
 }
 
 bool EntityLibInterface::CanBeFocused(std::uint64_t entity_id) const
 {
-	auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
+	const auto entity = find_check_entity(lua_interface, entity_id);
 	return entity.CanBeFocused();
 }
 
@@ -657,46 +693,40 @@ namespace
 
 bool EntityLibInterface::IsResource(std::uint64_t entity_id) const
 {
-	const auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
+	const auto entity = find_check_entity(lua_interface, entity_id);
 	return object_is_of_type(entity.obj, STR("SimResource"));
 }
 
 bool EntityLibInterface::IsMissile(std::uint64_t entity_id) const
 {
-	const auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
+	const auto entity = find_check_entity(lua_interface, entity_id);
 	return object_is_of_type(entity.obj, STR("SimMissile"));
 }
 
 std::string EntityLibInterface::GetEntityInternalName(std::uint64_t entity_id) const
 {
-	const auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
+	const auto entity = find_check_entity(lua_interface, entity_id);
 	return boost::nowide::narrow(entity->GetName());
+}
+
+namespace
+{
+	SimShip find_check_ship(const LuaInterface* interface, std::uint64_t entity_id)
+	{
+		const auto entity = find_check_entity(interface, entity_id);
+		if (!entity.IsShip())
+		{
+			const auto err_msg = std::format("Entity with id {} is not a ship\n", entity_id);
+			throw std::runtime_error(err_msg);
+		}
+		return entity.obj;
+	}
 }
 
 SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 {
-	const auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
-	if (!entity.IsShip())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} is not a ship\n"), entity_id);
-	}
-	const SimShip ship = entity.obj;
+	const auto ship = find_check_ship(lua_interface, entity_id);
+
 	UC::TArray<SimShip> ships;
 	ships.Add(ship);
 	bool single_formation;
@@ -714,16 +744,8 @@ SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 
 std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
 {
-	const auto entity = lua_interface->FindEntity(entity_id);
-	if (!entity.IsValid())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} not found\n"), entity_id);
-	}
-	if (!entity.IsShip())
-	{
-		RC::Output::send<LogLevel::Error>(STR("Entity with id {} is not a ship\n"), entity_id);
-	}
-	const SimShip ship = entity.obj;
+	const auto ship = find_check_ship(lua_interface, entity_id);
+
 	UC::TArray<SimShip> ships;
 	ships.Add(ship);
 	bool single_formation;
@@ -737,4 +759,328 @@ std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
 		single_formation, formation_order_index, formation_order,
 		single_stance, stance_order_index, stance_order);
 	return boost::nowide::narrow(formation_order.GetStrikeGroupFormationData()->obj->GetName());
+}
+
+bool EntityLibInterface::IsNis(std::uint64_t entity_id) const
+{
+	const auto entity = find_check_entity(lua_interface, entity_id);
+	return *entity.GetbIsNis();
+}
+
+float EntityLibInterface::GetShipScreenSize(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetShipScreenSize();
+}
+
+float EntityLibInterface::GetShipNormalizedScreenSize(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetShipNormalizedScreenSize();
+}
+
+float EntityLibInterface::GetShipAudioSignificance(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetShipAudioSignificance();
+}
+
+std::int32_t EntityLibInterface::GetSquadronID(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetSquadronID();
+}
+
+bool EntityLibInterface::IsSquadronLeader(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetIsSquadronLeader();
+}
+
+std::uint64_t EntityLibInterface::GetSquadronLeader(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	if (const auto& leader = *ship.GetSquadronLeader(); leader.IsValid())
+	{
+		return *leader.GetSimID();
+	}
+	return 0;
+}
+
+std::string EntityLibInterface::GetPilotName(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return boost::nowide::narrow(ship.GetPilotName()->ToString());
+}
+
+std::string EntityLibInterface::GetLocalizedUnitName(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto& ship_static_data = *ship.GetDataAsset();
+	return boost::nowide::narrow(ship_static_data.GetUnitName()->ToString());
+}
+
+std::string EntityLibInterface::GetLocalizedUnitDescription(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto& ship_static_data = *ship.GetDataAsset();
+	return boost::nowide::narrow(ship_static_data.GetUnitDescription()->ToString());
+}
+
+std::string EntityLibInterface::GetLocalizedUnitFlavourText(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto& ship_static_data = *ship.GetDataAsset();
+	return boost::nowide::narrow(ship_static_data.GetUnitFlavourText()->ToString());
+}
+
+std::string EntityLibInterface::GetCreationMap(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return boost::nowide::narrow(ship.GetCreationMap()->GetCharArray());
+}
+
+float EntityLibInterface::GetAudioFocusWeight(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetAudioFocusWeight();
+}
+
+float EntityLibInterface::GetAudioFocusWeightContextualMultiplier(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetAudioFocusWeightContextualMultiplier();
+}
+
+std::int32_t EntityLibInterface::GetAudioFocusRank(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetAudioFocusRank();
+}
+
+float EntityLibInterface::GetAudioFocusRankNormalized(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetAudioFocusRankNormalized();
+}
+
+std::int32_t EntityLibInterface::GetControlGroupsFlags(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetControlGroupsFlags();
+}
+
+bool EntityLibInterface::IsCenterFocused(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetIsCenterFocused();
+}
+
+TurretDeploymentState EntityLibInterface::GetDeployState(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetDeployState();
+}
+
+std::tuple<double, double, double> EntityLibInterface::GetDeployLocation(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto location = *ship.GetDeployLocation();
+	return { location.X(), location.Y(), location.Z() };
+}
+
+std::tuple<double, double, double> EntityLibInterface::GetDeployNormal(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto normal = *ship.GetDeployNormal();
+	return { normal.X(), normal.Y(), normal.Z() };
+}
+
+bool EntityLibInterface::IsDeployedInTacticalPause(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetbDeployedInTacticalPause();
+}
+
+bool EntityLibInterface::IsLatched(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetIsLatched();
+}
+
+float EntityLibInterface::GetWeaponRange(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetWeaponRange();
+}
+
+float EntityLibInterface::GetSpecialWeaponRange(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetSpecialWeaponRange();
+}
+
+float EntityLibInterface::GetHealWeaponRange(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetHealWeaponRange();
+}
+
+float EntityLibInterface::GetHealSpecialWeaponRange(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetHealSpecialWeaponRange();
+}
+
+float EntityLibInterface::GetHyperspaceProgress(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetHyperspaceProgress();
+}
+
+std::uint64_t EntityLibInterface::GetOpposingShip(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	if (const auto& opposing_ship = *ship.GetOpposingShip(); opposing_ship.IsValid())
+	{
+		return *opposing_ship.GetSimID();
+	}
+	return 0;
+}
+
+float EntityLibInterface::GetZombieTime(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetZombieTime();
+}
+
+std::tuple<bool, bool, bool, bool> EntityLibInterface::GetDeathModifiers(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	auto& flags = *ship.GetDeathModifiers();
+	return {
+		static_cast<bool>(flags.Instant), 
+		static_cast<bool>(flags.NoAoeDamage),
+		static_cast<bool>(flags.NoDebris),
+		static_cast<bool>(flags.NoZombie)
+	};
+}
+
+float EntityLibInterface::GetSignificance(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetSignificance();
+}
+
+float EntityLibInterface::GetDistanceToCamera(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetDistanceToCamera();
+}
+
+float EntityLibInterface::GetBackstageEffectiveness(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetBackstageEffectiveness();
+}
+
+std::uint64_t EntityLibInterface::GetDockWith(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	if (const auto& dock_with = *ship.GetDockWith(); dock_with.IsValid())
+	{
+		return *dock_with.GetSimID();
+	}
+	return 0;
+}
+
+DockingStage EntityLibInterface::GetDockingStage(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetDockingStage();
+}
+
+bool EntityLibInterface::IsDocked(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetIsDocked();
+}
+
+bool EntityLibInterface::IsDocking(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetbIsDocking();
+}
+
+bool EntityLibInterface::HasPower(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetbHasPower();
+}
+
+bool EntityLibInterface::IsHandlingExternalMove(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetbIsHandlingExternalMove();
+}
+
+bool EntityLibInterface::CanRally(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetbCanRally();
+}
+
+HyperspaceStatus EntityLibInterface::GetHyperspaceStatus(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetHyperspaceStatus();
+}
+
+std::uint64_t EntityLibInterface::GetParent(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	if (const auto& parent = *ship.GetParent(); parent.IsValid())
+	{
+		return *parent.GetSimID();
+	}
+	return 0;
+}
+
+sol::table EntityLibInterface::GetCollectors(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto& collectors = *ship.GetCollectors();
+	sol::table result = lua->create_table();
+	for (auto& collector : collectors)
+	{
+		result.add(static_cast<std::uint64_t>(*collector.GetSimID()));
+	}
+	return result;
+}
+
+sol::table EntityLibInterface::GetAnimationStates(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto& animation_states = *ship.GetAnimationStates();
+	sol::table result = lua->create_table();
+	for (auto& kv : animation_states)
+	{
+		auto& state = kv.Key();
+		auto& val = kv.Value();
+		result[static_cast<std::uint8_t>(state)] = val;
+	}
+	return result;
+}
+
+UCommandType EntityLibInterface::GetActiveCommandType(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	return *ship.GetActiveCommandType();
+}
+
+std::tuple<double, double, double> EntityLibInterface::GetShipVelocity(std::uint64_t entity_id) const
+{
+	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto& velocity = ship.GetShipVelocity();
+	return { velocity.X(), velocity.Y(), velocity.Z() };
 }

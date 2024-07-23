@@ -1,6 +1,7 @@
 function WSys_RegisterCustomCode()
   WSys.CustomCode:Register("SA_F01_Probe", "Probe_OnCreate", "Probe_OnUpdate", "Probe_OnDestroy", 2 * 20)
   WSys.CustomCode:Register("SA_F01_Frigate01", "Ion_OnCreate", "Ion_OnUpdate", "Ion_OnDestroy", 5 * 20)
+  WSys.CustomCode:Register("SA_F01_Frigate02", "Assault_OnCreate", "Assault_OnUpdate", "Assault_OnDestroy", 5 * 20)
   -- CustomCode can also be registered for non ship entities!
   -- If you do not need any of the 3 callbacks, you can pass an empty string.
   -- The first trigger of the on_update function will happen after 20 seconds (400 ticks) after they're born.
@@ -43,6 +44,30 @@ function Ion_OnUpdate(entity_id)
     stance_str = "Unknown"
   end
   print(string.format("ion frigate %d @ stance `%s`(%d) @ formation `%s`\n", entity_id, stance_str, stance, formation))
+end
+
+--- @param entity_id integer
+function Resource_OnDestroy(entity_id)
+  print(string.format("resource %d destroyed\n", entity_id))
+end
+
+--- @param entity_id integer
+function Assault_OnCreate(entity_id)
+  local n = WSys.Entity:GetPilotName(entity_id)
+  print(string.format("assault frigate %d created with pilot `%s`\n", entity_id, n))
+end
+
+--- @param entity_id integer
+function Assault_OnDestroy(entity_id)
+  print(string.format("assault frigate %d destroyed\n", entity_id))
+end
+
+--- @param entity_id integer
+function Assault_OnUpdate(entity_id)
+  local v_x, v_y, v_z = WSys.Entity:GetShipVelocity(entity_id)
+  local is_docking = WSys.Entity:IsDocking(entity_id)
+  local is_docked = WSys.Entity:IsDocked(entity_id)
+  print(string.format("assault frigate %d @ velocity (%f, %f, %f) @ docking %s @ docked %s\n", entity_id, v_x, v_y, v_z, is_docking and "true" or "false", is_docked and "true" or "false"))
 end
 
 --- @param entity_id integer

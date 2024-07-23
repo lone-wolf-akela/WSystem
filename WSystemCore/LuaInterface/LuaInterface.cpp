@@ -38,7 +38,8 @@ void LuaInterface::Initialize()
 	sobgroup_manager.Initialize(
 		&lua_state, 
 		&this->wsystem_core->function_libs.EntityGroup,
-		&this->wsystem_core->database
+		&this->wsystem_core->database,
+		this
 	);
 	custom_code_manager.Initialize(
 		&lua_state, 
@@ -82,6 +83,11 @@ void LuaInterface::Initialize()
 	SolRegisterEnum<InfluenceType>(&lua_state, "InfluenceType");
 	SolRegisterEnum<ActivityRelation>(&lua_state, "ActivityRelation");
 	SolRegisterEnum<ParadeMode>(&lua_state, "ParadeMode");
+	SolRegisterEnum<TurretDeploymentState>(&lua_state, "TurretDeploymentState");
+	SolRegisterEnum<DockingStage>(&lua_state, "DockingStage");
+	SolRegisterEnum<HyperspaceStatus>(&lua_state, "HyperspaceStatus");
+	SolRegisterEnum<SobAnimationState>(&lua_state, "SobAnimationState");
+	SolRegisterEnum<UCommandType>(&lua_state, "UCommandType");
 
 	lua_state["WSys"] = shared_from_this();
 }
@@ -89,6 +95,7 @@ void LuaInterface::Initialize()
 void LuaInterface::Begin_InitScenario()
 {
 	entity_lib_interface.Begin_InitScenario(this->wsystem_core->units_info_subsystem);
+	sobgroup_manager.Begin_InitScenario(this->wsystem_core->units_info_subsystem);
 	
 	RC::Output::send<LogLevel::Verbose>(STR("Loading Research Conditions...\n"));
 

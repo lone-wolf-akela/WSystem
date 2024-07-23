@@ -4,6 +4,9 @@
 #include <Core/Database.h>
 #include <LibWrapper/TiirEntityGroupFunctionLibrary.h>
 #include <DataWrapper/RavenSimulationProxy.h>
+#include <DataWrapper/UnitsInfoSubsystem.h>
+
+class LuaInterface;
 
 class SobGroupManager
 {
@@ -17,7 +20,8 @@ public:
 
 	~SobGroupManager() = default;
 
-	void Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database);
+	void Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, LuaInterface* lua_interface);
+	void Begin_InitScenario(UnitsInfoSubsystem units_info_subsystem);
 	void Begin_InGame(RavenSimulationProxy sim_proxy);
 
 	[[nodiscard]] TiirEntityGroup& FindGroup(std::string_view name);
@@ -53,7 +57,7 @@ public:
 		std::string_view group,
 		std::string_view source_group,
 		sol::table desired_types);
-	[[nodiscard]] std::int32_t GroupCount(std::string_view group);
+	[[nodiscard]] std::int32_t GroupCount(std::string_view group) const;
 	void TakeDamageAbsolute(std::string_view group, float damage_absolute) const;
 	void TakeDamage(std::string_view group, float damage_percentage) const;
 	void Stop(std::string_view group) const;
@@ -191,10 +195,16 @@ public:
 	void FillGroupAllAliveShipsInGame(std::string_view group);
 	void FillGroupAllAliveEntitiesInGame(std::string_view group);
 	void FillGroupAllAliveNonShipEntitiesInGame(std::string_view group);
+
+	[[nodiscard]] std::int32_t GroupCountAliveEntities(std::string_view group) const;
+	[[nodiscard]] std::tuple<bool, SquadronStance> GetStance(std::string_view group) const;
+	[[nodiscard]] std::tuple<bool, std::string> GetFormation(std::string_view group) const;
 private:
 	sol::state_view* lua = nullptr;
 	TiirEntityGroupFunctionLibrary* lib = nullptr;
 	Database* database = nullptr;
 	RavenSimulationProxy sim_proxy;
+	LuaInterface* lua_interface = nullptr;
+	UnitsInfoSubsystem units_info_subsystem = nullptr;
 	std::map<std::string, TiirEntityGroup, std::less<>> groups;
 };

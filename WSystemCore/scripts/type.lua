@@ -1,3 +1,139 @@
+--- @class UCommandType
+--- @field UCommand_Idle UCommandType
+--- @field UCommand_Move UCommandType
+--- @field UCommand_Attack UCommandType
+--- @field UCommand_BlindFire UCommandType
+--- @field UCommand_Build UCommandType
+--- @field UCommand_Dock UCommandType
+--- @field UCommand_Resource UCommandType
+--- @field UCommand_Launch UCommandType
+--- @field UCommand_WaypointMove UCommandType
+--- @field UCommand_Parade UCommandType
+--- @field UCommand_Guard UCommandType
+--- @field UCommand_SalvageCaptureOverseer UCommandType
+--- @field UCommand_SalvageCapture UCommandType
+--- @field UCommand_Hyperspace UCommandType
+--- @field UCommand_MoveToSob UCommandType
+--- @field UCommand_FormHyperspaceGate UCommandType
+--- @field UCommand_HyperspaceViaGate UCommandType
+--- @field UCommand_RepairOverseer UCommandType
+--- @field UCommand_Repair UCommandType
+--- @field UCommand_Retire UCommandType
+--- @field UCommand_Despawn UCommandType
+--- @field UCommand_LayMines UCommandType
+--- @field UCommand_DeployTurret UCommandType
+--- @field UCommand_DeployCounterMeasureFog UCommandType
+--- @field UCommand_AttackMove UCommandType
+--- @field UCommand_RallyParade UCommandType
+--- @field UCommand_Rotate UCommandType
+--- @field UCommand_Harvest UCommandType
+--- @field UCommand_Scuttle UCommandType
+--- @field UCommand_BoostAllies UCommandType
+--- @field UCommand_BoostArmor UCommandType
+--- @field UCommand_BoostProduction UCommandType
+--- @field UCommand_BoostSpeed UCommandType
+--- @field UCommand_BoostWeaponDamage UCommandType
+--- @field UCommand_BoostWeaponRange UCommandType
+--- @field UCommand_BoostWeaponRateOfFire UCommandType
+--- @field UCommand_SpecialAttackTripleShot UCommandType
+--- @field UCommand_SpecialAttackMissileVolley UCommandType
+--- @field UCommand_SpecialAttackMegaBeam UCommandType
+--- @field UCommand_SpecialAttackClusterMissile UCommandType
+--- @field UCommand_SpecialAttackCruiseMissile UCommandType
+--- @field UCommand_SpecialAttackCannonVolley UCommandType
+--- @field UCommand_SpecialAttackFusionRound UCommandType
+--- @field UCommand_SpecialAttackNuke UCommandType
+--- @field UCommand_Maneuver UCommandType
+--- @field UCommand_Custom UCommandType
+--- @field UCommand_SelfRepair UCommandType
+UCommandType = {}
+
+--- @class SobAnimationState
+--- @field Normal SobAnimationState
+--- @field Open SobAnimationState
+--- @field Closed SobAnimationState
+--- @field CodeRed SobAnimationState
+--- @field ResourceStart SobAnimationState
+--- @field ResourceDo SobAnimationState
+--- @field ResourceEnd SobAnimationState
+--- @field RepairStart SobAnimationState
+--- @field RepairDo SobAnimationState
+--- @field RepairEnd SobAnimationState
+--- @field DockPathOpen SobAnimationState
+--- @field DockPathOpen1 SobAnimationState
+--- @field DockPathOpen2 SobAnimationState
+--- @field DockPathOpen3 SobAnimationState
+--- @field DockPathOpen4 SobAnimationState
+--- @field DockPathOpen5 SobAnimationState
+--- @field DockPathClosed SobAnimationState
+--- @field DockPathClosed1 SobAnimationState
+--- @field DockPathClosed2 SobAnimationState
+--- @field DockPathClosed3 SobAnimationState
+--- @field DockPathClosed4 SobAnimationState
+--- @field DockPathClosed5 SobAnimationState
+--- @field Launched SobAnimationState
+--- @field Docked SobAnimationState
+--- @field DefenseFieldActivate SobAnimationState
+--- @field DefenseFieldDeActivate SobAnimationState
+--- @field CloakFieldActivate SobAnimationState
+--- @field CloakFieldDeactivate SobAnimationState
+--- @field HyperspaceGateActivate SobAnimationState
+--- @field HyperspaceGateDeActivate SobAnimationState
+--- @field DoingFlightManeuver SobAnimationState
+--- @field CaptureActive SobAnimationState
+--- @field CaptureInActive SobAnimationState
+--- @field CustomCommandActivate SobAnimationState
+--- @field CustomCommandDeActivate SobAnimationState
+--- @field MagneticFieldActivate SobAnimationState
+--- @field MagneticFieldDeActivate SobAnimationState
+--- @field NIS00 SobAnimationState
+--- @field NIS01 SobAnimationState
+--- @field NIS02 SobAnimationState
+--- @field NumberStates SobAnimationState
+--- @field NoState SobAnimationState
+SobAnimationState = {}
+
+--- @class HyperspaceStatus
+--- @field Entering HyperspaceStatus
+--- @field EnteringGate HyperspaceStatus
+--- @field Exiting HyperspaceStatus
+--- @field Interrupted HyperspaceStatus
+--- @field GateFormed HyperspaceStatus
+--- @field EnteredInhibitorVolume HyperspaceStatus
+--- @field NotEnoughCash HyperspaceStatus
+--- @field EnteringEffect HyperspaceStatus
+--- @field ExitingEffect HyperspaceStatus
+HyperspaceStatus = {}
+
+
+--- @class DockingStage
+--- @field OrderGiven DockingStage
+--- @field FindBestDockShip DockingStage
+--- @field FlyToDockShip DockingStage
+--- @field FindBestPathOnShip DockingStage
+--- @field RegisterForQueue DockingStage
+--- @field FlyToBehindQueue DockingStage
+--- @field Queue DockingStage
+--- @field BookPath DockingStage
+--- @field FlyToDockPathStartPoint DockingStage
+--- @field OpenDoor DockingStage
+--- @field DockFormations DockingStage
+--- @field PutSquadronInShip DockingStage
+--- @field Docked DockingStage
+--- @field UnInitialized DockingStage
+DockingStage = {}
+
+--- @class TurretDeploymentState
+--- @field None TurretDeploymentState
+--- @field Failed TurretDeploymentState
+--- @field MovingToTarget TurretDeploymentState
+--- @field PreparingToDeploy TurretDeploymentState
+--- @field Deploying TurretDeploymentState
+--- @field Deployed TurretDeploymentState
+--- @field Undeploying TurretDeploymentState
+--- @field Undeployed TurretDeploymentState
+TurretDeploymentState = {}
+
 --- @class TiirCommander
 TiirCommander = {}
 
@@ -703,7 +839,7 @@ function SobGroupManagerType:DockInstantly(group, dock_target_entity_group) end
 --- @param group string
 --- @param dock_target_entity_group string
 --- @param stay_docked boolean
---- @param dock_only boolean
+--- @param dock_only boolean @ if false, the unit may prioritize latching instead of docking
 function SobGroupManagerType:Dock(group, dock_target_entity_group, stay_docked, dock_only) end
 
 --- @param group string
@@ -830,6 +966,18 @@ function SobGroupManagerType:FillGroupAllAliveEntitiesInGame(group) end
 
 --- @param group string
 function SobGroupManagerType:FillGroupAllAliveNonShipEntitiesInGame(group) end
+
+--- @param group string
+--- @return integer
+function SobGroupManagerType:GroupCountAliveEntities(group) return 0 end
+
+--- @param group string
+--- @return boolean, SquadronStance @ true if all ships in the group have the same stance, and the stance
+function SobGroupManagerType:GetStance(group) return false, SquadronStance end
+
+--- @param group string
+--- @return boolean, string @ true if all ships in the group have the same formation, and the formation
+function SobGroupManagerType:GetFormation(group) return false, "" end
 
 --- @class CustomCodeManagerType
 CustomCodeManagerType = {}
@@ -1106,7 +1254,7 @@ function EntityLibInterface:DockInstantly(entity_id, dock_target_entity) end
 --- @param entity_id integer
 --- @param dock_target_entity integer
 --- @param stay_docked boolean
---- @param dock_only boolean
+--- @param dock_only boolean @ if false, the unit may prioritize latching instead of docking
 function EntityLibInterface:Dock(entity_id, dock_target_entity, stay_docked, dock_only) end
 
 --- @param entity_id integer
@@ -1266,6 +1414,193 @@ function EntityLibInterface:GetStance(entity_id) return SquadronStance end
 --- @return string
 function EntityLibInterface:GetFormation(entity_id) return "" end
 
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsNis(entity_id) return false end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetShipScreenSize(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetShipNormalizedScreenSize(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetShipAudioSignificance(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return integer
+function EntityLibInterface:GetSquadronID(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsSquadronLeader(entity_id) return false end
+
+--- @param entity_id integer
+--- @return integer @ squadron leader entity id
+function EntityLibInterface:GetSquadronLeader(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return string @ localized name
+function EntityLibInterface:GetPilotName(entity_id) return "" end
+
+--- @param entity_id integer
+--- @return string
+function EntityLibInterface:GetLocalizedUnitName(entity_id) return "" end
+
+--- @param entity_id integer
+--- @return string
+function EntityLibInterface:GetLocalizedUnitDescription(entity_id) return "" end
+
+--- @param entity_id integer
+--- @return string
+function EntityLibInterface:GetLocalizedUnitFlavourText(entity_id) return "" end
+
+--- @param entity_id integer
+--- @return string
+function EntityLibInterface:GetCreationMap(entity_id) return "" end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetAudioFocusWeight(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetAudioFocusWeightContextualMultiplier(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return integer
+function EntityLibInterface:GetAudioFocusRank(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetAudioFocusRankNormalized(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return integer
+function EntityLibInterface:GetControlGroupsFlags(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsCenterFocused(entity_id) return false end
+
+--- @param entity_id integer
+--- @return TurretDeploymentState
+function EntityLibInterface:GetDeployState(entity_id) return TurretDeploymentState end
+
+--- @param entity_id integer
+--- @return number, number, number
+function EntityLibInterface:GetDeployLocation(entity_id) return 0, 0, 0 end
+
+--- @param entity_id integer
+--- @return number, number, number
+function EntityLibInterface:GetDeployNormal(entity_id) return 0, 0, 0 end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsDeployedInTacticalPause(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsLatched(entity_id) return false end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetWeaponRange(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetSpecialWeaponRange(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetHealWeaponRange(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetHealSpecialWeaponRange(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetHyperspaceProgress(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return integer
+function EntityLibInterface:GetOpposingShip(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetZombieTime(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return boolean, boolean, boolean, boolean @ Instant, NoAoeDamage, NoDebris, NoZombie
+function EntityLibInterface:GetDeathModifiers(entity_id) return false, false, false, false end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetSignificance(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetDistanceToCamera(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return number
+function EntityLibInterface:GetBackstageEffectiveness(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return integer
+function EntityLibInterface:GetDockWith(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return DockingStage
+function EntityLibInterface:GetDockingStage(entity_id) return DockingStage end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsDocked(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsDocking(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:HasPower(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsHandlingExternalMove(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:CanRally(entity_id) return false end
+
+--- @param entity_id integer
+--- @return HyperspaceStatus
+function EntityLibInterface:GetHyperspaceStatus(entity_id) return HyperspaceStatus end
+
+--- @param entity_id integer
+--- @return integer
+function EntityLibInterface:GetParent(entity_id) return 0 end
+
+--- @param entity_id integer
+--- @return integer[]
+function EntityLibInterface:GetCollectors(entity_id) return {} end
+
+--- @param entity_id integer
+--- @return table<SobAnimationState, boolean>
+function EntityLibInterface:GetAnimationStates(entity_id) return {} end
+
+--- @param entity_id integer
+--- @return UCommandType
+function EntityLibInterface:GetActiveCommandType(entity_id) return UCommandType end
+
+--- @param entity_id integer
+--- @return number, number, number
+function EntityLibInterface:GetShipVelocity(entity_id) return 0, 0, 0 end
 
 --- @class PlayerLibInterface
 PlayerLibInterface = {}

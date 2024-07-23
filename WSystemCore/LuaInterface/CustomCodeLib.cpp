@@ -1,5 +1,7 @@
 #include <pch.h>
 
+#include <DataWrapper/SimShip.h>
+
 #include "CustomCodeLib.h"
 
 void CustomCodeDef::CallCreate(std::uint64_t entity_id) const
@@ -119,6 +121,13 @@ namespace
 {
 	auto extract_entity_type(SimEntity entity)
 	{
+		if (entity.IsShip())
+		{
+			const SimShip ship = entity.obj;
+			const auto& data = *ship.GetDataAsset();
+			return data->GetName();
+		}
+		// fallback, maybe not accurate
 		auto name = entity->GetName();
 		if (const auto pos = name.rfind('_'); pos != decltype(name)::npos)
 		{
