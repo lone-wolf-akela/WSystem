@@ -6,13 +6,13 @@
 
 #include "EntityLib.h"
 
-void EntityLibInterface::Initialize(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database, LuaInterface* lua_interface)
+void EntityLibInterface::Initialize(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database, EntityIdManager* entity_id_manager)
 {
 	this->lua = lua;
 	this->lib = lib;
 	this->sob_group_manager = sob_group_manager;
 	this->database = database;
-	this->lua_interface = lua_interface;
+	this->entity_id_manager = entity_id_manager;
 
 	auto EntityLibType = lua->new_usertype<EntityLibInterface>("EntityLibInterface");
 	EntityLibType["UndeployTurret"] = &EntityLibInterface::UndeployTurret;
@@ -149,6 +149,10 @@ void EntityLibInterface::Initialize(sol::state_view* lua, TiirEntityFunctionLibr
 	EntityLibType["GetAnimationStates"] = &EntityLibInterface::GetAnimationStates;
 	EntityLibType["GetActiveCommandType"] = &EntityLibInterface::GetActiveCommandType;
 	EntityLibType["GetShipVelocity"] = &EntityLibInterface::GetShipVelocity;
+	EntityLibType["IsMovableEntity"] = &EntityLibInterface::IsMovableEntity;
+	EntityLibType["IsWeaponFireActor"] = &EntityLibInterface::IsWeaponFireActor;
+	EntityLibType["IsRavenSimProjectile"] = &EntityLibInterface::IsRavenSimProjectile;
+	EntityLibType["IsProjectile"] = &EntityLibInterface::IsProjectile;
 }
 
 void EntityLibInterface::Begin_InitScenario(UnitsInfoSubsystem units_info_subsystem)
@@ -621,9 +625,9 @@ void EntityLibInterface::AddObtainableArtifactToShip(std::uint64_t entity_id,
 
 namespace 
 {
-	SimEntity find_check_entity(const LuaInterface* interface, std::uint64_t entity_id)
+	SimEntity find_check_entity(const EntityIdManager* id_manager, std::uint64_t entity_id)
 	{
-		const auto entity = interface->FindEntity(entity_id);
+		const auto entity = id_manager->FindEntity(entity_id);
 		if (!entity.IsValid())
 		{
 			const auto err_msg = std::format("Entity with id {} not found\n", entity_id);
@@ -635,85 +639,63 @@ namespace
 
 bool EntityLibInterface::IsShip(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
 	return entity.IsShip();
 }
 
 bool EntityLibInterface::IsMilitary(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
 	return entity.IsMilitary();
 }
 
 bool EntityLibInterface::IsDamaged(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
 	return entity.IsDamaged();
 }
 
 bool EntityLibInterface::IsAliveAndVisibleEntity(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
 	return entity.IsAliveAndVisibleEntity();
 }
 
 bool EntityLibInterface::CanHeal(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
 	return entity.CanHeal();
 }
 
 bool EntityLibInterface::CanBeFocused(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
 	return entity.CanBeFocused();
-}
-
-namespace
-{
-	bool object_is_of_type(Unreal::UObject* object, StringViewType type)
-	{
-		const auto class_name = Unreal::FName(type);
-		const auto class_obj = object->GetClassPrivate();
-
-		if (class_obj->GetNamePrivate().Equals(class_name))
-		{
-			return true;
-		}
-		for (const auto super_struct : class_obj->ForEachSuperStruct())
-		{
-			if (super_struct->GetNamePrivate().Equals(class_name))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
 }
 
 bool EntityLibInterface::IsResource(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
-	return object_is_of_type(entity.obj, STR("SimResource"));
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
+	return entity.IsResource();
 }
 
 bool EntityLibInterface::IsMissile(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
-	return object_is_of_type(entity.obj, STR("SimMissile"));
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
+	return entity.IsMissile();
 }
 
 std::string EntityLibInterface::GetEntityInternalName(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
 	return boost::nowide::narrow(entity->GetName());
 }
 
 namespace
 {
-	SimShip find_check_ship(const LuaInterface* interface, std::uint64_t entity_id)
+	SimShip find_check_ship(const EntityIdManager* id_manager, std::uint64_t entity_id)
 	{
-		const auto entity = find_check_entity(interface, entity_id);
+		const auto entity = find_check_entity(id_manager, entity_id);
 		if (!entity.IsShip())
 		{
 			const auto err_msg = std::format("Entity with id {} is not a ship\n", entity_id);
@@ -725,7 +707,7 @@ namespace
 
 SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 
 	UC::TArray<SimShip> ships;
 	ships.Add(ship);
@@ -744,7 +726,7 @@ SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 
 std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 
 	UC::TArray<SimShip> ships;
 	ships.Add(ship);
@@ -763,43 +745,43 @@ std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
 
 bool EntityLibInterface::IsNis(std::uint64_t entity_id) const
 {
-	const auto entity = find_check_entity(lua_interface, entity_id);
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
 	return *entity.GetbIsNis();
 }
 
 float EntityLibInterface::GetShipScreenSize(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetShipScreenSize();
 }
 
 float EntityLibInterface::GetShipNormalizedScreenSize(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetShipNormalizedScreenSize();
 }
 
 float EntityLibInterface::GetShipAudioSignificance(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetShipAudioSignificance();
 }
 
 std::int32_t EntityLibInterface::GetSquadronID(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetSquadronID();
 }
 
 bool EntityLibInterface::IsSquadronLeader(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetIsSquadronLeader();
 }
 
 std::uint64_t EntityLibInterface::GetSquadronLeader(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	if (const auto& leader = *ship.GetSquadronLeader(); leader.IsValid())
 	{
 		return *leader.GetSimID();
@@ -809,138 +791,138 @@ std::uint64_t EntityLibInterface::GetSquadronLeader(std::uint64_t entity_id) con
 
 std::string EntityLibInterface::GetPilotName(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return boost::nowide::narrow(ship.GetPilotName()->ToString());
 }
 
 std::string EntityLibInterface::GetLocalizedUnitName(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	const auto& ship_static_data = *ship.GetDataAsset();
 	return boost::nowide::narrow(ship_static_data.GetUnitName()->ToString());
 }
 
 std::string EntityLibInterface::GetLocalizedUnitDescription(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	const auto& ship_static_data = *ship.GetDataAsset();
 	return boost::nowide::narrow(ship_static_data.GetUnitDescription()->ToString());
 }
 
 std::string EntityLibInterface::GetLocalizedUnitFlavourText(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	const auto& ship_static_data = *ship.GetDataAsset();
 	return boost::nowide::narrow(ship_static_data.GetUnitFlavourText()->ToString());
 }
 
 std::string EntityLibInterface::GetCreationMap(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return boost::nowide::narrow(ship.GetCreationMap()->GetCharArray());
 }
 
 float EntityLibInterface::GetAudioFocusWeight(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetAudioFocusWeight();
 }
 
 float EntityLibInterface::GetAudioFocusWeightContextualMultiplier(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetAudioFocusWeightContextualMultiplier();
 }
 
 std::int32_t EntityLibInterface::GetAudioFocusRank(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetAudioFocusRank();
 }
 
 float EntityLibInterface::GetAudioFocusRankNormalized(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetAudioFocusRankNormalized();
 }
 
 std::int32_t EntityLibInterface::GetControlGroupsFlags(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetControlGroupsFlags();
 }
 
 bool EntityLibInterface::IsCenterFocused(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetIsCenterFocused();
 }
 
 TurretDeploymentState EntityLibInterface::GetDeployState(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetDeployState();
 }
 
 std::tuple<double, double, double> EntityLibInterface::GetDeployLocation(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	const auto location = *ship.GetDeployLocation();
 	return { location.X(), location.Y(), location.Z() };
 }
 
 std::tuple<double, double, double> EntityLibInterface::GetDeployNormal(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	const auto normal = *ship.GetDeployNormal();
 	return { normal.X(), normal.Y(), normal.Z() };
 }
 
 bool EntityLibInterface::IsDeployedInTacticalPause(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetbDeployedInTacticalPause();
 }
 
 bool EntityLibInterface::IsLatched(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetIsLatched();
 }
 
 float EntityLibInterface::GetWeaponRange(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetWeaponRange();
 }
 
 float EntityLibInterface::GetSpecialWeaponRange(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetSpecialWeaponRange();
 }
 
 float EntityLibInterface::GetHealWeaponRange(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetHealWeaponRange();
 }
 
 float EntityLibInterface::GetHealSpecialWeaponRange(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetHealSpecialWeaponRange();
 }
 
 float EntityLibInterface::GetHyperspaceProgress(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetHyperspaceProgress();
 }
 
 std::uint64_t EntityLibInterface::GetOpposingShip(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	if (const auto& opposing_ship = *ship.GetOpposingShip(); opposing_ship.IsValid())
 	{
 		return *opposing_ship.GetSimID();
@@ -950,13 +932,13 @@ std::uint64_t EntityLibInterface::GetOpposingShip(std::uint64_t entity_id) const
 
 float EntityLibInterface::GetZombieTime(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetZombieTime();
 }
 
 std::tuple<bool, bool, bool, bool> EntityLibInterface::GetDeathModifiers(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	auto& flags = *ship.GetDeathModifiers();
 	return {
 		static_cast<bool>(flags.Instant), 
@@ -968,25 +950,25 @@ std::tuple<bool, bool, bool, bool> EntityLibInterface::GetDeathModifiers(std::ui
 
 float EntityLibInterface::GetSignificance(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetSignificance();
 }
 
 float EntityLibInterface::GetDistanceToCamera(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetDistanceToCamera();
 }
 
 float EntityLibInterface::GetBackstageEffectiveness(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetBackstageEffectiveness();
 }
 
 std::uint64_t EntityLibInterface::GetDockWith(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	if (const auto& dock_with = *ship.GetDockWith(); dock_with.IsValid())
 	{
 		return *dock_with.GetSimID();
@@ -996,49 +978,49 @@ std::uint64_t EntityLibInterface::GetDockWith(std::uint64_t entity_id) const
 
 DockingStage EntityLibInterface::GetDockingStage(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetDockingStage();
 }
 
 bool EntityLibInterface::IsDocked(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetIsDocked();
 }
 
 bool EntityLibInterface::IsDocking(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetbIsDocking();
 }
 
 bool EntityLibInterface::HasPower(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetbHasPower();
 }
 
 bool EntityLibInterface::IsHandlingExternalMove(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetbIsHandlingExternalMove();
 }
 
 bool EntityLibInterface::CanRally(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetbCanRally();
 }
 
 HyperspaceStatus EntityLibInterface::GetHyperspaceStatus(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetHyperspaceStatus();
 }
 
 std::uint64_t EntityLibInterface::GetParent(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	if (const auto& parent = *ship.GetParent(); parent.IsValid())
 	{
 		return *parent.GetSimID();
@@ -1048,7 +1030,7 @@ std::uint64_t EntityLibInterface::GetParent(std::uint64_t entity_id) const
 
 sol::table EntityLibInterface::GetCollectors(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	const auto& collectors = *ship.GetCollectors();
 	sol::table result = lua->create_table();
 	for (auto& collector : collectors)
@@ -1060,7 +1042,7 @@ sol::table EntityLibInterface::GetCollectors(std::uint64_t entity_id) const
 
 sol::table EntityLibInterface::GetAnimationStates(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	const auto& animation_states = *ship.GetAnimationStates();
 	sol::table result = lua->create_table();
 	for (auto& kv : animation_states)
@@ -1074,13 +1056,37 @@ sol::table EntityLibInterface::GetAnimationStates(std::uint64_t entity_id) const
 
 UCommandType EntityLibInterface::GetActiveCommandType(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	return *ship.GetActiveCommandType();
 }
 
 std::tuple<double, double, double> EntityLibInterface::GetShipVelocity(std::uint64_t entity_id) const
 {
-	const auto ship = find_check_ship(lua_interface, entity_id);
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
 	const auto& velocity = ship.GetShipVelocity();
 	return { velocity.X(), velocity.Y(), velocity.Z() };
+}
+
+bool EntityLibInterface::IsMovableEntity(std::uint64_t entity_id) const
+{
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
+	return entity.IsMovableEntity();
+}
+
+bool EntityLibInterface::IsWeaponFireActor(std::uint64_t entity_id) const
+{
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
+	return entity.IsWeaponFireActor();
+}
+
+bool EntityLibInterface::IsRavenSimProjectile(std::uint64_t entity_id) const
+{
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
+	return entity.IsRavenSimProjectile();
+}
+
+bool EntityLibInterface::IsProjectile(std::uint64_t entity_id) const
+{
+	const auto entity = find_check_entity(entity_id_manager, entity_id);
+	return entity.IsProjectile();
 }

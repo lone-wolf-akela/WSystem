@@ -4,6 +4,8 @@
 #include <Core/Database.h>
 #include <DataWrapper/RavenSimulationProxy.h>
 
+#include "EntityIdManager.h"
+
 struct CustomCodeDef
 {
 	std::string UnitTypeName;
@@ -34,18 +36,16 @@ class CustomCodeManager
 {
 public:
 	void Register(std::string_view unit_type, std::string_view on_create, std::string_view on_update, std::string_view on_destroy, std::int64_t update_interval);
+	
 	void Begin_InGame(RavenSimulationProxy sim_proxy);
 	void Tick();
-	void Initialize(
-		sol::state_view* lua, 
-		Database* database);
+	void Initialize(sol::state_view* lua, EntityIdManager* entity_id_manager);
 private:
 	sol::state_view* lua = nullptr;
 	Database* database = nullptr;
 	RavenSimulationProxy sim_proxy = nullptr;
+	EntityIdManager* entity_id_manager = nullptr;
 
 	std::map<std::string, CustomCodeDef> custom_code_defs;
 	std::map<std::uint64_t, CustomCodeRecord> custom_code_records;
-
-	std::set<std::uint64_t> alive_units;
 };

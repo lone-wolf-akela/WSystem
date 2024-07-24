@@ -1,14 +1,14 @@
 #include <pch.h>
 
-#include "WeaponFireActor.h"
+#include "SimMovable.h"
 
-std::wstring WeaponFireActor::GetDataAssetName() const
+std::wstring SimMovable::GetDataAssetName() const
 {
 	const auto& data = *GetDataAsset();
 	return data->GetName();
 }
 
-std::string WeaponFireActor::GetDataAssetNameNarrow() const
+std::string SimMovable::GetDataAssetNameNarrow() const
 {
 	return boost::nowide::narrow(GetDataAssetName());
 }

@@ -1602,6 +1602,22 @@ function EntityLibInterface:GetActiveCommandType(entity_id) return UCommandType 
 --- @return number, number, number
 function EntityLibInterface:GetShipVelocity(entity_id) return 0, 0, 0 end
 
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsMovableEntity(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsWeaponFireActor(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsRavenSimProjectile(entity_id) return false end
+
+--- @param entity_id integer
+--- @return boolean
+function EntityLibInterface:IsProjectile(entity_id) return false end
+
 --- @class PlayerLibInterface
 PlayerLibInterface = {}
 

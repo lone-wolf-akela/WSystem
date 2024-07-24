@@ -7,6 +7,7 @@
 #include "EntityLib.h"
 #include "PlayerLib.h"
 #include "UniverseLib.h"
+#include "EntityIdManager.h"
 
 class WSystemCore;
 
@@ -27,7 +28,6 @@ public:
 	void Tick();
 	bool EnableTick = false;
 
-	SimEntity FindEntity(std::uint64_t entity_id) const;
 public:
 	void AddResearchCondition(
 		std::string_view target_research, 
@@ -40,6 +40,7 @@ private:
 	ScriptRuleManager rule_manager;
 	SobGroupManager sobgroup_manager;
 	CustomCodeManager custom_code_manager;
+	EntityIdManager entity_id_manager;
 	EntityLibInterface entity_lib_interface;
 	PlayerLibInterface player_lib_interface;
 	UniverseLib universe_lib;

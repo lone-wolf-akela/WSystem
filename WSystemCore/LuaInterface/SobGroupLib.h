@@ -6,7 +6,7 @@
 #include <DataWrapper/RavenSimulationProxy.h>
 #include <DataWrapper/UnitsInfoSubsystem.h>
 
-class LuaInterface;
+#include "EntityIdManager.h"
 
 class SobGroupManager
 {
@@ -20,7 +20,7 @@ public:
 
 	~SobGroupManager() = default;
 
-	void Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, LuaInterface* lua_interface);
+	void Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, EntityIdManager* entity_id_manager);
 	void Begin_InitScenario(UnitsInfoSubsystem units_info_subsystem);
 	void Begin_InGame(RavenSimulationProxy sim_proxy);
 
@@ -204,7 +204,7 @@ private:
 	TiirEntityGroupFunctionLibrary* lib = nullptr;
 	Database* database = nullptr;
 	RavenSimulationProxy sim_proxy;
-	LuaInterface* lua_interface = nullptr;
+	EntityIdManager* entity_id_manager = nullptr;
 	UnitsInfoSubsystem units_info_subsystem = nullptr;
 	std::map<std::string, TiirEntityGroup, std::less<>> groups;
 };

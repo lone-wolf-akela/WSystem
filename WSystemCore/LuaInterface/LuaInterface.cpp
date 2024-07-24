@@ -39,18 +39,18 @@ void LuaInterface::Initialize()
 		&lua_state, 
 		&this->wsystem_core->function_libs.EntityGroup,
 		&this->wsystem_core->database,
-		this
+		&this->entity_id_manager
 	);
 	custom_code_manager.Initialize(
-		&lua_state, 
-		&this->wsystem_core->database
+		&lua_state,
+		&this->entity_id_manager
 	);
 	entity_lib_interface.Initialize(
 		&lua_state, 
 		&this->wsystem_core->function_libs.Entity,
 		&sobgroup_manager,
 		&this->wsystem_core->database,
-		this
+		&this->entity_id_manager
 	);
 	player_lib_interface.Initialize(
 		&lua_state, 
@@ -134,7 +134,7 @@ void LuaInterface::Begin_InitScenario()
 
 void LuaInterface::Begin_InGame()
 {
-	RC::Output::send<LogLevel::Verbose>(STR("Finding Rule_OnInit()...\n"));
+	entity_id_manager.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
 
 	rule_manager.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
 	custom_code_manager.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
@@ -143,6 +143,7 @@ void LuaInterface::Begin_InGame()
 	player_lib_interface.Begin_InGame(this->wsystem_core->raven_simulation_proxy);
 
 	auto& lua_state = *this->wsystem_core->lua;
+	RC::Output::send<LogLevel::Verbose>(STR("Finding Rule_OnInit()...\n"));
 	if (const sol::protected_function init_func = lua_state["Rule_OnInit"]; init_func.valid())
 	{
 		if (const auto result = init_func(); !result.valid())
@@ -163,25 +164,10 @@ void LuaInterface::Tick()
 	{
 		return;
 	}
+	entity_id_manager.Tick();
+
 	rule_manager.Tick();
 	custom_code_manager.Tick();
-}
-
-
-SimEntity LuaInterface::FindEntity(std::uint64_t entity_id) const
-{
-	auto& entity_map = *this->wsystem_core->raven_simulation_proxy.GetEntityMap();
-	if (const auto found = entity_map.Find(
-		static_cast<std::uint32_t>(entity_id), 
-		[](const auto& a, const auto& b) {return a == b;});
-		found != end(entity_map))
-	{
-		return found->Value();
-	}
-	else
-	{
-		return nullptr;
-	}
 }
 
 void LuaInterface::AddResearchCondition(

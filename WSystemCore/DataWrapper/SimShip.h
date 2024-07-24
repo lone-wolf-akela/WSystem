@@ -64,5 +64,8 @@ public:
 	// TArray<UStatusEffectStaticData*> CurStatusEffects;
 
 	WSYS_MEMBER_FUNCTION_NOARGS(Unreal::FVector, GetShipVelocity)
+
+	[[nodiscard]] std::wstring GetDataAssetName() const;
+	[[nodiscard]] std::string  GetDataAssetNameNarrow() const;
 };
 

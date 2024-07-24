@@ -3,12 +3,12 @@
 #include "LuaInterface.h"
 #include "SobGroupLib.h"
 
-void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, LuaInterface* lua_interface)
+void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, EntityIdManager* entity_id_manager)
 {
 	this->lua = lua;
 	this->lib = lib;
 	this->database = database;
-	this->lua_interface = lua_interface;
+	this->entity_id_manager = entity_id_manager;
 
 	auto sobgroup_manager_t = lua->new_usertype<SobGroupManager>(
 		"SobGroupManagerType",
@@ -938,7 +938,7 @@ std::int32_t SobGroupManager::GroupCountAliveEntities(std::string_view group) co
 	const auto& g = FindGroup(group);
 	for (auto& e : g.Entities)
 	{
-		if (const auto entity = lua_interface->FindEntity(e.EntityID); entity.IsValid() && entity.IsAlive())
+		if (const auto entity = entity_id_manager->FindEntity(e.EntityID); entity.IsValid() && entity.IsAlive())
 		{
 			n += 1;
 		}
@@ -948,9 +948,9 @@ std::int32_t SobGroupManager::GroupCountAliveEntities(std::string_view group) co
 
 namespace
 {
-	SimEntity find_check_entity(const LuaInterface* interface, std::uint64_t entity_id)
+	SimEntity find_check_entity(const EntityIdManager* id_manager, std::uint64_t entity_id)
 	{
-		const auto entity = interface->FindEntity(entity_id);
+		const auto entity = id_manager->FindEntity(entity_id);
 		if (!entity.IsValid())
 		{
 			const auto err_msg = std::format("Entity with id {} not found\n", entity_id);
@@ -959,9 +959,9 @@ namespace
 		return entity;
 	}
 
-	SimShip find_check_ship(const LuaInterface* interface, std::uint64_t entity_id)
+	SimShip find_check_ship(const EntityIdManager* id_manager, std::uint64_t entity_id)
 	{
-		const auto entity = find_check_entity(interface, entity_id);
+		const auto entity = find_check_entity(id_manager, entity_id);
 		if (!entity.IsShip())
 		{
 			const auto err_msg = std::format("Entity with id {} is not a ship\n", entity_id);
@@ -977,7 +977,7 @@ std::tuple<bool, SquadronStance> SobGroupManager::GetStance(std::string_view gro
 	const auto& g = FindGroup(group);
 	for (auto& e : g.Entities)
 	{
-		const auto ship = find_check_ship(lua_interface, e.EntityID);
+		const auto ship = find_check_ship(entity_id_manager, e.EntityID);
 		ships.Add(ship);
 	}
 
@@ -1003,7 +1003,7 @@ std::tuple<bool, std::string> SobGroupManager::GetFormation(std::string_view gro
 	const auto& g = FindGroup(group);
 	for (auto& e : g.Entities)
 	{
-		const auto ship = find_check_ship(lua_interface, e.EntityID);
+		const auto ship = find_check_ship(entity_id_manager, e.EntityID);
 		ships.Add(ship);
 	}
 

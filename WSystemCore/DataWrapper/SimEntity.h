@@ -20,4 +20,13 @@ public:
 	[[nodiscard]] WSYS_MEMBER_FUNCTION_NOARGS(bool, IsAliveAndVisibleEntity)
 	[[nodiscard]] WSYS_MEMBER_FUNCTION_NOARGS(bool, CanHeal)
 	[[nodiscard]] WSYS_MEMBER_FUNCTION_NOARGS(bool, CanBeFocused)
+
+	[[nodiscard]] bool IsMovableEntity() const;
+	[[nodiscard]] bool IsResource() const;
+	[[nodiscard]] bool IsWeaponFireActor() const;
+	[[nodiscard]] bool IsMissile() const;
+	[[nodiscard]] bool IsRavenSimProjectile() const;
+	[[nodiscard]] bool IsProjectile() const;
+	[[nodiscard]] std::wstring GetDataAssetName() const;
+	[[nodiscard]] std::string  GetDataAssetNameNarrow() const;
 };
