@@ -199,6 +199,8 @@ public:
 	[[nodiscard]] std::int32_t GroupCountAliveEntities(std::string_view group) const;
 	[[nodiscard]] std::tuple<bool, SquadronStance> GetStance(std::string_view group) const;
 	[[nodiscard]] std::tuple<bool, std::string> GetFormation(std::string_view group) const;
+
+	[[nodiscard]] bool GroupContains(std::string_view group, std::uint64_t entity_id) const;
 private:
 	sol::state_view* lua = nullptr;
 	TiirEntityGroupFunctionLibrary* lib = nullptr;

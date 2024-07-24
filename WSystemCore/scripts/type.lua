@@ -979,6 +979,11 @@ function SobGroupManagerType:GetStance(group) return false, SquadronStance end
 --- @return boolean, string @ true if all ships in the group have the same formation, and the formation
 function SobGroupManagerType:GetFormation(group) return false, "" end
 
+--- @param group string
+--- @param entity_id integer
+--- @return boolean
+function SobGroupManagerType:GroupContains(group, entity_id) return false end
+
 --- @class CustomCodeManagerType
 CustomCodeManagerType = {}
 
@@ -1602,6 +1607,8 @@ function EntityLibInterface:GetActiveCommandType(entity_id) return UCommandType 
 --- @return number, number, number
 function EntityLibInterface:GetShipVelocity(entity_id) return 0, 0, 0 end
 
+--- Return true if the entity is with a type of "SimMovable" \
+--- This is a special type of entities, not any ships or missles that can move.
 --- @param entity_id integer
 --- @return boolean
 function EntityLibInterface:IsMovableEntity(entity_id) return false end

@@ -121,7 +121,8 @@ void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLi
 		"FillGroupAllAliveNonShipEntitiesInGame", &SobGroupManager::FillGroupAllAliveNonShipEntitiesInGame,
 		"GroupCountAliveEntities", &SobGroupManager::GroupCountAliveEntities,
 		"GetStance", &SobGroupManager::GetStance,
-		"GetFormation", &SobGroupManager::GetFormation
+		"GetFormation", &SobGroupManager::GetFormation,
+		"GroupContains", &SobGroupManager::GroupContains
 	);
 }
 
@@ -1022,6 +1023,12 @@ std::tuple<bool, std::string> SobGroupManager::GetFormation(std::string_view gro
 		boost::nowide::narrow(formation_order.GetStrikeGroupFormationData()->obj->GetName()) : "";
 
 	return { single_formation, std::move(formation) };
+}
+
+bool SobGroupManager::GroupContains(std::string_view group, std::uint64_t entity_id) const
+{
+	const auto& g = FindGroup(group);
+	return g.Entities.Contains({ entity_id });
 }
 
 TiirEntityGroup& SobGroupManager::FindGroup(std::string_view name)

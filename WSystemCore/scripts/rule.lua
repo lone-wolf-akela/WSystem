@@ -22,6 +22,13 @@ function FindPlayer0Scouts()
   local n = WSys.SobGroup:GroupCount("player_0_scouts")
   print("find " .. n .. " scouts.\n")
 
+  local scouts = WSys.SobGroup:GroupMembers("player_0_scouts")
+  local is_member_1 = WSys.SobGroup:GroupContains("player_0_scouts", scouts[1])
+  local is_member_2 = WSys.SobGroup:GroupContains("player_0_scouts", scouts[1] + 1)
+
+  print(string.format("%d is member of player_0_scouts: %s\n", scouts[1], tostring(is_member_1)))
+  print(string.format("%d is member of player_0_scouts: %s\n", scouts[1] + 1, tostring(is_member_2)))
+
   WSys.Rule:AddInterval("JumpScouts", 5 * 20)
 end
 
