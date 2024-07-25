@@ -199,6 +199,8 @@ public:
 	[[nodiscard]] bool IsWeaponFireActor(std::uint64_t entity_id) const;
 	[[nodiscard]] bool IsRavenSimProjectile(std::uint64_t entity_id) const;
 	[[nodiscard]] bool IsProjectile(std::uint64_t entity_id) const;
+
+	void SetAnimationState(std::uint64_t entity_id, SobAnimationState state, bool value) const;
 private:
 	sol::state_view* lua = nullptr;
 	SobGroupManager* sob_group_manager = nullptr;

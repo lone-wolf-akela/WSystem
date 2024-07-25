@@ -1625,6 +1625,11 @@ function EntityLibInterface:IsRavenSimProjectile(entity_id) return false end
 --- @return boolean
 function EntityLibInterface:IsProjectile(entity_id) return false end
 
+--- @param entity_id integer
+--- @param state SobAnimationState
+--- @param value boolean
+function EntityLibInterface:SetAnimationState(entity_id, state, value) end
+
 --- @class PlayerLibInterface
 PlayerLibInterface = {}
 

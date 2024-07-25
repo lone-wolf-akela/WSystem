@@ -34,6 +34,8 @@ LuaInterface::LuaInterface(WSystemCore* wsystem_core) :
 void LuaInterface::Initialize()
 {
 	auto& lua_state = *this->wsystem_core->lua;
+	set_default_state(lua_state);
+
 	rule_manager.Initialize(&lua_state);
 	sobgroup_manager.Initialize(
 		&lua_state, 

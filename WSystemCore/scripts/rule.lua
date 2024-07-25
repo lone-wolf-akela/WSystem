@@ -9,6 +9,24 @@ function Rule_OnInit()
   -- At tick 0, players are not yet initialized.
   -- So we need to wait a bit before we can fix the CPU player names.
   WSys.Rule:AddIntervalOneTime("FixCpuPlayerName", 1)
+
+  WSys.Rule:AddIntervalOneTime("MotherShipAnimation", 2 * 20)
+end
+
+function MotherShipAnimation()
+  WSys.SobGroup:CreateOrClear("player_0_allships")
+  WSys.SobGroup:FillGroupFromPlayer("player_0_allships", 0, true, true, false)
+
+  WSys.SobGroup:CreateOrClear("player_0_motherships")
+  WSys.SobGroup:FillGroupFromFilteredType(
+    "player_0_motherships", "player_0_allships", { "SA_F01_Mothership01_PVP" })
+  local n = WSys.SobGroup:GroupCount("player_0_motherships")
+  print("find " .. n .. " motherships.\n")
+
+  local motherships = WSys.SobGroup:GroupMembers("player_0_motherships")
+  local mothership = motherships[1]
+
+  WSys.Entity:SetAnimationState(mothership, SobAnimationState.DockPathOpen, true)
 end
 
 

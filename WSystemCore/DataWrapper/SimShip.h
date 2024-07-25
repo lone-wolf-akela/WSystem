@@ -64,6 +64,7 @@ public:
 	// TArray<UStatusEffectStaticData*> CurStatusEffects;
 
 	WSYS_MEMBER_FUNCTION_NOARGS(Unreal::FVector, GetShipVelocity)
+	WSYS_MEMBER_FUNCTION_VOID(ReceiveAnimationStateChanged, const SobAnimationState, AnimationState, const UC::TArray<SobAnimationState>&, ImplicitAnimationStateChanges)
 
 	[[nodiscard]] std::wstring GetDataAssetName() const;
 	[[nodiscard]] std::string  GetDataAssetNameNarrow() const;

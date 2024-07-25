@@ -153,6 +153,7 @@ void EntityLibInterface::Initialize(sol::state_view* lua, TiirEntityFunctionLibr
 	EntityLibType["IsWeaponFireActor"] = &EntityLibInterface::IsWeaponFireActor;
 	EntityLibType["IsRavenSimProjectile"] = &EntityLibInterface::IsRavenSimProjectile;
 	EntityLibType["IsProjectile"] = &EntityLibInterface::IsProjectile;
+	EntityLibType["SetAnimationState"] = &EntityLibInterface::SetAnimationState;
 }
 
 void EntityLibInterface::Begin_InitScenario(UnitsInfoSubsystem units_info_subsystem)
@@ -1089,4 +1090,13 @@ bool EntityLibInterface::IsProjectile(std::uint64_t entity_id) const
 {
 	const auto entity = find_check_entity(entity_id_manager, entity_id);
 	return entity.IsProjectile();
+}
+
+void EntityLibInterface::SetAnimationState(std::uint64_t entity_id, SobAnimationState state, bool value) const
+{
+	const auto ship = find_check_ship(entity_id_manager, entity_id);
+	auto& states = *ship.GetAnimationStates();
+	auto kv = states.Find(state, [](auto a, auto b) {return a == b; });
+	kv->Value() = value;
+	ship.ReceiveAnimationStateChanged(state, {});
 }

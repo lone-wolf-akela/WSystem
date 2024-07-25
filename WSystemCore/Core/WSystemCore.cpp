@@ -6,8 +6,7 @@
 #include "WSystemCore.h"
 
 WSystemCore::WSystemCore() : 
-	research_manager(&this->function_libs.Research),
-	lua_interface(std::make_shared<LuaInterface>(this))
+	research_manager(&this->function_libs.Research)
 {
 	ModName = STR("WSystem");
 	ModVersion = STR("0.0.3");
@@ -63,8 +62,6 @@ void WSystemCore::OnFirst_GameModeInit()
 		std::bind_front(&WSystemCore::Pre_GameModeStateTransition, this),
 		std::bind_front(&WSystemCore::Post_GameModeStateTransition, this),
 		nullptr);
-
-	database.ScanData();
 
 	first_game_mode_init = false;
 }
@@ -134,6 +131,8 @@ void WSystemCore::Begin_InitScenario()
 
 	research_manager.EnableTick = false;
 	lua_interface->EnableTick = false;
+
+	database.ScanData();
 
 	std::vector<Unreal::UObject*> actors;
 	Unreal::UObjectGlobals::FindAllOf(STR("RTSLevelScriptActor"), actors);
@@ -209,7 +208,15 @@ void WSystemCore::on_lua_start(LuaMadeSimple::Lua& lua, LuaMadeSimple::Lua& main
 	std::vector<LuaMadeSimple::Lua*>& hook_luas)
 {
 	this->lua = lua.get_lua_state();
+	this->lua_interface = std::make_shared<LuaInterface>(this);
 	this->lua_interface->Initialize();
 
 	RC::Output::send<LogLevel::Verbose>(STR("WSystem Lua Mod Loaded.\n"));
+}
+
+void WSystemCore::on_lua_stop(LuaMadeSimple::Lua& lua, LuaMadeSimple::Lua& main_lua, LuaMadeSimple::Lua& async_lua,
+	std::vector<LuaMadeSimple::Lua*>& hook_luas)
+{
+	this->lua_interface.reset();
+	this->lua.reset();
 }

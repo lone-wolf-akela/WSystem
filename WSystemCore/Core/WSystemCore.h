@@ -51,6 +51,18 @@ public:
         LuaMadeSimple::Lua& async_lua,
         std::vector<LuaMadeSimple::Lua*>& hook_luas) override;
 
+    /**
+         * Executes before a Lua mod of the same name is about to be stopped.
+         * @param lua This is the main Lua instance.
+         * @param main_lua This is the main Lua thread instance.
+         * @param async_lua This is the Lua instance for asynchronous things like ExecuteAsync and ExecuteWithDelay.
+         * @param hook_luas This is a container of Lua instances that are used for game-thread hooks like ExecuteInGameThread.
+         */
+    void on_lua_stop(LuaMadeSimple::Lua& lua,
+        LuaMadeSimple::Lua& main_lua,
+        LuaMadeSimple::Lua& async_lua,
+        std::vector<LuaMadeSimple::Lua*>& hook_luas) override;
+
     void On_GameModeInit(Unreal::AGameModeBase* gamemode);
     void OnFirst_GameModeInit();
 
