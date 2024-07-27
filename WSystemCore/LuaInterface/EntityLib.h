@@ -5,8 +5,8 @@
 #include <LibWrapper/TiirEntityFunctionLibrary.h>
 #include <Core/Database.h>
 
-#include "SobGroupLib.h"
-#include "EntityIdManager.h"
+class SobGroupManager;
+class EntityIdManager;
 
 class EntityLibInterface
 {

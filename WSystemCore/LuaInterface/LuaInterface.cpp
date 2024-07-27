@@ -41,7 +41,8 @@ void LuaInterface::Initialize()
 		&lua_state, 
 		&this->wsystem_core->function_libs.EntityGroup,
 		&this->wsystem_core->database,
-		&this->entity_id_manager
+		&this->entity_id_manager,
+		&this->entity_lib_interface
 	);
 	custom_code_manager.Initialize(
 		&lua_state,
@@ -50,14 +51,14 @@ void LuaInterface::Initialize()
 	entity_lib_interface.Initialize(
 		&lua_state, 
 		&this->wsystem_core->function_libs.Entity,
-		&sobgroup_manager,
+		&this->sobgroup_manager,
 		&this->wsystem_core->database,
 		&this->entity_id_manager
 	);
 	player_lib_interface.Initialize(
-		&lua_state, 
+		&lua_state,
 		&this->wsystem_core->function_libs.Player,
-		&sobgroup_manager
+		&this->sobgroup_manager
 	);
 	universe_lib.Initialize(&lua_state);
 

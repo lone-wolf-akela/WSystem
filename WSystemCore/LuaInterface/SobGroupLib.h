@@ -6,7 +6,8 @@
 #include <DataWrapper/RavenSimulationProxy.h>
 #include <DataWrapper/UnitsInfoSubsystem.h>
 
-#include "EntityIdManager.h"
+class EntityIdManager;
+class EntityLibInterface;
 
 class SobGroupManager
 {
@@ -20,7 +21,7 @@ public:
 
 	~SobGroupManager() = default;
 
-	void Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, EntityIdManager* entity_id_manager);
+	void Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, EntityIdManager* entity_id_manager, EntityLibInterface* entity_lib_interface);
 	void Begin_InitScenario(UnitsInfoSubsystem units_info_subsystem);
 	void Begin_InGame(RavenSimulationProxy sim_proxy);
 
@@ -145,13 +146,20 @@ public:
 	std::int32_t FillGroupFromPlayerMothershipList(std::string_view group, std::int32_t owning_player, bool include_dead);
 	std::int32_t FillGroupFromFilteredFamily(std::string_view group, std::string_view source_group, sol::table desired_types);
 	std::int32_t FillGroupExcludingPlayer(std::string_view group, std::string_view source_group, std::int32_t excluding_player);
-	std::int32_t FillGroupByProximityToLocation(
+	std::int32_t FillGroupByProximityToLocationBox(
 		std::string_view group, std::string_view source_group, 
 		double location_x, double location_y, double location_z,
 		double distance_x, double distance_y, double distance_z);
-	std::int32_t FillGroupByProximityToGroup(
+	std::int32_t FillGroupByProximityToGroupBox(
 		std::string_view group, std::string_view source_group, std::string_view near_group, 
 		double distance_x, double distance_y, double distance_z);
+	std::int32_t FillGroupByProximityToLocationSphere(
+		std::string_view group, std::string_view source_group,
+		double location_x, double location_y, double location_z,
+		double radius);
+	std::int32_t FillGroupByProximityToGroupSphere(
+		std::string_view group, std::string_view source_group, std::string_view near_group,
+		double radius);
 	void DockInstantly(std::string_view group, std::string_view dock_target_entity_group) const;
 	void Dock(std::string_view group, std::string_view dock_target_entity_group, bool stay_docked, bool dock_only) const;
 	void DisbandStrikeGroup(std::string_view group) const;
@@ -207,6 +215,7 @@ private:
 	Database* database = nullptr;
 	RavenSimulationProxy sim_proxy;
 	EntityIdManager* entity_id_manager = nullptr;
+	EntityLibInterface* entity_lib_interface = nullptr;
 	UnitsInfoSubsystem units_info_subsystem = nullptr;
 	std::map<std::string, TiirEntityGroup, std::less<>> groups;
 };

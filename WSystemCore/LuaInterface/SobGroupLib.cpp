@@ -1,14 +1,17 @@
 #include <pch.h>
 
 #include "LuaInterface.h"
+#include "EntityIdManager.h"
+#include "EntityLib.h"
 #include "SobGroupLib.h"
 
-void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, EntityIdManager* entity_id_manager)
+void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLibrary* lib, Database* database, EntityIdManager* entity_id_manager, EntityLibInterface* entity_lib_interface)
 {
 	this->lua = lua;
 	this->lib = lib;
 	this->database = database;
 	this->entity_id_manager = entity_id_manager;
+	this->entity_lib_interface = entity_lib_interface;
 
 	auto sobgroup_manager_t = lua->new_usertype<SobGroupManager>(
 		"SobGroupManagerType",
@@ -91,8 +94,10 @@ void SobGroupManager::Initialize(sol::state_view* lua, TiirEntityGroupFunctionLi
 		"FillGroupFromPlayerMothershipList", &SobGroupManager::FillGroupFromPlayerMothershipList,
 		"FillGroupFromFilteredFamily", &SobGroupManager::FillGroupFromFilteredFamily,
 		"FillGroupExcludingPlayer", &SobGroupManager::FillGroupExcludingPlayer,
-		"FillGroupByProximityToLocation", &SobGroupManager::FillGroupByProximityToLocation,
-		"FillGroupByProximityToGroup", &SobGroupManager::FillGroupByProximityToGroup,
+		"FillGroupByProximityToLocationBox", &SobGroupManager::FillGroupByProximityToLocationBox,
+		"FillGroupByProximityToGroupBox", &SobGroupManager::FillGroupByProximityToGroupBox,
+		"FillGroupByProximityToLocationSphere", &SobGroupManager::FillGroupByProximityToLocationSphere,
+		"FillGroupByProximityToGroupSphere", &SobGroupManager::FillGroupByProximityToGroupSphere,
 		"DockInstantly", &SobGroupManager::DockInstantly,
 		"Dock", &SobGroupManager::Dock,
 		"DisbandStrikeGroup", &SobGroupManager::DisbandStrikeGroup,
@@ -675,19 +680,56 @@ std::int32_t SobGroupManager::FillGroupExcludingPlayer(std::string_view group, s
 	return lib->FillGroupExcludingPlayer(FindGroup(group), FindGroup(source_group), excluding_player);
 }
 
-std::int32_t SobGroupManager::FillGroupByProximityToLocation(std::string_view group, std::string_view source_group,
+std::int32_t SobGroupManager::FillGroupByProximityToLocationBox(std::string_view group, std::string_view source_group,
 	double location_x, double location_y, double location_z, double distance_x, double distance_y, double distance_z)
 {
-	return lib->FillGroupByProximityToLocation(FindGroup(group), FindGroup(source_group),
-		RC::Unreal::FVector{ location_x, location_y, location_z },
-		RC::Unreal::FVector{ distance_x, distance_y, distance_z });
+	auto& g = FindGroup(group);
+	const auto& s = FindGroup(source_group);
+
+	std::int32_t n_added = 0;
+	for (const auto& entity : s.Entities)
+	{
+		if (auto [x, y, z] = entity_lib_interface->GetPosition(entity.EntityID);
+			std::abs(x - location_x) <= distance_x && std::abs(y - location_y) <= distance_y && std::abs(z - location_z) <= distance_z)
+		{
+			g.Entities.Add(entity);
+			n_added++;
+		}
+	}
+	return n_added;
 }
 
-std::int32_t SobGroupManager::FillGroupByProximityToGroup(std::string_view group, std::string_view source_group,
+std::int32_t SobGroupManager::FillGroupByProximityToGroupBox(std::string_view group, std::string_view source_group,
 	std::string_view near_group, double distance_x, double distance_y, double distance_z)
 {
-	return lib->FillGroupByProximityToGroup(FindGroup(group), FindGroup(source_group), FindGroup(near_group),
-		RC::Unreal::FVector{ distance_x, distance_y, distance_z });
+	const auto& [x, y, z] = GetPosition(near_group);
+	return FillGroupByProximityToLocationBox(group, source_group, x, y, z, distance_x, distance_y, distance_z);
+}
+
+std::int32_t SobGroupManager::FillGroupByProximityToLocationSphere(std::string_view group,
+	std::string_view source_group, double location_x, double location_y, double location_z, double radius)
+{
+	auto& g = FindGroup(group);
+	const auto& s = FindGroup(source_group);
+
+	std::int32_t n_added = 0;
+	for (const auto& entity : s.Entities)
+	{
+		if (auto [x, y, z] = entity_lib_interface->GetPosition(entity.EntityID);
+			(x - location_x) * (x - location_x) + (y - location_y) * (y - location_y) + (z - location_z) * (z - location_z) <= radius * radius)
+		{
+			g.Entities.Add(entity);
+			n_added++;
+		}
+	}
+	return n_added;
+}
+
+std::int32_t SobGroupManager::FillGroupByProximityToGroupSphere(std::string_view group, std::string_view source_group,
+	std::string_view near_group, double radius)
+{
+	const auto& [x, y, z] = GetPosition(near_group);
+	return FillGroupByProximityToLocationSphere(group, source_group, x, y, z, radius);
 }
 
 void SobGroupManager::DockInstantly(std::string_view group, std::string_view dock_target_entity_group) const

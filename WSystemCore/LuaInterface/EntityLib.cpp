@@ -3,7 +3,8 @@
 #include <DataWrapper/UnitsInfoSubsystem.h>
 
 #include "LuaInterface.h"
-
+#include "SobGroupLib.h"
+#include "EntityIdManager.h"
 #include "EntityLib.h"
 
 void EntityLibInterface::Initialize(sol::state_view* lua, TiirEntityFunctionLibrary* lib, SobGroupManager* sob_group_manager, Database* database, EntityIdManager* entity_id_manager)
