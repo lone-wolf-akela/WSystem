@@ -35,6 +35,15 @@ public:
 		std::string_view none_of_units,
 		std::string_view all_of_researches,
 		std::string_view none_of_researches) const;
+	void AddBuildCondition(
+		std::string_view ship_to_build,
+		std::string_view build_from_ships,	// cannot be empty
+		std::string_view all_of_units_fleetwise,
+		std::string_view none_of_units_fleetwise,
+		std::string_view all_of_units_this_ship,
+		std::string_view none_of_units_this_ship,
+		std::string_view all_of_researches,
+		std::string_view none_of_researches) const;
 private:
 	WSystemCore* wsystem_core;
 	ScriptRuleManager rule_manager;

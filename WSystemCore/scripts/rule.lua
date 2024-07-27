@@ -10,7 +10,8 @@ function Rule_OnInit()
   -- So we need to wait a bit before we can fix the CPU player names.
   WSys.Rule:AddIntervalOneTime("FixCpuPlayerName", 1)
 
-  WSys.Rule:AddIntervalOneTime("MotherShipAnimation", 2 * 20)
+  WSys.Rule:AddIntervalOneTime("MotherShipAnimation", 20 * 20)
+  WSys.Rule:AddIntervalOneTime("FindShipNearbyMother", 20 * 20)
 end
 
 function MotherShipAnimation()
@@ -21,7 +22,7 @@ function MotherShipAnimation()
   WSys.SobGroup:FillGroupFromFilteredType(
     "player_0_motherships", "player_0_allships", { "SA_F01_Mothership01_PVP" })
   local n = WSys.SobGroup:GroupCount("player_0_motherships")
-  print("find " .. n .. " motherships.\n")
+  print("found " .. n .. " motherships.\n")
 
   local motherships = WSys.SobGroup:GroupMembers("player_0_motherships")
   local mothership = motherships[1]
@@ -29,6 +30,22 @@ function MotherShipAnimation()
   WSys.Entity:SetAnimationState(mothership, SobAnimationState.DockPathOpen, true)
 end
 
+function FindShipNearbyMother()
+  WSys.SobGroup:CreateOrClear("player_0_allships")
+  WSys.SobGroup:FillGroupFromPlayer("player_0_allships", 0, true, true, false)
+
+  WSys.SobGroup:CreateOrClear("player_0_motherships")
+  WSys.SobGroup:FillGroupFromFilteredType(
+    "player_0_motherships", "player_0_allships", { "SA_F01_Mothership01_PVP" })
+
+  WSys.SobGroup:CreateOrClear("player_0_nearby_ships")
+  local radius = {100, 1000, 5000, 10000, 100000}
+  for i, r in pairs(radius) do
+    local n = WSys.SobGroup:FillGroupByProximityToGroupSphere(
+    "player_0_nearby_ships", "player_0_allships", "player_0_motherships", r)
+    print("found " .. n .. " ships nearby mothership within " .. r .. " meters.\n")
+  end
+end
 
 function FindPlayer0Scouts()
   WSys.SobGroup:CreateOrClear("player_0_allships")
@@ -38,7 +55,7 @@ function FindPlayer0Scouts()
   WSys.SobGroup:FillGroupFromFilteredType(
     "player_0_scouts", "player_0_allships", { "SA_F01_Fighter01" })
   local n = WSys.SobGroup:GroupCount("player_0_scouts")
-  print("find " .. n .. " scouts.\n")
+  print("found " .. n .. " scouts.\n")
 
   local scouts = WSys.SobGroup:GroupMembers("player_0_scouts")
   local is_member_1 = WSys.SobGroup:GroupContains("player_0_scouts", scouts[1])
@@ -98,14 +115,14 @@ function SpawnFighter()
     true                     -- bool do_not_retaliate_against_me
   )
   local n = WSys.SobGroup:GroupCount("create_fighter_group")
-  -- print("find " .. n .. " fighters.\n")
+  -- print("found " .. n .. " fighters.\n")
 end
 
 function FindResource()
   WSys.SobGroup:CreateOrClear("all_nonship_entities")
   WSys.SobGroup:FillGroupAllAliveNonShipEntitiesInGame("all_nonship_entities")
   local n = WSys.SobGroup:GroupCount("all_nonship_entities")
-  print("find " .. n .. " nonship entities.\n")
+  print("found " .. n .. " nonship entities.\n")
 
   local t = WSys.SobGroup:GroupMembers("all_nonship_entities")
   for i, entity in pairs(t) do

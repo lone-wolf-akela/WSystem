@@ -28,15 +28,6 @@ function WSys_SetupResearchConditions()
     ""
   )
 
-  -- Ion frigates require at least one scout to build
-  WSys:AddResearchCondition(
-    "Skirmish_F01_Frigate01_Research",
-    "SA_F01_Fighter01",
-    "",
-    "",
-    ""
-  )
-
   -- Assault frigates
   WSys:AddResearchCondition(
     "Skirmish_F01_Frigate02_Research",
@@ -46,5 +37,25 @@ function WSys_SetupResearchConditions()
     -- also requires that the player has unlocked scout speed boost ability
     "Skirmish_F01_Fighter01_BoostSpeedResearch",
     ""
+  )
+
+  -- Ion frigates require at least one scout to build
+  WSys:AddResearchCondition(
+    "Skirmish_F01_Frigate01_Research",
+    "SA_F01_Fighter01",
+    "",
+    "",
+    ""
+  )
+  -- But it also requires the mothership has a scout docking in it
+  WSys:AddBuildCondition(
+    "SA_F01_Frigate01",        -- ship to build
+    "SA_F01_Mothership01_PVP", -- build_from_ships
+    "",                        -- all_of_units_fleetwise
+    "",                        -- none_of_units_fleetwise
+    "SA_F01_Fighter01",        -- all_of_units_this_ship
+    "",                        -- none_of_units_this_ship
+    "",                        -- all_of_researches
+    ""                         -- none_of_researches
   )
 end

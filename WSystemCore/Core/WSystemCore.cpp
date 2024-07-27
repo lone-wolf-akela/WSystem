@@ -187,7 +187,22 @@ void WSystemCore::Begin_InGame()
 		return;
 	}
 
-	research_manager.Begin_InGame(raven_simulation_proxy, raven_hud);
+	std::vector<Unreal::UObject*> build_panels;
+	Unreal::UObjectGlobals::FindAllOf(STR("WBP_BuildPanel_C"), build_panels);
+	for (const auto panel : build_panels)
+	{
+		if (auto fullname = panel->GetFullName(); fullname.find(L"/Engine/Transient.GameEngine") != decltype(fullname)::npos)
+		{
+			wbp_build_panel = panel;
+		}
+	}
+	if (!wbp_build_panel.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("No WBP_BuildPanel_C\n"));
+		return;
+	}
+
+	research_manager.Begin_InGame(raven_simulation_proxy, raven_hud, wbp_build_panel);
 	lua_interface->Begin_InGame();
 	
 	research_manager.EnableTick = true;

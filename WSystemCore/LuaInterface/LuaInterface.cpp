@@ -67,6 +67,7 @@ void LuaInterface::Initialize()
 		"WSysType",
 		// functions
 		"AddResearchCondition", &LuaInterface::AddResearchCondition,
+		"AddBuildCondition", &LuaInterface::AddBuildCondition,
 		// members
 		"Rule", sol::readonly(&LuaInterface::rule_manager),
 		"SobGroup", sol::readonly(&LuaInterface::sobgroup_manager),
@@ -104,6 +105,7 @@ void LuaInterface::Begin_InitScenario()
 
 	auto& research_manager = this->wsystem_core->research_manager;
 	research_manager.ConditionController.ResearchConditions.clear();
+	research_manager.BuildController.BuildConditions.clear();
 
 	auto& lua_state = *this->wsystem_core->lua;
 	if (const sol::protected_function scan = lua_state["WSys_SetupResearchConditions"]; scan.valid())
@@ -173,6 +175,33 @@ void LuaInterface::Tick()
 	custom_code_manager.Tick();
 }
 
+namespace
+{
+	auto to_string_views = std::views::transform([](auto sr)
+		{
+			return std::string_view(sr.data(), sr.size());
+		});
+	auto trim_string = std::views::transform([](std::string_view sr)
+		{
+			return boost::trim_copy(sr);
+		});
+	auto filter_nonempty_string = std::views::filter([](std::string_view sr)
+		{
+			return !sr.empty();
+		});
+	auto string_to_wide = std::views::transform([](std::string_view sr)
+		{
+			return boost::nowide::widen(sr);
+		});
+
+	auto comma_split_string_w =
+		std::views::split(',') |
+		to_string_views |
+		trim_string |
+		filter_nonempty_string |
+		string_to_wide;
+}
+
 void LuaInterface::AddResearchCondition(
 	std::string_view target_research,
 	std::string_view all_of_units,
@@ -184,16 +213,6 @@ void LuaInterface::AddResearchCondition(
 		STR("Registering research conditions for {}\n"), 
 		boost::nowide::widen(target_research));
 	auto& research_manager = this->wsystem_core->research_manager;
-	
-	std::vector<std::string> all_of_units_list;
-	std::vector<std::string> none_of_units_list;
-	std::vector<std::string> all_of_researches_list;
-	std::vector<std::string> none_of_researches_list;
-
-	split(all_of_units_list, all_of_units, boost::is_any_of(","));
-	split(none_of_units_list, none_of_units, boost::is_any_of(","));
-	split(all_of_researches_list, all_of_researches, boost::is_any_of(","));
-	split(none_of_researches_list, none_of_researches, boost::is_any_of(","));
 
 	const auto wide_research_name = boost::nowide::widen(target_research);
 
@@ -206,42 +225,49 @@ void LuaInterface::AddResearchCondition(
 
 	ResearchCondition condition;
 
-	for (auto& line : all_of_units_list)
-	{
-		boost::trim(line);
-		if (!line.empty())
-		{
-			condition.RequiredAllOfUnits.push_back(boost::nowide::widen(line));
-		}
-	}
-
-	for (auto& line : none_of_units_list)
-	{
-		boost::trim(line);
-		if (!line.empty())
-		{
-			condition.RequiredNoneOfUnits.push_back(boost::nowide::widen(line));
-		}
-	}
-	
-	for (auto& line : all_of_researches_list)
-	{
-		boost::trim(line);
-		if (!line.empty())
-		{
-			condition.RequiredAllOfResearches.push_back(boost::nowide::widen(line));
-		}
-	}
-
-	for (auto& line : none_of_researches_list)
-	{
-		boost::trim(line);
-		if (!line.empty())
-		{
-			condition.RequiredNoneOfResearches.push_back(boost::nowide::widen(line));
-		}
-	}
+	std::ranges::copy(all_of_units | comma_split_string_w, std::back_inserter(condition.RequiredAllOfUnits));
+	std::ranges::copy(none_of_units | comma_split_string_w, std::back_inserter(condition.RequiredNoneOfUnits));
+	std::ranges::copy(all_of_researches | comma_split_string_w, std::back_inserter(condition.RequiredAllOfResearches));
+	std::ranges::copy(none_of_researches | comma_split_string_w, std::back_inserter(condition.RequiredNoneOfResearches));
 
 	group.RequiredAnyOf.push_back(std::move(condition));
+}
+
+void LuaInterface::AddBuildCondition(std::string_view ship_to_build, std::string_view build_from_ships,
+	std::string_view all_of_units_fleetwise, std::string_view none_of_units_fleetwise,
+	std::string_view all_of_units_this_ship, std::string_view none_of_units_this_ship,
+	std::string_view all_of_researches, std::string_view none_of_researches) const
+{
+	RC::Output::send<LogLevel::Verbose>(
+		STR("Registering build conditions for {}\n"),
+		boost::nowide::widen(ship_to_build));
+	auto& research_manager = this->wsystem_core->research_manager;
+
+	const auto wide_ship_to_build = boost::nowide::widen(ship_to_build);
+
+	for (const auto& build_from : build_from_ships | comma_split_string_w)
+	{
+		if (!research_manager.BuildController.BuildConditions.contains(build_from))
+		{
+			research_manager.BuildController.BuildConditions[build_from] = {};
+		}
+		auto& build_conditions_from_this_ship = research_manager.BuildController.BuildConditions[build_from];
+		if (!build_conditions_from_this_ship.BuildOptions.contains(wide_ship_to_build))
+		{
+			build_conditions_from_this_ship.BuildOptions[wide_ship_to_build] = {};
+		}
+		auto& group = build_conditions_from_this_ship.BuildOptions[wide_ship_to_build];
+
+		BuildCondition condition;
+
+		std::ranges::copy(all_of_units_fleetwise | comma_split_string_w, std::back_inserter(condition.RequiredAllOfUnitsFleetwise));
+		std::ranges::copy(none_of_units_fleetwise | comma_split_string_w, std::back_inserter(condition.RequiredNoneOfUnitsFleetwise));
+		std::ranges::copy(all_of_units_this_ship | comma_split_string_w, std::back_inserter(condition.RequiredAllOfUnitsThisShip));
+		std::ranges::copy(none_of_units_this_ship | comma_split_string_w, std::back_inserter(condition.RequiredNoneOfUnitsThisShip));
+		std::ranges::copy(all_of_researches | comma_split_string_w, std::back_inserter(condition.RequiredAllOfResearches));
+		std::ranges::copy(none_of_researches | comma_split_string_w, std::back_inserter(condition.RequiredNoneOfResearches));
+
+		group.RequiredAnyOf.push_back(std::move(condition));
+	}
 }
 

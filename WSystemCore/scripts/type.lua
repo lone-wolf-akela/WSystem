@@ -807,32 +807,6 @@ function SobGroupManagerType:FillGroupFromPlayerMothershipList(group, owning_pla
 function SobGroupManagerType:FillGroupFromFilteredFamily(group, source_group, desired_types) return 0 end
 
 --- @param group string
---- @param source_group string
---- @param location_x number
---- @param location_y number
---- @param location_z number
---- @param distance_x number
---- @param distance_y number
---- @param distance_z number
---- @return integer
-function SobGroupManagerType:FillGroupByProximityToLocation(group, source_group, location_x, location_y, location_z,
-                                                            distance_x, distance_y, distance_z)
-    return 0
-end
-
---- @param group string
---- @param source_group string
---- @param near_group string
---- @param distance_x number
---- @param distance_y number
---- @param distance_z number
---- @return integer
-function SobGroupManagerType:FillGroupByProximityToGroup(group, source_group, near_group, distance_x, distance_y,
-                                                         distance_z)
-    return 0
-end
-
---- @param group string
 --- @param dock_target_entity_group string
 function SobGroupManagerType:DockInstantly(group, dock_target_entity_group) end
 
@@ -983,6 +957,65 @@ function SobGroupManagerType:GetFormation(group) return false, "" end
 --- @param entity_id integer
 --- @return boolean
 function SobGroupManagerType:GroupContains(group, entity_id) return false end
+
+--- Find all entities from `source_group`, whose x, y, z coordinates are all less than the given `distance`
+--- from the given `locations`. \
+--- The newly found entities are added to `group`, while entities that are already inside of `group` are
+--- not removed.
+--- @param group string
+--- @param source_group string
+--- @param location_x number
+--- @param location_y number
+--- @param location_z number
+--- @param distance_x number
+--- @param distance_y number
+--- @param distance_z number
+--- @return integer @ number of entities added to `group`
+function SobGroupManagerType:FillGroupByProximityToLocationBox(group, source_group, location_x, location_y, location_z,
+                                                               distance_x, distance_y, distance_z)
+    return 0
+end
+
+--- Find all entities from `source_group`, whose x, y, z coordinates are all less than the given `distance`
+--- from the location of `near_group`. \
+--- The newly found entities are added to `group`, while entities that are already inside of `group` are
+--- not removed.
+--- @param group string
+--- @param source_group string
+--- @param near_group string
+--- @param distance_x number
+--- @param distance_y number
+--- @param distance_z number
+--- @return integer @ number of entities added to `group`
+function SobGroupManagerType:FillGroupByProximityToGroupBox(group, source_group, near_group, distance_x, distance_y,
+                                                            distance_z)
+    return 0
+end
+
+--- Find all entities from `source_group`, whose positions are inside the sphere defined by the given center \
+--- `location` and `radius`. \
+--- The newly found entities are added to `group`, while entities that are already inside of `group` are
+--- not removed.
+--- @param group string
+--- @param source_group string
+--- @param location_x number
+--- @param location_y number
+--- @param location_z number
+--- @param radius number
+function SobGroupManagerType:FillGroupByProximityToLocationSphere(group, source_group, location_x, location_y, location_z,
+                                                                  radius)
+    return 0
+end
+
+--- Find all entities from `source_group`, whose positions are inside a sphere, whose center is at the location of \
+--- `near_group` with the given `radius`. \
+--- The newly found entities are added to `group`, while entities that are already inside of `group` are
+--- not removed.
+--- @param group string
+--- @param source_group string
+--- @param near_group string
+--- @param radius number
+function SobGroupManagerType:FillGroupByProximityToGroupSphere(group, source_group, near_group, radius) return 0 end
 
 --- @class CustomCodeManagerType
 CustomCodeManagerType = {}
@@ -1721,7 +1754,6 @@ function UniverseLibType:GameFrame() return 0 end
 --- @return number
 function UniverseLibType:FrameDeltaTime() return 0 end
 
-
 --- @class WSysType
 --- @field public Rule ScriptRuleManagerType
 --- @field public SobGroup SobGroupManagerType
@@ -1738,6 +1770,19 @@ WSysType = {}
 --- @param none_of_researches string @ Comma separated list of research types
 function WSysType:AddResearchCondition(target_research, all_of_units, none_of_units, all_of_researches,
                                        none_of_researches)
+end
+
+--- @param ship_to_build string
+--- @param build_from_ships string @ Comma separated list of unit types, must not be empty
+--- @param all_of_units_fleetwise string @ Comma separated list of unit types
+--- @param none_of_units_fleetwise string @ Comma separated list of unit types
+--- @param all_of_units_this_ship string @ Comma separated list of unit types
+--- @param none_of_units_this_ship string @ Comma separated list of unit types
+--- @param all_of_researches string @ Comma separated list of research types
+--- @param none_of_researches string @ Comma separated list of research types
+function WSysType:AddBuildCondition(ship_to_build, build_from_ships, all_of_units_fleetwise, none_of_units_fleetwise,
+                                    all_of_units_this_ship, none_of_units_this_ship, all_of_researches,
+                                    none_of_researches)
 end
 
 --- @type WSysType
