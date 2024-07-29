@@ -6,7 +6,7 @@
 #include "WSystemCore.h"
 
 WSystemCore::WSystemCore() : 
-	research_manager(&this->function_libs.Research)
+	research_manager(&this->function_libs.Research, &this->function_libs.OrderFactory, &this->database)
 {
 	ModName = STR("WSystem");
 	ModVersion = STR("0.0.3");
@@ -137,6 +137,12 @@ void WSystemCore::Begin_InitScenario()
 	std::vector<Unreal::UObject*> actors;
 	Unreal::UObjectGlobals::FindAllOf(STR("RTSLevelScriptActor"), actors);
 
+	rts_player_controller = Unreal::UObjectGlobals::FindFirstOf(STR("RTSPlayerController"));
+	if (!rts_player_controller.IsValid())
+	{
+		RC::Output::send<LogLevel::Error>(STR("RTSPlayerController not found!\n"));
+	}
+
 	RC::Output::send<LogLevel::Verbose>(STR("It's normal to see \"Failed to find function `TiirTick`\" error below. Don't panic.\n"));
 
 	Unreal::UFunction* tiir_tick = nullptr;
@@ -187,6 +193,7 @@ void WSystemCore::Begin_InGame()
 		return;
 	}
 
+	wbp_build_panel = nullptr;
 	std::vector<Unreal::UObject*> build_panels;
 	Unreal::UObjectGlobals::FindAllOf(STR("WBP_BuildPanel_C"), build_panels);
 	for (const auto panel : build_panels)
@@ -202,7 +209,7 @@ void WSystemCore::Begin_InGame()
 		return;
 	}
 
-	research_manager.Begin_InGame(raven_simulation_proxy, raven_hud, wbp_build_panel);
+	research_manager.Begin_InGame(raven_simulation_proxy, raven_hud, wbp_build_panel, *rts_player_controller.GetUnitOrderComponent());
 	lua_interface->Begin_InGame();
 	
 	research_manager.EnableTick = true;

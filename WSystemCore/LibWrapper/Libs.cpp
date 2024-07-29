@@ -7,4 +7,5 @@ void FunctionLibs::Init()
 	EntityGroup.Init();
 	Player.Init();
 	Research.Init();
+	OrderFactory.Init();
 }

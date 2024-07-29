@@ -139,16 +139,19 @@ ResearchConditionCheckResult ResearchConditionController::CheckResearchCondition
 	return ResearchConditionCheckResult::Locked;
 }
 
-WSysResearchManager::WSysResearchManager(TiirResearchFunctionLibrary* tiir_research_function_library) : 
-	tiir_research_function_library(tiir_research_function_library)
+WSysResearchManager::WSysResearchManager(TiirResearchFunctionLibrary* tiir_research_function_library, SimOrderFactory* sim_order_factory, Database* database) :
+	tiir_research_function_library(tiir_research_function_library),
+	sim_order_factory(sim_order_factory),
+	database(database)
 {
 }
 
-void WSysResearchManager::Begin_InGame(RavenSimulationProxy sim_proxy, RavenHUD hud, WBP_BuildPanel build_panel)
+void WSysResearchManager::Begin_InGame(RavenSimulationProxy sim_proxy, RavenHUD hud, WBP_BuildPanel build_panel, RTSPlayerUnitOrderComponent unit_order_component)
 {
 	this->sim_proxy = sim_proxy;
 	this->hud = hud;
 	this->build_panel = build_panel;
+	this->unit_order_component = unit_order_component;
 
 	if (!functions_hooked)
 	{
@@ -216,7 +219,7 @@ void WSysResearchManager::Tick()
 		}
 
 		UpdateResearchStatus(player_idx, player, *research_list, owned_ship_types, done_research_list);
-		build_options_has_update |= UpdateBuildStatus(*entity_list, owned_ship_types, done_research_list);
+		build_options_has_update |= UpdateBuildStatus(player, *entity_list, owned_ship_types, done_research_list);
 	}
 
 	if (build_options_has_update)
@@ -343,7 +346,9 @@ namespace
 	}
 }
 
-bool WSysResearchManager::UpdateBuildStatus(const UC::TArray<SimEntity>& entity_list,
+bool WSysResearchManager::UpdateBuildStatus(
+	SimPlayer player,
+	const UC::TArray<SimEntity>& entity_list,
 	const std::set<StringType>& owned_ship_types,
 	const std::set<StringType>& done_research_list)
 {
@@ -377,17 +382,21 @@ bool WSysResearchManager::UpdateBuildStatus(const UC::TArray<SimEntity>& entity_
 			{
 				old_result = found->second;
 			}
-
-			if (const auto new_result = BuildController.CheckBuildCondition(
+			const auto new_result = BuildController.CheckBuildCondition(
 				build_from_ship_name,
 				build_option,
 				owned_ship_types,
 				done_research_list,
-				docked_ships[build_from_ship]); 
-				new_result != old_result)
+				docked_ships[build_from_ship]);
+			if (new_result != old_result) 
 			{
 				build_capability_cache_this_ship[build_option] = new_result;
 				build_options_has_update = true;
+			}
+
+			if (new_result == BuildConditionCheckResult::NotBuildable)
+			{
+				CancelBuild(player, build_from_ship, database->GetShipData(boost::nowide::narrow(build_option)));
 			}
 		}
 	}
@@ -398,4 +407,24 @@ bool WSysResearchManager::UpdateBuildStatus(const UC::TArray<SimEntity>& entity_
 void WSysResearchManager::NotifyBuildListChanged() const
 {
 	build_panel.PopulateProductionCategories();
+}
+
+
+
+void WSysResearchManager::CancelBuild(SimPlayer player, SimShip builder, ShipStaticData ship_to_build) const
+{
+	const auto production = *builder.GetProductionComponent();
+	bool valid;
+	const auto build_jobs = production.GetJobTypeState(ship_to_build, valid);
+	if (!valid)
+	{
+		return;
+	}
+
+	for(std::int32_t i = build_jobs.Jobs.Num() - 1; i >= 0; i--)
+	{
+		const auto& job = build_jobs.Jobs[i];
+		auto order = sim_order_factory->MakeCancelBuildOrder(player, builder.obj, BuildCancelType::Job, job.ID, nullptr);
+		unit_order_component.SendOrder(order);
+	}
 }

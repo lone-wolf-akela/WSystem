@@ -1,11 +1,15 @@
 #pragma once
 #include <pch.h>
 
+#include <Core/Database.h>
+
 #include <DataWrapper/RavenSimulationProxy.h>
 #include <DataWrapper/RavenHUD.h>
 #include <DataWrapper/WBP_BuildPanel.h>
+#include <DataWrapper/RTSPlayerUnitOrderComponent.h>
 
 #include <LibWrapper/TiirResearchFunctionLibrary.h>
+#include <LibWrapper/SimOrderFactory.h>
 
 struct BuildCondition
 {
@@ -84,18 +88,24 @@ public:
 class WSysResearchManager
 {
 public:
-	explicit WSysResearchManager(TiirResearchFunctionLibrary* tiir_research_function_library);
+	WSysResearchManager(TiirResearchFunctionLibrary* tiir_research_function_library, SimOrderFactory* sim_order_factory, Database* database);
 
-	void Begin_InGame(RavenSimulationProxy sim_proxy, RavenHUD hud, WBP_BuildPanel build_panel);
+	void Begin_InGame(RavenSimulationProxy sim_proxy, RavenHUD hud, WBP_BuildPanel build_panel, RTSPlayerUnitOrderComponent unit_order_component);
 	void Tick();
 	bool EnableTick = false;
 	ResearchConditionController ConditionController;
 	BuildConditionController BuildController;
 private:
 	TiirResearchFunctionLibrary* tiir_research_function_library;
+	SimOrderFactory* sim_order_factory = nullptr;
+
+	Database* database = nullptr;
+
 	RavenSimulationProxy sim_proxy = nullptr;
 	RavenHUD hud = nullptr;
 	WBP_BuildPanel build_panel = nullptr;
+	RTSPlayerUnitOrderComponent unit_order_component = nullptr;
+
 	bool functions_hooked = false;
 	void PostBuildPanelGetBuildListOfProductionEntity(
 		Unreal::UnrealScriptFunctionCallableContext& context,
@@ -105,6 +115,7 @@ private:
 	[[nodiscard]] BuildConditionCheckResult CanShipBuild(SimShip production_ship, ShipStaticData ship_to_build) const;
 	void NotifyResearchChanged(SimPlayer player, const ResearchData& data) const;
 	void UpdateResearchStatus(std::int32_t player_idx, SimPlayer player, const UC::TArray<ResearchData>& research_list, const std::set<StringType>& owned_ship_types, const std::set<StringType>& done_research_list) const;
-	bool UpdateBuildStatus(const UC::TArray<SimEntity>& entity_list, const std::set<StringType>& owned_ship_types, const std::set<StringType>& done_research_list);
+	bool UpdateBuildStatus(SimPlayer player, const UC::TArray<SimEntity>& entity_list, const std::set<StringType>& owned_ship_types, const std::set<StringType>& done_research_list);
 	void NotifyBuildListChanged() const;
+	void CancelBuild(SimPlayer player, SimShip builder, ShipStaticData ship_to_build) const;
 };

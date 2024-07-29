@@ -16,47 +16,80 @@ namespace utils
         static constexpr bool value = true;
     };
 
+    // from https://groups.google.com/g/comp.lang.c++.moderated/c/c873bPtT9mQ
 
-    template<typename Head, typename... Tail>
-    struct VariadicStruct 
+    template <class T>
+    struct IncList
     {
-        std::remove_cvref_t<Head> Value;
-        VariadicStruct<Tail...> Rest;
+        template <class S>
+        IncList<T> operator - (IncList<S>) { return {}; }
 
-        explicit VariadicStruct(Head&& head, Tail&&... tail) : 
-            Value(std::forward<Head>(head)), 
-            Rest(std::forward<Tail>(tail)...) 
-        {
-        }
+        using Type = T;
     };
 
-    template<typename Head>
-    struct VariadicStruct<Head> 
+    template <int Index>
+    struct PickTypeIndex
     {
-        std::remove_cvref_t<Head> Value;
-
-        explicit VariadicStruct(Head&& head) : 
-            Value(std::forward<Head>(head))
-        {
-        }
+        template <class T>
+        PickTypeIndex<Index - 1> operator - (IncList<T>) { return {}; }
     };
 
-    template<typename Head, typename... Tail>
-    auto& get_last_member(VariadicStruct<Head, Tail...>& vs) 
+    template <>
+    struct PickTypeIndex<1>
     {
-        return get_last_member(vs.Rest);
-    }
+        template <class T>
+        IncList<T> operator - (IncList<T>) { return {}; }
+    };
 
-    template<typename Head>
-    auto& get_last_member(VariadicStruct<Head>& vs)
+    template <int Ind, typename ... Types>
+    using PickType = typename decltype((PickTypeIndex<Ind>() - ... - IncList<Types>()))::Type;
+
+    template <int ... IList>
+    struct IntList
     {
-        return vs.Value;
-    }
+        template <typename T>
+        IntList<IList..., 1 + sizeof ... (IList)> operator + (IncList<T>) { return {}; }
+    };
 
-    template<typename... T>
-    auto& get_first_member(VariadicStruct<T...>& vs) {
-		return vs.Value;
-	}
+    template <typename ... Types>
+    struct VariadicStructFactory
+    {
+        template <int Index>
+        using Type = PickType<Index, Types...>;
+
+        template <int Index>
+        struct Field
+        {
+            std::remove_cvref_t<Type<Index>> field;
+
+            template <typename ArgType>
+            Field(ArgType&& arg) : field(std::forward<ArgType>(arg)) {}
+        };
+
+        template <int ... IList>
+        struct VariadicStructImpl : Field<IList>...
+        {
+            template <int I>
+            auto& ref() { return static_cast<Field<I>*>(this)->field; }
+
+            template<typename... ArgTypes>
+            VariadicStructImpl(ArgTypes&&... args) : Field<IList>{ std::forward<ArgTypes>(args) }... {}
+        };
+
+        template <int ... IList>
+        static constexpr VariadicStructImpl<IList...> FromList(IntList<IList...>) { return {}; }
+
+        using Ret = decltype(FromList((IntList<>() + ... + IncList<Types>())));
+    };
+
+    template <typename ... Types>
+    using VariadicStruct = typename VariadicStructFactory<Types...>::Ret;
+
+    template <typename ... Types>
+    auto& get_first_member(VariadicStruct<Types...>& vs) { return vs.template ref<1>(); }
+
+    template <typename ... Types>
+    auto& get_last_member(VariadicStruct<Types...>& vs) { return vs.template ref<sizeof...(Types)>(); }
 
     template<typename... Args>
     void call_unreal_function_void(RC::Unreal::UObject* obj, RC::Unreal::UFunction* func, Args&&... args)
@@ -77,7 +110,7 @@ namespace utils
     {
         VariadicStruct<Args..., Ret> args_struct(std::forward<Args>(args)..., Ret{});
         obj->ProcessEvent(func, &args_struct);
-        return std::move(get_last_member(args_struct));
+        return std::move(get_last_member<Args..., Ret>(args_struct));
     }
 
     template<typename RefArg, typename... Args>
@@ -85,7 +118,7 @@ namespace utils
     {
         VariadicStruct<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args...> args_struct(std::move(ref_arg), std::forward<Args>(args)...);
         obj->ProcessEvent(func, &args_struct);
-        ref_arg = std::move(get_first_member(args_struct));
+        ref_arg = std::move(get_first_member<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args...>(args_struct));
     }
 
 	template<typename Ret, typename RefArg, typename... Args>
@@ -93,8 +126,8 @@ namespace utils
     {
 		VariadicStruct<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args..., Ret> args_struct(std::move(ref_arg), std::forward<Args>(args)..., Ret{});
 		obj->ProcessEvent(func, &args_struct);
-        ref_arg = std::move(get_first_member(args_struct));
-		return std::move(get_last_member(args_struct));
+        ref_arg = std::move(get_first_member<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args..., Ret>(args_struct));
+		return std::move(get_last_member<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args..., Ret>(args_struct));
 	}
 }
 

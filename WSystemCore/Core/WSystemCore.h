@@ -7,6 +7,7 @@
 #include <DataWrapper/RavenHUD.h>
 #include <DataWrapper/UnitsInfoSubsystem.h>
 #include <DataWrapper/WBP_BuildPanel.h>
+#include <DataWrapper/RTSPlayerController.h>
 
 #include <LibWrapper/Libs.h>
 
@@ -32,6 +33,7 @@ public:
     RavenHUD raven_hud = nullptr;
     UnitsInfoSubsystem units_info_subsystem = nullptr;
     WBP_BuildPanel wbp_build_panel = nullptr;
+    RTSPlayerController rts_player_controller = nullptr;
 
     FunctionLibs function_libs;
 

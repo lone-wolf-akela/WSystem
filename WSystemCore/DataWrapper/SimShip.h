@@ -5,6 +5,7 @@
 #include "ShipStaticData.h"
 #include "SimEntity.h"
 #include "StrikeGroupFormationStaticData.h"
+#include "ProductionComponent.h"
 
 class SimShip : public SimEntity
 {
@@ -62,6 +63,7 @@ public:
 	WSYS_DATA_PROPERTY(UCommandType, ActiveCommandType)
 	// TArray<FSimShipAbilityState> AbilityStates;
 	// TArray<UStatusEffectStaticData*> CurStatusEffects;
+	WSYS_DATA_PROPERTY(ProductionComponent, ProductionComponent)
 
 	WSYS_MEMBER_FUNCTION_NOARGS(Unreal::FVector, GetShipVelocity)
 	WSYS_MEMBER_FUNCTION_VOID(ReceiveAnimationStateChanged, const SobAnimationState, AnimationState, const UC::TArray<SobAnimationState>&, ImplicitAnimationStateChanges)
