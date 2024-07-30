@@ -3,8 +3,8 @@
 
 #include "WeaponFireActor.h"
 
-class SimProjectile : public WeaponFireActor
+class ASimProjectile : public AWeaponFireActor
 {
 public:
-	using WeaponFireActor::WeaponFireActor;
+	using AWeaponFireActor::AWeaponFireActor;
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include <pch.h>
 
-struct SimOrder 
+struct FSimOrder 
 {
     UC::TArray<std::uint8_t> Data;
 };

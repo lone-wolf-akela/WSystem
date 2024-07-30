@@ -88,72 +88,72 @@ void Database::ScanData()
 	has_inited = true;
 }
 
-ShipStaticData Database::GetShipData(std::string_view name) const
+UShipStaticData Database::GetShipData(std::string_view name) const
 {
 	return GetData(name, has_inited, name_to_shipdata);
 }
 
-std::string Database::GetShipName(const ShipStaticData& data) const
+std::string Database::GetShipName(const UShipStaticData& data) const
 {
 	return GetName(data, has_inited, shipdata_to_name);
 }
 
-EntityStaticData Database::GetEntityData(std::string_view name) const
+UEntityStaticData Database::GetEntityData(std::string_view name) const
 {
 	return GetData(name, has_inited, name_to_entitydata);
 }
 
-std::string Database::GetEntityName(const EntityStaticData& data) const
+std::string Database::GetEntityName(const UEntityStaticData& data) const
 {
 	return GetName(data, has_inited, entitydata_to_name);
 }
 
-StatusEffectStaticData Database::GetStatusEffectData(std::string_view name) const
+UStatusEffectStaticData Database::GetStatusEffectData(std::string_view name) const
 {
 	return GetData(name, has_inited, name_to_statuseffectdata);
 }
 
-std::string Database::GetStatusEffectName(const StatusEffectStaticData& data) const
+std::string Database::GetStatusEffectName(const UStatusEffectStaticData& data) const
 {
 	return GetName(data, has_inited, statuseffectdata_to_name);
 }
 
-StrikeGroupFormationStaticData Database::GetStrikeGroupFormationData(std::string_view name) const
+UStrikeGroupFormationStaticData Database::GetStrikeGroupFormationData(std::string_view name) const
 {
 	return GetData(name, has_inited, name_to_strikegroupformationdata);
 }
 
-std::string Database::GetStrikeGroupFormationName(const StrikeGroupFormationStaticData& data) const
+std::string Database::GetStrikeGroupFormationName(const UStrikeGroupFormationStaticData& data) const
 {
 	return GetName(data, has_inited, strikegroupformationdata_to_name);
 }
 
-ArtifactStaticData Database::GetArtifactData(std::string_view name) const
+UArtifactStaticData Database::GetArtifactData(std::string_view name) const
 {
 	return GetData(name, has_inited, name_to_artifactdata);
 }
 
-std::string Database::GetArtifactName(const ArtifactStaticData& data) const
+std::string Database::GetArtifactName(const UArtifactStaticData& data) const
 {
 	return GetName(data, has_inited, artifactdata_to_name);
 }
 
-WeaponStaticData Database::GetWeaponData(std::string_view name) const
+UWeaponStaticData Database::GetWeaponData(std::string_view name) const
 {
 	return GetData(name, has_inited, name_to_weapondata);
 }
 
-std::string Database::GetWeaponName(const WeaponStaticData& data) const
+std::string Database::GetWeaponName(const UWeaponStaticData& data) const
 {
 	return GetName(data, has_inited, weapondata_to_name);
 }
 
-AttackFamily Database::GetAttackFamily(std::string_view name) const
+UAttackFamily Database::GetAttackFamily(std::string_view name) const
 {
 	return GetData(name, has_inited, name_to_attackfamily);
 }
 
-std::string Database::GetAttackFamilyName(const AttackFamily& data) const
+std::string Database::GetAttackFamilyName(const UAttackFamily& data) const
 {
 	return GetName(data, has_inited, attackfamily_to_name);
 }

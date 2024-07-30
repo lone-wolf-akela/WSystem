@@ -4,13 +4,13 @@
 #include "BuildFamily.h"
 #include "EntityStaticData.h"
 
-class ShipStaticData : public EntityStaticData
+class UShipStaticData : public UEntityStaticData
 {
 public:
-	using EntityStaticData::EntityStaticData;
+	using UEntityStaticData::UEntityStaticData;
 
 	WSYS_DATA_PROPERTY(RC::Unreal::FText, UnitName)
 	WSYS_DATA_PROPERTY(RC::Unreal::FText, UnitDescription)
 	WSYS_DATA_PROPERTY(RC::Unreal::FText, UnitFlavourText)
-	WSYS_DATA_PROPERTY(UC::TArray<BuildFamily>, ProductionFamilies)
+	WSYS_DATA_PROPERTY(UC::TArray<UBuildFamily>, ProductionFamilies)
 };

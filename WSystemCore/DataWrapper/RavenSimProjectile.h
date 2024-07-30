@@ -3,8 +3,8 @@
 
 #include "SimProjectile.h"
 
-class RavenSimProjectile : public SimProjectile
+class ARavenSimProjectile : public ASimProjectile
 {
 public:
-	using SimProjectile::SimProjectile;
+	using ASimProjectile::ASimProjectile;
 };

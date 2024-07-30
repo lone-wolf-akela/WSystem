@@ -122,13 +122,13 @@ void PlayerLibInterface::AddResourceUnits(std::int32_t player_index, std::int32_
 
 namespace
 {
-	SimPlayer find_player_by_index(RavenSimulationProxy proxy, std::int32_t player_index)
+	USimPlayer find_player_by_index(RavenSimulationProxy proxy, std::int32_t player_index)
 	{
 		if (player_index == -1)
 		{
-			return *proxy.GetGalaxyPlayer();
+			return proxy.GalaxyPlayer;
 		}
-		auto& players = *proxy.GetSimPlayers();
+		auto& players = proxy.SimPlayers;
 		if (player_index < 0 || player_index >= players.Num())
 		{
 			throw std::runtime_error("Invalid player index");
@@ -139,24 +139,24 @@ namespace
 
 void PlayerLibInterface::SetPlayerName(std::int32_t player_index, std::string_view name) const
 {
-	const auto& player = find_player_by_index(sim_proxy, player_index);
-	*player.GetPlayerName() = Unreal::FString(boost::nowide::widen(name).c_str());
+	auto player = find_player_by_index(sim_proxy, player_index);
+	player.PlayerName = Unreal::FString(boost::nowide::widen(name).c_str());
 }
 
 std::string PlayerLibInterface::GetPlayerName(std::int32_t player_index) const
 {
 	const auto& player = find_player_by_index(sim_proxy, player_index);
-	return boost::nowide::narrow(player.GetPlayerName()->GetCharArray());
+	return boost::nowide::narrow(player.PlayerName.GetCharArray());
 }
 
 std::int32_t PlayerLibInterface::GetPlayerTeamID(std::int32_t player_index) const
 {
 	const auto& player = find_player_by_index(sim_proxy, player_index);
-	return *player.GetTeamID();
+	return player.TeamID;
 }
 
 bool PlayerLibInterface::IsHuman(std::int32_t player_index) const
 {
 	const auto& player = find_player_by_index(sim_proxy, player_index);
-	return *player.GetIsHuman();
+	return player.IsHuman;
 }

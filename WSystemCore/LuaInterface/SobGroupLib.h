@@ -76,9 +76,9 @@ public:
 		double rotation_w, double rotation_x, double rotation_y, double rotation_z,
 		double translation_x, double translation_y, double translation_z,
 		double scale_x, double scale_y, double scale_z) const;
-	void SetTactics(std::string_view group, SquadronTactics tactics) const;
+	void SetTactics(std::string_view group, ESquadronTactics tactics) const;
 	void SetStrikeGroupFormation(std::string_view group, std::string_view formation) const;
-	void SetStance(std::string_view group, SquadronStance stance) const;
+	void SetStance(std::string_view group, ESquadronStance stance) const;
 	void SetRotation(std::string_view group, double pitch, double yaw, double roll) const;
 	void SetNoRetaliate(std::string_view group, bool enabled) const;
 	void SetLocation(std::string_view group, double x, double y, double z) const;
@@ -88,7 +88,7 @@ public:
 	void SetHealth(std::string_view group, float health_percentage) const;
 	void SetGhost(std::string_view group, bool enabled) const;
 	void SetCloaking(std::string_view group, bool enabled) const;
-	void SetAutoLaunch(std::string_view group, AutoLaunchSetting auto_launch_setting) const;
+	void SetAutoLaunch(std::string_view group, EAutoLaunchSetting auto_launch_setting) const;
 	void Scuttle(std::string_view group) const;
 	void SalvageCapture(std::string_view group, std::string_view targets) const;
 	void RevealInFow(std::string_view group, bool revealed) const;
@@ -98,8 +98,8 @@ public:
 	void RemoveStatusEffectsByHandles(sol::table handles) const;
 	void RemoveStatusEffect(std::string_view group, std::string_view status) const;
 	void RemoveObtainableArtifactFromShips(std::string_view group) const;
-	void ParadeAround(std::string_view group, std::uint64_t parade_around_entity_id, ParadeMode parade_mode) const;
-	void OverrideRetaliationSetting(std::string_view group, RetaliationSetting the_retaliation_setting) const;
+	void ParadeAround(std::string_view group, std::uint64_t parade_around_entity_id, EParadeMode parade_mode) const;
+	void OverrideRetaliationSetting(std::string_view group, ERetaliationSetting the_retaliation_setting) const;
 	void MoveTo(std::string_view group, double dest_x, double dest_y, double dest_z, bool attack_move) const;
 	void MovePingPong(std::string_view group, sol::table locations, bool attack_move) const;
 	void MoveAlong(std::string_view group, sol::table path, bool loop, bool attack_move) const;
@@ -193,8 +193,8 @@ public:
 		double x, double y, double z,
 		double pitch, double yaw, double roll,
 		std::int32_t owning_player, bool start_in_hyperspace, bool skip_placement_logic,
-		std::string_view ship_type, std::int32_t ship_count, SquadronStance stance,
-		bool use_retaliation_override, RetaliationSetting retaliation_override,
+		std::string_view ship_type, std::int32_t ship_count, ESquadronStance stance,
+		bool use_retaliation_override, ERetaliationSetting retaliation_override,
 		bool do_not_retaliate_against_me);
 
 	void FillGroupAllEntitiesInGame(std::string_view group);
@@ -205,7 +205,7 @@ public:
 	void FillGroupAllAliveNonShipEntitiesInGame(std::string_view group);
 
 	[[nodiscard]] std::int32_t GroupCountAliveEntities(std::string_view group) const;
-	[[nodiscard]] std::tuple<bool, SquadronStance> GetStance(std::string_view group) const;
+	[[nodiscard]] std::tuple<bool, ESquadronStance> GetStance(std::string_view group) const;
 	[[nodiscard]] std::tuple<bool, std::string> GetFormation(std::string_view group) const;
 
 	[[nodiscard]] bool GroupContains(std::string_view group, std::uint64_t entity_id) const;

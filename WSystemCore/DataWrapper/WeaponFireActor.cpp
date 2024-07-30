@@ -2,13 +2,12 @@
 
 #include "WeaponFireActor.h"
 
-std::wstring WeaponFireActor::GetDataAssetName() const
+std::wstring AWeaponFireActor::GetDataAssetName() const
 {
-	const auto& data = *GetDataAsset();
-	return data->GetName();
+	return DataAsset->GetName();
 }
 
-std::string WeaponFireActor::GetDataAssetNameNarrow() const
+std::string AWeaponFireActor::GetDataAssetNameNarrow() const
 {
 	return boost::nowide::narrow(GetDataAssetName());
 }

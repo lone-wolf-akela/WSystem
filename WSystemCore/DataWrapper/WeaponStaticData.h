@@ -3,7 +3,7 @@
 
 #include "UObject.h"
 
-class WeaponStaticData : public UObjWrapper
+class UWeaponStaticData : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;

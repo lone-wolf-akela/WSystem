@@ -1,7 +1,7 @@
 #pragma once
 #include <pch.h>
 
-struct BuildJob 
+struct FBuildJob 
 {
     std::int32_t ID;
     float Progress;

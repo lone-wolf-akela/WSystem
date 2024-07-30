@@ -2,19 +2,19 @@
 
 #include "UnitsInfoSubsystem.h"
 
-void UnitsInfoSubsystem::GetShipsFormationAndStance(const UC::TArray<SimShip>& ships, bool& single_formation,
-	std::int32_t& formation_order_index, UnitOrderStaticData& formation_order, bool& single_stance,
-	std::int32_t& stance_order_index, UnitOrderStaticData& stance_order, const std::source_location& location) const
+void UnitsInfoSubsystem::GetShipsFormationAndStance(const UC::TArray<ASimShip>& ships, bool& single_formation,
+	std::int32_t& formation_order_index, UUnitOrderStaticData& formation_order, bool& single_stance,
+	std::int32_t& stance_order_index, UUnitOrderStaticData& stance_order, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("GetShipsFormationAndStance"), location);
 	struct {
-		UC::TArray<SimShip> ships;
+		UC::TArray<ASimShip> ships;
 		bool single_formation;
 		std::int32_t formation_order_index;
-		UnitOrderStaticData formation_order;
+		UUnitOrderStaticData formation_order;
 		bool single_stance;
 		std::int32_t stance_order_index;
-		UnitOrderStaticData stance_order;
+		UUnitOrderStaticData stance_order;
 	} args{
 		ships,
 		single_formation,
@@ -33,13 +33,13 @@ void UnitsInfoSubsystem::GetShipsFormationAndStance(const UC::TArray<SimShip>& s
 	stance_order = args.stance_order;
 }
 
-void UnitsInfoSubsystem::IsUnitResourceController(const SimEntity sim_entity, const SimPlayer sim_player, bool& result,
+void UnitsInfoSubsystem::IsUnitResourceController(const ASimEntity sim_entity, const USimPlayer sim_player, bool& result,
 	bool& belongs_to_player, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("IsUnitResourceController"), location);
 	struct {
-		SimEntity sim_entity;
-		SimPlayer sim_player;
+		ASimEntity sim_entity;
+		USimPlayer sim_player;
 		bool result;
 		bool belongs_to_player;
 	} args{
@@ -53,14 +53,14 @@ void UnitsInfoSubsystem::IsUnitResourceController(const SimEntity sim_entity, co
 	belongs_to_player = args.belongs_to_player;
 }
 
-void UnitsInfoSubsystem::GetShipsToDockWith(SimPlayer sim_player, SimEntity docker,
-	UC::TArray<SimShip>& out_dockees, const std::source_location& location) const
+void UnitsInfoSubsystem::GetShipsToDockWith(USimPlayer sim_player, ASimEntity docker,
+	UC::TArray<ASimShip>& out_dockees, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("GetShipsToDockWith"), location);
 	struct {
-		SimPlayer sim_player;
-		SimEntity docker;
-		UC::TArray<SimShip> out_dockees;
+		USimPlayer sim_player;
+		ASimEntity docker;
+		UC::TArray<ASimShip> out_dockees;
 	} args{
 		sim_player,
 		docker,
@@ -70,12 +70,12 @@ void UnitsInfoSubsystem::GetShipsToDockWith(SimPlayer sim_player, SimEntity dock
 	out_dockees = std::move(args.out_dockees);
 }
 
-void UnitsInfoSubsystem::GetResourceControllersOfPlayer(const SimPlayer sim_player, UC::TArray<SimShip>& result, const std::source_location& location) const
+void UnitsInfoSubsystem::GetResourceControllersOfPlayer(const USimPlayer sim_player, UC::TArray<ASimShip>& result, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("GetResourceControllersOfPlayer"), location);
 	struct {
-		SimPlayer sim_player;
-		UC::TArray<SimShip> result;
+		USimPlayer sim_player;
+		UC::TArray<ASimShip> result;
 	} args{
 		sim_player,
 		std::move(result)
@@ -84,12 +84,12 @@ void UnitsInfoSubsystem::GetResourceControllersOfPlayer(const SimPlayer sim_play
 	result = std::move(args.result);
 }
 
-void UnitsInfoSubsystem::GetProductionUnitsOfSimPlayer(SimPlayer sim_player, UC::TArray<SimEntity>& result, const std::source_location& location) const
+void UnitsInfoSubsystem::GetProductionUnitsOfSimPlayer(USimPlayer sim_player, UC::TArray<ASimEntity>& result, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("GetProductionUnitsOfSimPlayer"), location);
 	struct {
-		SimPlayer sim_player;
-		UC::TArray<SimEntity> result;
+		USimPlayer sim_player;
+		UC::TArray<ASimEntity> result;
 	} args{
 		sim_player,
 		std::move(result)
@@ -98,11 +98,11 @@ void UnitsInfoSubsystem::GetProductionUnitsOfSimPlayer(SimPlayer sim_player, UC:
 	result = std::move(args.result);
 }
 
-void UnitsInfoSubsystem::GetProductionCapableUnitsCopy(UC::TArray<SimEntity>& result, const std::source_location& location) const
+void UnitsInfoSubsystem::GetProductionCapableUnitsCopy(UC::TArray<ASimEntity>& result, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("GetProductionCapableUnitsCopy"), location);
 	struct {
-		UC::TArray<SimEntity> result;
+		UC::TArray<ASimEntity> result;
 	} args{
 		std::move(result)
 	};
@@ -110,13 +110,13 @@ void UnitsInfoSubsystem::GetProductionCapableUnitsCopy(UC::TArray<SimEntity>& re
 	result = std::move(args.result);
 }
 
-void UnitsInfoSubsystem::GetIdleResourceControllersOfPlayer(const SimPlayer sim_player,
-	UC::TArray<SimShip>& result, const std::source_location& location) const
+void UnitsInfoSubsystem::GetIdleResourceControllersOfPlayer(const USimPlayer sim_player,
+	UC::TArray<ASimShip>& result, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("GetIdleResourceControllersOfPlayer"), location);
 	struct {
-		SimPlayer sim_player;
-		UC::TArray<SimShip> result;
+		USimPlayer sim_player;
+		UC::TArray<ASimShip> result;
 	} args{
 		sim_player,
 		std::move(result)
@@ -125,12 +125,12 @@ void UnitsInfoSubsystem::GetIdleResourceControllersOfPlayer(const SimPlayer sim_
 	result = std::move(args.result);
 }
 
-void UnitsInfoSubsystem::GetCarrierUnitsOfSimPlayer(SimPlayer sim_player, UC::TArray<SimEntity>& result, const std::source_location& location) const
+void UnitsInfoSubsystem::GetCarrierUnitsOfSimPlayer(USimPlayer sim_player, UC::TArray<ASimEntity>& result, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("GetCarrierUnitsOfSimPlayer"), location);
 	struct {
-		SimPlayer sim_player;
-		UC::TArray<SimEntity> result;
+		USimPlayer sim_player;
+		UC::TArray<ASimEntity> result;
 	} args{
 		sim_player,
 		std::move(result)
@@ -139,11 +139,11 @@ void UnitsInfoSubsystem::GetCarrierUnitsOfSimPlayer(SimPlayer sim_player, UC::TA
 	result = std::move(args.result);
 }
 
-void UnitsInfoSubsystem::GetCarrierUnitsCopy(UC::TArray<SimEntity>& result, const std::source_location& location) const
+void UnitsInfoSubsystem::GetCarrierUnitsCopy(UC::TArray<ASimEntity>& result, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("GetCarrierUnitsCopy"), location);
 	struct {
-		UC::TArray<SimEntity> result;
+		UC::TArray<ASimEntity> result;
 	} args{
 		std::move(result)
 	};

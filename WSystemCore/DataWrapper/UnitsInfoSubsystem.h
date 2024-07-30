@@ -11,21 +11,21 @@ class UnitsInfoSubsystem : public UObjWrapper
 {
 	using UObjWrapper::UObjWrapper;
 public:
-    WSYS_MEMBER_FUNCTION(bool, IsUnitProductionCapable, SimEntity, sob)
-    WSYS_MEMBER_FUNCTION(bool, IsUnitCarrier, SimEntity, sob)
-    WSYS_MEMBER_FUNCTION(bool, IsShipDockableOnShip, SimShip, docker, SimShip, dockee)
-    WSYS_MEMBER_FUNCTION(std::int32_t, GetNumResourceControllersOfPlayer, const SimPlayer, sim_player)
-    WSYS_MEMBER_FUNCTION(std::int32_t, GetNumIdleResourceControllersOfPlayer, const SimPlayer, sim_player)
-    WSYS_MEMBER_FUNCTION(SimShip, GetAnyResourceController, const SimPlayer, sim_player)
-    WSYS_MEMBER_FUNCTION(bool, CanSimPlayerDockShip, SimPlayer, sim_player, SimEntity, docker)
+    WSYS_MEMBER_FUNCTION(bool, IsUnitProductionCapable, ASimEntity, sob)
+    WSYS_MEMBER_FUNCTION(bool, IsUnitCarrier, ASimEntity, sob)
+    WSYS_MEMBER_FUNCTION(bool, IsShipDockableOnShip, ASimShip, docker, ASimShip, dockee)
+    WSYS_MEMBER_FUNCTION(std::int32_t, GetNumResourceControllersOfPlayer, const USimPlayer, sim_player)
+    WSYS_MEMBER_FUNCTION(std::int32_t, GetNumIdleResourceControllersOfPlayer, const USimPlayer, sim_player)
+    WSYS_MEMBER_FUNCTION(ASimShip, GetAnyResourceController, const USimPlayer, sim_player)
+    WSYS_MEMBER_FUNCTION(bool, CanSimPlayerDockShip, USimPlayer, sim_player, ASimEntity, docker)
 
-    void GetShipsFormationAndStance(const UC::TArray<SimShip>& ships, bool& single_formation, std::int32_t& formation_order_index, UnitOrderStaticData& formation_order, bool& single_stance, std::int32_t& stance_order_index, UnitOrderStaticData& stance_order, const std::source_location& location = std::source_location::current()) const;
-    void IsUnitResourceController(const SimEntity sim_entity, const SimPlayer sim_player, bool& result, bool& belongs_to_player, const std::source_location& location = std::source_location::current()) const;
-    void GetShipsToDockWith(SimPlayer sim_player, SimEntity docker, UC::TArray<SimShip>& out_dockees, const std::source_location& location = std::source_location::current()) const;
-    void GetResourceControllersOfPlayer(const SimPlayer sim_player, UC::TArray<SimShip>& result, const std::source_location& location = std::source_location::current()) const;
-    void GetProductionUnitsOfSimPlayer(SimPlayer sim_player, UC::TArray<SimEntity>& result, const std::source_location& location = std::source_location::current()) const;
-    void GetProductionCapableUnitsCopy(UC::TArray<SimEntity>& result, const std::source_location& location = std::source_location::current()) const;
-    void GetIdleResourceControllersOfPlayer(const SimPlayer sim_player, UC::TArray<SimShip>& result, const std::source_location& location = std::source_location::current()) const;
-    void GetCarrierUnitsOfSimPlayer(SimPlayer sim_player, UC::TArray<SimEntity>& result, const std::source_location& location = std::source_location::current()) const;
-    void GetCarrierUnitsCopy(UC::TArray<SimEntity>& result, const std::source_location& location = std::source_location::current()) const;
+    void GetShipsFormationAndStance(const UC::TArray<ASimShip>& ships, bool& single_formation, std::int32_t& formation_order_index, UUnitOrderStaticData& formation_order, bool& single_stance, std::int32_t& stance_order_index, UUnitOrderStaticData& stance_order, const std::source_location& location = std::source_location::current()) const;
+    void IsUnitResourceController(const ASimEntity sim_entity, const USimPlayer sim_player, bool& result, bool& belongs_to_player, const std::source_location& location = std::source_location::current()) const;
+    void GetShipsToDockWith(USimPlayer sim_player, ASimEntity docker, UC::TArray<ASimShip>& out_dockees, const std::source_location& location = std::source_location::current()) const;
+    void GetResourceControllersOfPlayer(const USimPlayer sim_player, UC::TArray<ASimShip>& result, const std::source_location& location = std::source_location::current()) const;
+    void GetProductionUnitsOfSimPlayer(USimPlayer sim_player, UC::TArray<ASimEntity>& result, const std::source_location& location = std::source_location::current()) const;
+    void GetProductionCapableUnitsCopy(UC::TArray<ASimEntity>& result, const std::source_location& location = std::source_location::current()) const;
+    void GetIdleResourceControllersOfPlayer(const USimPlayer sim_player, UC::TArray<ASimShip>& result, const std::source_location& location = std::source_location::current()) const;
+    void GetCarrierUnitsOfSimPlayer(USimPlayer sim_player, UC::TArray<ASimEntity>& result, const std::source_location& location = std::source_location::current()) const;
+    void GetCarrierUnitsCopy(UC::TArray<ASimEntity>& result, const std::source_location& location = std::source_location::current()) const;
 };

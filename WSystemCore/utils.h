@@ -132,12 +132,20 @@ namespace utils
 }
 
 
-#define WSYS_DATA_PROPERTY(type, name) [[nodiscard]] auto Get##name(\
-    const std::source_location& location = std::source_location::current()\
-) const\
+#define WSYS_DATA_PROPERTY(type, name) \
+[[nodiscard]] type& Internal_Get##name() const\
 {\
-	return GetPropertyValueByName<type>(STR(#name), location);\
-}
+	return *GetPropertyValueByName<type>(STR(#name));\
+}\
+type& Internal_Set##name(const type& value)\
+{\
+	return *GetPropertyValueByName<type>(STR(#name)) = value;\
+}\
+type& Internal_Set##name(type&& value)\
+{\
+	return *GetPropertyValueByName<type>(STR(#name)) = std::move(value);\
+}\
+__declspec(property(get = Internal_Get##name, put = Internal_Set##name)) type& name;
 
 #define WSYS_GET_MEMBER_FUNCTION(name) [[nodiscard]] RC::Unreal::UFunction* GetFunc##name(\
     const std::source_location& location = std::source_location::current()\

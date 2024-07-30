@@ -2,13 +2,12 @@
 
 #include "SimMovable.h"
 
-std::wstring SimMovable::GetDataAssetName() const
+std::wstring ASimMovable::GetDataAssetName() const
 {
-	const auto& data = *GetDataAsset();
-	return data->GetName();
+	return DataAsset->GetName();
 }
 
-std::string SimMovable::GetDataAssetNameNarrow() const
+std::string ASimMovable::GetDataAssetNameNarrow() const
 {
 	return boost::nowide::narrow(GetDataAssetName());
 }

@@ -4,12 +4,12 @@
 #include <LibWrapper/LibDataTypes.h>
 #include "ShipStaticData.h"
 
-struct StartingUnitEntry 
+struct FStartingUnitEntry 
 {
-    ShipStaticData UnitType;
-    SquadronStance UnitStance;
+    UShipStaticData UnitType;
+    ESquadronStance UnitStance;
     bool UnitUseRetaliationOverride;
-    RetaliationSetting UnitRetaliationOverride;
+    ERetaliationSetting UnitRetaliationOverride;
     bool DoNotRetaliateAgainstMe;
     std::int32_t UnitCount;
 };

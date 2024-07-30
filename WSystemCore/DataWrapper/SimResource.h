@@ -4,11 +4,11 @@
 #include "SimEntity.h"
 #include "ResourceStaticData.h"
 
-class SimResource : public SimEntity
+class ASimResource : public ASimEntity
 {
 public:
-	using SimEntity::SimEntity;
-	WSYS_DATA_PROPERTY(ResourceStaticData, DataAsset)
+	using ASimEntity::ASimEntity;
+	WSYS_DATA_PROPERTY(UResourceStaticData, DataAsset)
 
 	[[nodiscard]] std::wstring GetDataAssetName() const;
 	[[nodiscard]] std::string  GetDataAssetNameNarrow() const;

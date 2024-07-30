@@ -3,7 +3,7 @@
 
 #include "UObject.h"
 
-class RTSLevelScriptActor : public UObjWrapper
+class ARTSLevelScriptActor : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;

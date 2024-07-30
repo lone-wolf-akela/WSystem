@@ -1,7 +1,7 @@
 #pragma once
 #include <pch.h>
 
-enum class TurretDeploymentState : std::uint8_t
+enum class ETurretDeploymentState : std::uint8_t
 {
     None,
     Failed,
@@ -13,7 +13,7 @@ enum class TurretDeploymentState : std::uint8_t
     Undeployed,
 };
 
-enum class DockingStage : std::uint8_t
+enum class EDockingStage : std::uint8_t
 {
     OrderGiven,
     FindBestDockShip,
@@ -31,7 +31,7 @@ enum class DockingStage : std::uint8_t
     UnInitialized,
 };
 
-enum class HyperspaceStatus : std::uint8_t
+enum class EHyperspaceStatus : std::uint8_t
 {
     Entering,
     EnteringGate,
@@ -44,7 +44,7 @@ enum class HyperspaceStatus : std::uint8_t
     ExitingEffect,
 };
 
-enum class SobAnimationState : std::uint8_t
+enum class ESobAnimationState : std::uint8_t
 {
     Normal,
     Open,
@@ -142,28 +142,28 @@ enum class UCommandType : std::uint8_t
     UCommand_SelfRepair,
 };
 
-enum class SquadronStance : std::uint8_t
+enum class ESquadronStance : std::uint8_t
 {
     Aggressive,
     Evasive,
     Neutral,
 };
 
-enum class SquadronTactics : std::uint8_t
+enum class ESquadronTactics : std::uint8_t
 {
     Aggressive,
     Defensive,
     Passive,
 };
 
-enum class AutoLaunchSetting : std::uint8_t
+enum class EAutoLaunchSetting : std::uint8_t
 {
     Launch,
     StayDockedUpToLimit,
     StayDockedAlways,
 };
 
-enum class RetaliationSetting : std::uint8_t
+enum class ERetaliationSetting : std::uint8_t
 {
     Enemies,
     AttackersOfFriends,
@@ -171,7 +171,7 @@ enum class RetaliationSetting : std::uint8_t
     None,
 };
 
-enum class SobPropertyType : std::uint8_t
+enum class ESobPropertyType : std::uint8_t
 {
     HealthMax,
     HealthRegenerateDelay,
@@ -204,7 +204,7 @@ enum class SobPropertyType : std::uint8_t
     LeashingRange,
 };
 
-enum class MultiplierType : std::uint8_t
+enum class EMultiplierType : std::uint8_t
 {
     Unknown,
     MaxHealth,
@@ -261,7 +261,7 @@ enum class MultiplierType : std::uint8_t
     MaxSpeedWithFormation,
 };
 
-enum class AbilityType : std::uint8_t
+enum class EAbilityType : std::uint8_t
 {
     None,
     Move,
@@ -320,7 +320,7 @@ enum class AbilityType : std::uint8_t
     SelfRepair,
 };
 
-enum class InfluenceType : std::uint8_t
+enum class EInfluenceType : std::uint8_t
 {
     Unknown,
     ThisShipOnly,
@@ -332,21 +332,21 @@ enum class InfluenceType : std::uint8_t
     EnemyShipsWithinRadiusIncludingSleeping,
 };
 
-enum class ActivityRelation : std::uint8_t
+enum class EActivityRelation : std::uint8_t
 {
     Unknown,
     None,
     Linear,
 };
 
-enum class ParadeMode : std::uint8_t
+enum class EParadeMode : std::uint8_t
 {
     Normal,
     InstantWithHyperspace,
     Instant,
 };
 
-enum class TiirGroupCountFilter : std::uint8_t
+enum class ETiirGroupCountFilter : std::uint8_t
 {
     All = 0b0000,
     Awake = 0b0001,
@@ -355,14 +355,14 @@ enum class TiirGroupCountFilter : std::uint8_t
     InCombat = 0b1000,
 };
 
-enum class BuildCancelType : std::uint8_t
+enum class EBuildCancelType : std::uint8_t
 {
     Job,
     Family,
     All,
 };
 
-enum class BuildPauseType : std::uint8_t
+enum class EBuildPauseType : std::uint8_t
 {
     Job,
     Family,
@@ -370,9 +370,47 @@ enum class BuildPauseType : std::uint8_t
     All,
 };
 
-enum class UpgradeType : std::uint8_t
+enum class EUpgradeType : std::uint8_t
 {
     Modifier,
     Ability,
     None,
+};
+
+enum class ELobbyState : std::int8_t
+{
+    Invalid = -1,
+    Setup = 0,
+    PreLobby = 1,
+    Lobby = 2,
+    LoadSaveGame = 3,
+    LoadReplay = 4,
+    InitScenario = 5,
+    InGame = 6,
+    PostGame = 7,
+};
+
+enum class EResearchState : std::int8_t
+{
+    Restricted,
+    Locked,
+    Pending,
+    InProgress,
+    Done,
+};
+
+enum class EResearchEvent : std::uint8_t
+{
+    ResearchStart,
+    ResearchCancel,
+    ResearchComplete,
+    ResearchNoRU,
+    ResearchAvailable,
+    InstaResearchComplete,
+    ResearchInProgress,
+    ResearchRestricted,
+    ResearchUnrestricted,
+    ResearchPaused,
+    ResearchUnpaused,
+    _ResearchEventNum,
 };

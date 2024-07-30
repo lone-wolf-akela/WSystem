@@ -4,8 +4,8 @@
 #include "SimulationProxy.h"
 #include "UObject.h"
 
-class RavenSimulationProxy : public SimulationProxy
+class RavenSimulationProxy : public ASimulationProxy
 {
 public:
-	using SimulationProxy::SimulationProxy;
+	using ASimulationProxy::ASimulationProxy;
 };

@@ -4,11 +4,11 @@
 #include "ShipStaticData.h"
 #include "BuildJob.h"
 
-struct BuildJobType 
+struct FBuildJobType 
 {
 public:
-    ShipStaticData Type;
-    UC::TArray<BuildJob> Jobs;
+    UShipStaticData Type;
+    UC::TArray<FBuildJob> Jobs;
     std::int32_t NumShipsInBatch;
     std::int32_t NumShipsRemaining;
     std::int32_t CurrentJobIndex;

@@ -7,20 +7,20 @@
 #include "StrikeGroupFormationStaticData.h"
 #include "ProductionComponent.h"
 
-class SimShip : public SimEntity
+class ASimShip : public ASimEntity
 {
 public:
-	using SimEntity::SimEntity;
+	using ASimEntity::ASimEntity;
 
-	WSYS_DATA_PROPERTY(ShipStaticData, DataAsset)
+	WSYS_DATA_PROPERTY(UShipStaticData, DataAsset)
 	WSYS_DATA_PROPERTY(float, ShipScreenSize)
 	WSYS_DATA_PROPERTY(float, ShipNormalizedScreenSize)
 	WSYS_DATA_PROPERTY(float, ShipAudioSignificance)
 	WSYS_DATA_PROPERTY(std::int32_t, SquadronID)
 	WSYS_DATA_PROPERTY(bool, IsSquadronLeader)
-	WSYS_DATA_PROPERTY(SimShip, SquadronLeader)
-	WSYS_DATA_PROPERTY(SquadronStance, SquadronStance)
-	WSYS_DATA_PROPERTY(StrikeGroupFormationStaticData, CurrentFormation)
+	WSYS_DATA_PROPERTY(ASimShip, SquadronLeader)
+	WSYS_DATA_PROPERTY(ESquadronStance, SquadronStance)
+	WSYS_DATA_PROPERTY(UStrikeGroupFormationStaticData, CurrentFormation)
 	WSYS_DATA_PROPERTY(Unreal::FText, PilotName)
 	WSYS_DATA_PROPERTY(Unreal::FString, CreationMap)
 	WSYS_DATA_PROPERTY(float, AudioFocusWeight)
@@ -29,7 +29,7 @@ public:
 	WSYS_DATA_PROPERTY(float, AudioFocusRankNormalized)
 	WSYS_DATA_PROPERTY(std::int32_t, ControlGroupsFlags)
 	WSYS_DATA_PROPERTY(bool, IsCenterFocused)
-	WSYS_DATA_PROPERTY(TurretDeploymentState, DeployState)
+	WSYS_DATA_PROPERTY(ETurretDeploymentState, DeployState)
 	WSYS_DATA_PROPERTY(Unreal::FVector, DeployLocation)
 	WSYS_DATA_PROPERTY(Unreal::FVector, DeployNormal)
 	WSYS_DATA_PROPERTY(bool, bDeployedInTacticalPause)
@@ -41,32 +41,32 @@ public:
 	WSYS_DATA_PROPERTY(float, HealWeaponRange)
 	WSYS_DATA_PROPERTY(float, HealSpecialWeaponRange)
 	WSYS_DATA_PROPERTY(float, HyperspaceProgress)
-	WSYS_DATA_PROPERTY(SimShip, OpposingShip)
+	WSYS_DATA_PROPERTY(ASimShip, OpposingShip)
 	WSYS_DATA_PROPERTY(float, ZombieTime)
 	WSYS_DATA_PROPERTY(EntityDeathModifiers, DeathModifiers)
 	WSYS_DATA_PROPERTY(float, Significance)
 	WSYS_DATA_PROPERTY(float, DistanceToCamera)
 	WSYS_DATA_PROPERTY(float, BackstageEffectiveness)
-	WSYS_DATA_PROPERTY(SimShip, DockWith)
-	WSYS_DATA_PROPERTY(DockingStage, DockingStage)
+	WSYS_DATA_PROPERTY(ASimShip, DockWith)
+	WSYS_DATA_PROPERTY(EDockingStage, DockingStage)
 	WSYS_DATA_PROPERTY(bool, IsDocked)
 	WSYS_DATA_PROPERTY(bool, bIsDocking)
 	WSYS_DATA_PROPERTY(bool, bHasPower)
 	WSYS_DATA_PROPERTY(bool, IsInCombat)
 	WSYS_DATA_PROPERTY(bool, bIsHandlingExternalMove)
 	WSYS_DATA_PROPERTY(bool, bCanRally)
-	WSYS_DATA_PROPERTY(HyperspaceStatus, HyperspaceStatus)
-	WSYS_DATA_PROPERTY(SimShip, Parent)
-	WSYS_DATA_PROPERTY(UC::TArray<SimShip>, Collectors)
-	using AnimationStatesMapType = UC::TMap<SobAnimationState, bool>;
+	WSYS_DATA_PROPERTY(EHyperspaceStatus, HyperspaceStatus)
+	WSYS_DATA_PROPERTY(ASimShip, Parent)
+	WSYS_DATA_PROPERTY(UC::TArray<ASimShip>, Collectors)
+	using AnimationStatesMapType = UC::TMap<ESobAnimationState, bool>;
 	WSYS_DATA_PROPERTY(AnimationStatesMapType, AnimationStates)
 	WSYS_DATA_PROPERTY(UCommandType, ActiveCommandType)
 	// TArray<FSimShipAbilityState> AbilityStates;
 	// TArray<UStatusEffectStaticData*> CurStatusEffects;
-	WSYS_DATA_PROPERTY(ProductionComponent, ProductionComponent)
+	WSYS_DATA_PROPERTY(UProductionComponent, ProductionComponent)
 
 	WSYS_MEMBER_FUNCTION_NOARGS(Unreal::FVector, GetShipVelocity)
-	WSYS_MEMBER_FUNCTION_VOID(ReceiveAnimationStateChanged, const SobAnimationState, AnimationState, const UC::TArray<SobAnimationState>&, ImplicitAnimationStateChanges)
+	WSYS_MEMBER_FUNCTION_VOID(ReceiveAnimationStateChanged, const ESobAnimationState, AnimationState, const UC::TArray<ESobAnimationState>&, ImplicitAnimationStateChanges)
 
 	[[nodiscard]] std::wstring GetDataAssetName() const;
 	[[nodiscard]] std::string  GetDataAssetNameNarrow() const;

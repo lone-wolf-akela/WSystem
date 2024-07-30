@@ -118,7 +118,7 @@ void CustomCodeManager::Tick()
 {
 	const auto& newly_born_units = entity_id_manager->GetNewlyBornEntity();
 	const auto& newly_dead_units = entity_id_manager->GetNewlyDeadEntity();
-	const auto current_tick = *sim_proxy.GetSimulatingFrame();
+	const auto current_tick = sim_proxy.SimulatingFrame;
 
 	for (auto& id : newly_born_units)
 	{

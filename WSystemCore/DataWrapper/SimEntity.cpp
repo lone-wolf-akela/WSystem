@@ -29,63 +29,63 @@ namespace
 	}
 }
 
-bool SimEntity::IsMovableEntity() const
+bool ASimEntity::IsMovableEntity() const
 {
 	return object_is_of_type(obj, L"SimMovable");
 }
 
-bool SimEntity::IsResource() const
+bool ASimEntity::IsResource() const
 {
 	return object_is_of_type(obj, L"SimResource");
 }
 
-bool SimEntity::IsWeaponFireActor() const
+bool ASimEntity::IsWeaponFireActor() const
 {
 	return object_is_of_type(obj, L"WeaponFireActor");
 }
 
-bool SimEntity::IsMissile() const
+bool ASimEntity::IsMissile() const
 {
 	return object_is_of_type(obj, L"SimMissile");
 }
 
-bool SimEntity::IsRavenSimProjectile() const
+bool ASimEntity::IsRavenSimProjectile() const
 {
 	return object_is_of_type(obj, L"RavenSimProjectile");
 }
 
-bool SimEntity::IsProjectile() const
+bool ASimEntity::IsProjectile() const
 {
 	return object_is_of_type(obj, L"SimProjectile");
 }
 
-std::wstring SimEntity::GetDataAssetName() const
+std::wstring ASimEntity::GetDataAssetName() const
 {
 	if (IsShip())
 	{
-		const SimShip ship = obj;
+		const ASimShip ship = obj;
 		return ship.GetDataAssetName();
 	}
 	if (IsResource())
 	{
-		const SimResource resource = obj;
+		const ASimResource resource = obj;
 		return resource.GetDataAssetName();
 	}
 	if (IsWeaponFireActor())
 	{
-		const WeaponFireActor weapon_fire = obj;
+		const AWeaponFireActor weapon_fire = obj;
 		return weapon_fire.GetDataAssetName();
 	}
 	else
 	if (IsMovableEntity())
 	{
-		const SimMovable movable = obj;
+		const ASimMovable movable = obj;
 		return movable.GetDataAssetName();
 	}
 	return {};
 }
 
-std::string SimEntity::GetDataAssetNameNarrow() const
+std::string ASimEntity::GetDataAssetNameNarrow() const
 {
 	return boost::nowide::narrow(GetDataAssetName());
 }

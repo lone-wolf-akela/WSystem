@@ -3,7 +3,7 @@
 
 #include "UObject.h"
 
-class BuildFamily : public UObjWrapper
+class UBuildFamily : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;

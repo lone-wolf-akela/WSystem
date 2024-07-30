@@ -27,13 +27,13 @@ public:
     bool first_game_mode_init = true;
 
     RavenGameMode raven_game_mode = nullptr;
-    LobbyState last_lobby_state = LobbyState::Invalid;
+    ELobbyState last_lobby_state = ELobbyState::Invalid;
     RavenSimulationProxy raven_simulation_proxy = nullptr;
-    RTSLevelScriptActor rts_level_script_actor = nullptr;
+    ARTSLevelScriptActor rts_level_script_actor = nullptr;
     RavenHUD raven_hud = nullptr;
     UnitsInfoSubsystem units_info_subsystem = nullptr;
     WBP_BuildPanel wbp_build_panel = nullptr;
-    RTSPlayerController rts_player_controller = nullptr;
+    ARTSPlayerController rts_player_controller = nullptr;
 
     FunctionLibs function_libs;
 

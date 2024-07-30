@@ -77,20 +77,20 @@ void LuaInterface::Initialize()
 		"Universe", sol::readonly(&LuaInterface::universe_lib)
 	); 
 
-	SolRegisterEnum<SquadronTactics>(&lua_state, "SquadronTactics");
-	SolRegisterEnum<SquadronStance>(&lua_state, "SquadronStance");
-	SolRegisterEnum<AutoLaunchSetting>(&lua_state, "AutoLaunchSetting");
-	SolRegisterEnum<RetaliationSetting>(&lua_state, "RetaliationSetting");
-	SolRegisterEnum<SobPropertyType>(&lua_state, "SobPropertyType");
-	SolRegisterEnum<MultiplierType>(&lua_state, "MultiplierType");
-	SolRegisterEnum<AbilityType>(&lua_state, "AbilityType");
-	SolRegisterEnum<InfluenceType>(&lua_state, "InfluenceType");
-	SolRegisterEnum<ActivityRelation>(&lua_state, "ActivityRelation");
-	SolRegisterEnum<ParadeMode>(&lua_state, "ParadeMode");
-	SolRegisterEnum<TurretDeploymentState>(&lua_state, "TurretDeploymentState");
-	SolRegisterEnum<DockingStage>(&lua_state, "DockingStage");
-	SolRegisterEnum<HyperspaceStatus>(&lua_state, "HyperspaceStatus");
-	SolRegisterEnum<SobAnimationState>(&lua_state, "SobAnimationState");
+	SolRegisterEnum<ESquadronTactics>(&lua_state, "SquadronTactics");
+	SolRegisterEnum<ESquadronStance>(&lua_state, "SquadronStance");
+	SolRegisterEnum<EAutoLaunchSetting>(&lua_state, "AutoLaunchSetting");
+	SolRegisterEnum<ERetaliationSetting>(&lua_state, "RetaliationSetting");
+	SolRegisterEnum<ESobPropertyType>(&lua_state, "SobPropertyType");
+	SolRegisterEnum<EMultiplierType>(&lua_state, "MultiplierType");
+	SolRegisterEnum<EAbilityType>(&lua_state, "AbilityType");
+	SolRegisterEnum<EInfluenceType>(&lua_state, "InfluenceType");
+	SolRegisterEnum<EActivityRelation>(&lua_state, "ActivityRelation");
+	SolRegisterEnum<EParadeMode>(&lua_state, "ParadeMode");
+	SolRegisterEnum<ETurretDeploymentState>(&lua_state, "TurretDeploymentState");
+	SolRegisterEnum<EDockingStage>(&lua_state, "DockingStage");
+	SolRegisterEnum<EHyperspaceStatus>(&lua_state, "HyperspaceStatus");
+	SolRegisterEnum<ESobAnimationState>(&lua_state, "SobAnimationState");
 	SolRegisterEnum<UCommandType>(&lua_state, "UCommandType");
 
 	lua_state["WSys"] = shared_from_this();

@@ -15,13 +15,13 @@ void TiirEntityGroupFunctionLibrary::GroupMembers(const TiirEntityGroup& Group, 
 	members = std::move(args.members);
 }
 
-void TiirEntityGroupFunctionLibrary::AddStatusEffect(const TiirEntityGroup& group, const StatusEffectStaticData status,
+void TiirEntityGroupFunctionLibrary::AddStatusEffect(const TiirEntityGroup& group, const UStatusEffectStaticData status,
 	UC::TArray<TiirStatusEffectHandle>& out_handles, const std::source_location& location) const
 {
 	const auto func = FindFunction(STR("AddStatusEffect"), location);
 	struct {
 		TiirEntityGroup group;
-		StatusEffectStaticData status;
+		UStatusEffectStaticData status;
 		UC::TArray<TiirStatusEffectHandle> out_handles;
 	} args{
 		group,

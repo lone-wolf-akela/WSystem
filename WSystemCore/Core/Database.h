@@ -13,41 +13,41 @@ class Database
 {
 public:
 	void ScanData();
-	ShipStaticData GetShipData(std::string_view name) const;
-	std::string GetShipName(const ShipStaticData& data) const;
-	EntityStaticData GetEntityData(std::string_view name) const;
-	std::string GetEntityName(const EntityStaticData& data) const;
-	StatusEffectStaticData GetStatusEffectData(std::string_view name) const;
-	std::string GetStatusEffectName(const StatusEffectStaticData& data) const;
-	StrikeGroupFormationStaticData GetStrikeGroupFormationData(std::string_view name) const;
-	std::string GetStrikeGroupFormationName(const StrikeGroupFormationStaticData& data) const;
-	ArtifactStaticData GetArtifactData(std::string_view name) const;
-	std::string GetArtifactName(const ArtifactStaticData& data) const;
-	WeaponStaticData GetWeaponData(std::string_view name) const;
-	std::string GetWeaponName(const WeaponStaticData& data) const;
-	AttackFamily GetAttackFamily(std::string_view name) const;
-	std::string GetAttackFamilyName(const AttackFamily& data) const;
+	UShipStaticData GetShipData(std::string_view name) const;
+	std::string GetShipName(const UShipStaticData& data) const;
+	UEntityStaticData GetEntityData(std::string_view name) const;
+	std::string GetEntityName(const UEntityStaticData& data) const;
+	UStatusEffectStaticData GetStatusEffectData(std::string_view name) const;
+	std::string GetStatusEffectName(const UStatusEffectStaticData& data) const;
+	UStrikeGroupFormationStaticData GetStrikeGroupFormationData(std::string_view name) const;
+	std::string GetStrikeGroupFormationName(const UStrikeGroupFormationStaticData& data) const;
+	UArtifactStaticData GetArtifactData(std::string_view name) const;
+	std::string GetArtifactName(const UArtifactStaticData& data) const;
+	UWeaponStaticData GetWeaponData(std::string_view name) const;
+	std::string GetWeaponName(const UWeaponStaticData& data) const;
+	UAttackFamily GetAttackFamily(std::string_view name) const;
+	std::string GetAttackFamilyName(const UAttackFamily& data) const;
 private:
 	bool has_inited = false;
 	
-	std::map<std::string, ShipStaticData, std::less<>> name_to_shipdata;
-	std::map<ShipStaticData, std::string> shipdata_to_name;
+	std::map<std::string, UShipStaticData, std::less<>> name_to_shipdata;
+	std::map<UShipStaticData, std::string> shipdata_to_name;
 
-	std::map<std::string, EntityStaticData, std::less<>> name_to_entitydata;
-	std::map<EntityStaticData, std::string> entitydata_to_name;
+	std::map<std::string, UEntityStaticData, std::less<>> name_to_entitydata;
+	std::map<UEntityStaticData, std::string> entitydata_to_name;
 
-	std::map<std::string, StatusEffectStaticData, std::less<>> name_to_statuseffectdata;
-	std::map<StatusEffectStaticData, std::string> statuseffectdata_to_name;
+	std::map<std::string, UStatusEffectStaticData, std::less<>> name_to_statuseffectdata;
+	std::map<UStatusEffectStaticData, std::string> statuseffectdata_to_name;
 
-	std::map<std::string, StrikeGroupFormationStaticData, std::less<>> name_to_strikegroupformationdata;
-	std::map<StrikeGroupFormationStaticData, std::string> strikegroupformationdata_to_name;
+	std::map<std::string, UStrikeGroupFormationStaticData, std::less<>> name_to_strikegroupformationdata;
+	std::map<UStrikeGroupFormationStaticData, std::string> strikegroupformationdata_to_name;
 
-	std::map<std::string, ArtifactStaticData, std::less<>> name_to_artifactdata;
-	std::map<ArtifactStaticData, std::string> artifactdata_to_name;
+	std::map<std::string, UArtifactStaticData, std::less<>> name_to_artifactdata;
+	std::map<UArtifactStaticData, std::string> artifactdata_to_name;
 
-	std::map<std::string, WeaponStaticData, std::less<>> name_to_weapondata;
-	std::map<WeaponStaticData, std::string> weapondata_to_name;
+	std::map<std::string, UWeaponStaticData, std::less<>> name_to_weapondata;
+	std::map<UWeaponStaticData, std::string> weapondata_to_name;
 
-	std::map<std::string, AttackFamily, std::less<>> name_to_attackfamily;
-	std::map<AttackFamily, std::string> attackfamily_to_name;
+	std::map<std::string, UAttackFamily, std::less<>> name_to_attackfamily;
+	std::map<UAttackFamily, std::string> attackfamily_to_name;
 };

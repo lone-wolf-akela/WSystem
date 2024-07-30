@@ -1,13 +1,12 @@
 #include <pch.h>
 #include "SimShip.h"
 
-std::wstring SimShip::GetDataAssetName() const
+std::wstring ASimShip::GetDataAssetName() const
 {
-	const auto& data = *GetDataAsset();
-	return data->GetName();
+	return DataAsset->GetName();
 }
 
-std::string SimShip::GetDataAssetNameNarrow() const
+std::string ASimShip::GetDataAssetNameNarrow() const
 {
 	return boost::nowide::narrow(GetDataAssetName());
 }

@@ -3,7 +3,7 @@
 
 #include "UObject.h"
 
-class SimEntity : public UObjWrapper
+class ASimEntity : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;

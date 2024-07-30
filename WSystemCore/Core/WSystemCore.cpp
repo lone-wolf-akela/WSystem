@@ -88,8 +88,7 @@ void WSystemCore::Post_GameModeStateTransition(
 	[[maybe_unused]] Unreal::UnrealScriptFunctionCallableContext& context,
 	[[maybe_unused]] void* custom_data)
 {
-	const auto p_state = raven_game_mode.GetLobbyState();
-	const auto state = p_state ? *p_state : LobbyState::Invalid;
+	const auto state = raven_game_mode.LobbyState;
 	RC::Output::send<LogLevel::Verbose>(
 		STR("post_game_mode_state_transition: {} -> {}\n"), 
 		boost::nowide::widen(magic_enum::enum_name(last_lobby_state)),
@@ -101,11 +100,11 @@ void WSystemCore::Post_GameModeStateTransition(
 		return;
 	}
 
-	if (state == LobbyState::InitScenario)
+	if (state == ELobbyState::InitScenario)
 	{
 		Begin_InitScenario();
 	}
-	else if (state == LobbyState::InGame)
+	else if (state == ELobbyState::InGame)
 	{
 		Begin_InGame();
 	}
@@ -209,7 +208,7 @@ void WSystemCore::Begin_InGame()
 		return;
 	}
 
-	research_manager.Begin_InGame(raven_simulation_proxy, raven_hud, wbp_build_panel, *rts_player_controller.GetUnitOrderComponent());
+	research_manager.Begin_InGame(raven_simulation_proxy, raven_hud, wbp_build_panel, rts_player_controller.UnitOrderComponent);
 	lua_interface->Begin_InGame();
 	
 	research_manager.EnableTick = true;

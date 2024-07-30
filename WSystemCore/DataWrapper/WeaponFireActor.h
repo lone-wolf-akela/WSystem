@@ -4,11 +4,11 @@
 #include "SimEntity.h"
 #include "WeaponFireStaticData.h"
 
-class WeaponFireActor : public SimEntity
+class AWeaponFireActor : public ASimEntity
 {
 public:
-	using SimEntity::SimEntity;
-	WSYS_DATA_PROPERTY(WeaponFireStaticData, DataAsset)
+	using ASimEntity::ASimEntity;
+	WSYS_DATA_PROPERTY(UWeaponFireStaticData, DataAsset)
 
 	[[nodiscard]] std::wstring GetDataAssetName() const;
 	[[nodiscard]] std::string  GetDataAssetNameNarrow() const;

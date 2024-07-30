@@ -3,7 +3,7 @@
 
 #include "UObject.h"
 
-class StrikeGroupFormationStaticData : public UObjWrapper
+class UStrikeGroupFormationStaticData : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;

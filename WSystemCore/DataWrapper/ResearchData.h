@@ -4,21 +4,13 @@
 #include "ResearchStaticData.h"
 #include "ShipStaticData.h"
 
-enum class ResearchState : std::int8_t
-{
-    Restricted,
-    Locked,
-    Pending,
-    InProgress,
-    Done,
-};
 
-struct ResearchData 
+struct FResearchData 
 {
-    ResearchStaticData StaticData;
-    ShipStaticData ShipData;
+    UResearchStaticData StaticData;
+    UShipStaticData ShipData;
     void* ResearchFamilyData;
-    ResearchState State;
+    EResearchState State;
     bool Paused;
     float Progress;
 };

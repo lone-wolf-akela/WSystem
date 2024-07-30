@@ -4,11 +4,11 @@
 #include "SimEntity.h"
 #include "MovableStaticData.h"
 
-class SimMovable : public SimEntity
+class ASimMovable : public ASimEntity
 {
 public:
-	using SimEntity::SimEntity;
-	WSYS_DATA_PROPERTY(MovableStaticData, DataAsset)
+	using ASimEntity::ASimEntity;
+	WSYS_DATA_PROPERTY(UMovableStaticData, DataAsset)
 
 	[[nodiscard]] std::wstring GetDataAssetName() const;
 	[[nodiscard]] std::string  GetDataAssetNameNarrow() const;

@@ -3,7 +3,7 @@
 
 #include "UObject.h"
 
-class ResourceStaticData : public UObjWrapper
+class UResourceStaticData : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;

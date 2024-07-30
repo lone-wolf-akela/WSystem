@@ -3,7 +3,7 @@
 
 #include "UObject.h"
 
-class StatusEffectStaticData : public UObjWrapper
+class UStatusEffectStaticData : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;

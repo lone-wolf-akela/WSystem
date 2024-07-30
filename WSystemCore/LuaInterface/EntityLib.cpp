@@ -200,12 +200,12 @@ void EntityLibInterface::SetTransform(
 		{ scale_x, scale_y, scale_z } });
 }
 
-void EntityLibInterface::SetTactics(std::uint64_t entity_id, SquadronTactics tactics) const
+void EntityLibInterface::SetTactics(std::uint64_t entity_id, ESquadronTactics tactics) const
 {
 	this->lib->SetTactics({ entity_id }, tactics);
 }
 
-void EntityLibInterface::SetStance(std::uint64_t entity_id, SquadronStance stance) const
+void EntityLibInterface::SetStance(std::uint64_t entity_id, ESquadronStance stance) const
 {
 	this->lib->SetStance({ entity_id }, stance);
 }
@@ -256,7 +256,7 @@ void EntityLibInterface::SetCloaking(std::uint64_t entity_id, bool enabled) cons
 	this->lib->SetCloaking({ entity_id }, enabled);
 }
 
-void EntityLibInterface::SetAutoLaunch(std::uint64_t entity_id, AutoLaunchSetting auto_launch_setting) const
+void EntityLibInterface::SetAutoLaunch(std::uint64_t entity_id, EAutoLaunchSetting auto_launch_setting) const
 {
 	this->lib->SetAutoLaunch({ entity_id }, auto_launch_setting);
 }
@@ -304,7 +304,7 @@ void EntityLibInterface::RemoveObtainableArtifactFromShip(std::uint64_t entity_i
 }
 
 void EntityLibInterface::OverrideRetaliationSetting(std::uint64_t entity_id,
-	RetaliationSetting retaliation_setting) const
+	ERetaliationSetting retaliation_setting) const
 {
 	this->lib->OverrideRetaliationSetting({ entity_id }, retaliation_setting);
 }
@@ -564,8 +564,8 @@ void EntityLibInterface::Attack(std::uint64_t entity_id, std::string_view target
 	this->lib->Attack({ entity_id }, targets, maintain_guard);
 }
 
-TiirModifierHandle EntityLibInterface::AddOverrideModifier(std::uint64_t entity_id, SobPropertyType property,
-	float value, InfluenceType influence_type, float influence_radius) const
+TiirModifierHandle EntityLibInterface::AddOverrideModifier(std::uint64_t entity_id, ESobPropertyType property,
+	float value, EInfluenceType influence_type, float influence_radius) const
 {
 	return this->lib->AddOverrideModifier({ entity_id }, property, value, influence_type, influence_radius);
 }
@@ -575,9 +575,9 @@ bool EntityLibInterface::RemoveModifier(const TiirModifierHandle& modifier) cons
 	return this->lib->RemoveModifier(modifier);
 }
 
-TiirModifierHandle EntityLibInterface::AddMultiplierModifier(std::uint64_t entity_id, MultiplierType multiplier,
-	float multiplier_value, InfluenceType influence_type, float influence_radius,
-	ActivityRelation multiplier_value_relation, float multiplier_interp_min_value) const
+TiirModifierHandle EntityLibInterface::AddMultiplierModifier(std::uint64_t entity_id, EMultiplierType multiplier,
+	float multiplier_value, EInfluenceType influence_type, float influence_radius,
+	EActivityRelation multiplier_value_relation, float multiplier_interp_min_value) const
 {
 	return this->lib->AddMultiplierModifier(
 		{ entity_id },
@@ -589,8 +589,8 @@ TiirModifierHandle EntityLibInterface::AddMultiplierModifier(std::uint64_t entit
 		multiplier_interp_min_value);
 }
 
-TiirModifierHandle EntityLibInterface::AddAbilityModifier(std::uint64_t entity_id, AbilityType ability,
-	bool ability_state, InfluenceType influence_type, float influence_radius) const
+TiirModifierHandle EntityLibInterface::AddAbilityModifier(std::uint64_t entity_id, EAbilityType ability,
+	bool ability_state, EInfluenceType influence_type, float influence_radius) const
 {
 	return this->lib->AddAbilityModifier(
 		{ entity_id },
@@ -627,7 +627,7 @@ void EntityLibInterface::AddObtainableArtifactToShip(std::uint64_t entity_id,
 
 namespace 
 {
-	SimEntity find_check_entity(const EntityIdManager* id_manager, std::uint64_t entity_id)
+	ASimEntity find_check_entity(const EntityIdManager* id_manager, std::uint64_t entity_id)
 	{
 		const auto entity = id_manager->FindEntity(entity_id);
 		if (!entity.IsValid())
@@ -695,7 +695,7 @@ std::string EntityLibInterface::GetEntityInternalName(std::uint64_t entity_id) c
 
 namespace
 {
-	SimShip find_check_ship(const EntityIdManager* id_manager, std::uint64_t entity_id)
+	ASimShip find_check_ship(const EntityIdManager* id_manager, std::uint64_t entity_id)
 	{
 		const auto entity = find_check_entity(id_manager, entity_id);
 		if (!entity.IsShip())
@@ -707,86 +707,86 @@ namespace
 	}
 }
 
-SquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
+ESquadronStance EntityLibInterface::GetStance(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
 
-	UC::TArray<SimShip> ships;
+	UC::TArray<ASimShip> ships;
 	ships.Add(ship);
 	bool single_formation;
-	UnitOrderStaticData formation_order;
+	UUnitOrderStaticData formation_order;
 	std::int32_t formation_order_index;
 	bool single_stance;
 	std::int32_t stance_order_index;
-	UnitOrderStaticData stance_order;
+	UUnitOrderStaticData stance_order;
 	units_info_subsystem.GetShipsFormationAndStance(
 		ships,
 		single_formation, formation_order_index, formation_order,
 		single_stance, stance_order_index, stance_order);
-	return *stance_order.GetSquadronStance();
+	return stance_order.SquadronStance;
 }
 
 std::string EntityLibInterface::GetFormation(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
 
-	UC::TArray<SimShip> ships;
+	UC::TArray<ASimShip> ships;
 	ships.Add(ship);
 	bool single_formation;
-	UnitOrderStaticData formation_order;
+	UUnitOrderStaticData formation_order;
 	std::int32_t formation_order_index;
 	bool single_stance;
 	std::int32_t stance_order_index;
-	UnitOrderStaticData stance_order;
+	UUnitOrderStaticData stance_order;
 	units_info_subsystem.GetShipsFormationAndStance(
 		ships, 
 		single_formation, formation_order_index, formation_order,
 		single_stance, stance_order_index, stance_order);
-	return boost::nowide::narrow(formation_order.GetStrikeGroupFormationData()->obj->GetName());
+	return boost::nowide::narrow(formation_order.StrikeGroupFormationData->GetName());
 }
 
 bool EntityLibInterface::IsNis(std::uint64_t entity_id) const
 {
 	const auto entity = find_check_entity(entity_id_manager, entity_id);
-	return *entity.GetbIsNis();
+	return entity.bIsNis;
 }
 
 float EntityLibInterface::GetShipScreenSize(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetShipScreenSize();
+	return ship.ShipScreenSize;
 }
 
 float EntityLibInterface::GetShipNormalizedScreenSize(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetShipNormalizedScreenSize();
+	return ship.ShipNormalizedScreenSize;
 }
 
 float EntityLibInterface::GetShipAudioSignificance(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetShipAudioSignificance();
+	return ship.ShipAudioSignificance;
 }
 
 std::int32_t EntityLibInterface::GetSquadronID(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetSquadronID();
+	return ship.SquadronID;
 }
 
 bool EntityLibInterface::IsSquadronLeader(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetIsSquadronLeader();
+	return ship.IsSquadronLeader;
 }
 
 std::uint64_t EntityLibInterface::GetSquadronLeader(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	if (const auto& leader = *ship.GetSquadronLeader(); leader.IsValid())
+	if (const auto& leader = ship.SquadronLeader; leader.IsValid())
 	{
-		return *leader.GetSimID();
+		return leader.SimID;
 	}
 	return 0;
 }
@@ -794,140 +794,140 @@ std::uint64_t EntityLibInterface::GetSquadronLeader(std::uint64_t entity_id) con
 std::string EntityLibInterface::GetPilotName(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return boost::nowide::narrow(ship.GetPilotName()->ToString());
+	return boost::nowide::narrow(ship.PilotName.ToString());
 }
 
 std::string EntityLibInterface::GetLocalizedUnitName(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	const auto& ship_static_data = *ship.GetDataAsset();
-	return boost::nowide::narrow(ship_static_data.GetUnitName()->ToString());
+	const auto& ship_static_data = ship.DataAsset;
+	return boost::nowide::narrow(ship_static_data.UnitName.ToString());
 }
 
 std::string EntityLibInterface::GetLocalizedUnitDescription(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	const auto& ship_static_data = *ship.GetDataAsset();
-	return boost::nowide::narrow(ship_static_data.GetUnitDescription()->ToString());
+	const auto& ship_static_data = ship.DataAsset;
+	return boost::nowide::narrow(ship_static_data.UnitDescription.ToString());
 }
 
 std::string EntityLibInterface::GetLocalizedUnitFlavourText(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	const auto& ship_static_data = *ship.GetDataAsset();
-	return boost::nowide::narrow(ship_static_data.GetUnitFlavourText()->ToString());
+	const auto& ship_static_data = ship.DataAsset;
+	return boost::nowide::narrow(ship_static_data.UnitFlavourText.ToString());
 }
 
 std::string EntityLibInterface::GetCreationMap(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return boost::nowide::narrow(ship.GetCreationMap()->GetCharArray());
+	return boost::nowide::narrow(ship.CreationMap.GetCharArray());
 }
 
 float EntityLibInterface::GetAudioFocusWeight(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetAudioFocusWeight();
+	return ship.AudioFocusWeight;
 }
 
 float EntityLibInterface::GetAudioFocusWeightContextualMultiplier(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetAudioFocusWeightContextualMultiplier();
+	return ship.AudioFocusWeightContextualMultiplier;
 }
 
 std::int32_t EntityLibInterface::GetAudioFocusRank(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetAudioFocusRank();
+	return ship.AudioFocusRank;
 }
 
 float EntityLibInterface::GetAudioFocusRankNormalized(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetAudioFocusRankNormalized();
+	return ship.AudioFocusRankNormalized;
 }
 
 std::int32_t EntityLibInterface::GetControlGroupsFlags(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetControlGroupsFlags();
+	return ship.ControlGroupsFlags;
 }
 
 bool EntityLibInterface::IsCenterFocused(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetIsCenterFocused();
+	return ship.IsCenterFocused;
 }
 
-TurretDeploymentState EntityLibInterface::GetDeployState(std::uint64_t entity_id) const
+ETurretDeploymentState EntityLibInterface::GetDeployState(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetDeployState();
+	return ship.DeployState;
 }
 
 std::tuple<double, double, double> EntityLibInterface::GetDeployLocation(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	const auto location = *ship.GetDeployLocation();
+	const auto& location = ship.DeployLocation;
 	return { location.X(), location.Y(), location.Z() };
 }
 
 std::tuple<double, double, double> EntityLibInterface::GetDeployNormal(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	const auto normal = *ship.GetDeployNormal();
+	const auto& normal = ship.DeployNormal;
 	return { normal.X(), normal.Y(), normal.Z() };
 }
 
 bool EntityLibInterface::IsDeployedInTacticalPause(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetbDeployedInTacticalPause();
+	return ship.bDeployedInTacticalPause;
 }
 
 bool EntityLibInterface::IsLatched(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetIsLatched();
+	return ship.IsLatched;
 }
 
 float EntityLibInterface::GetWeaponRange(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetWeaponRange();
+	return ship.WeaponRange;
 }
 
 float EntityLibInterface::GetSpecialWeaponRange(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetSpecialWeaponRange();
+	return ship.SpecialWeaponRange;
 }
 
 float EntityLibInterface::GetHealWeaponRange(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetHealWeaponRange();
+	return ship.HealWeaponRange;
 }
 
 float EntityLibInterface::GetHealSpecialWeaponRange(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetHealSpecialWeaponRange();
+	return ship.HealSpecialWeaponRange;
 }
 
 float EntityLibInterface::GetHyperspaceProgress(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetHyperspaceProgress();
+	return ship.HyperspaceProgress;
 }
 
 std::uint64_t EntityLibInterface::GetOpposingShip(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	if (const auto& opposing_ship = *ship.GetOpposingShip(); opposing_ship.IsValid())
+	if (const auto& opposing_ship = ship.OpposingShip; opposing_ship.IsValid())
 	{
-		return *opposing_ship.GetSimID();
+		return opposing_ship.SimID;
 	}
 	return 0;
 }
@@ -935,13 +935,13 @@ std::uint64_t EntityLibInterface::GetOpposingShip(std::uint64_t entity_id) const
 float EntityLibInterface::GetZombieTime(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetZombieTime();
+	return ship.ZombieTime;
 }
 
 std::tuple<bool, bool, bool, bool> EntityLibInterface::GetDeathModifiers(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	auto& flags = *ship.GetDeathModifiers();
+	auto& flags = ship.DeathModifiers;
 	return {
 		static_cast<bool>(flags.Instant), 
 		static_cast<bool>(flags.NoAoeDamage),
@@ -953,79 +953,79 @@ std::tuple<bool, bool, bool, bool> EntityLibInterface::GetDeathModifiers(std::ui
 float EntityLibInterface::GetSignificance(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetSignificance();
+	return ship.Significance;
 }
 
 float EntityLibInterface::GetDistanceToCamera(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetDistanceToCamera();
+	return ship.DistanceToCamera;
 }
 
 float EntityLibInterface::GetBackstageEffectiveness(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetBackstageEffectiveness();
+	return ship.BackstageEffectiveness;
 }
 
 std::uint64_t EntityLibInterface::GetDockWith(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	if (const auto& dock_with = *ship.GetDockWith(); dock_with.IsValid())
+	if (const auto& dock_with = ship.DockWith; dock_with.IsValid())
 	{
-		return *dock_with.GetSimID();
+		return dock_with.SimID;
 	}
 	return 0;
 }
 
-DockingStage EntityLibInterface::GetDockingStage(std::uint64_t entity_id) const
+EDockingStage EntityLibInterface::GetDockingStage(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetDockingStage();
+	return ship.DockingStage;
 }
 
 bool EntityLibInterface::IsDocked(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetIsDocked();
+	return ship.IsDocked;
 }
 
 bool EntityLibInterface::IsDocking(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetbIsDocking();
+	return ship.bIsDocking;
 }
 
 bool EntityLibInterface::HasPower(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetbHasPower();
+	return ship.bHasPower;
 }
 
 bool EntityLibInterface::IsHandlingExternalMove(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetbIsHandlingExternalMove();
+	return ship.bIsHandlingExternalMove;
 }
 
 bool EntityLibInterface::CanRally(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetbCanRally();
+	return ship.bCanRally;
 }
 
-HyperspaceStatus EntityLibInterface::GetHyperspaceStatus(std::uint64_t entity_id) const
+EHyperspaceStatus EntityLibInterface::GetHyperspaceStatus(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetHyperspaceStatus();
+	return ship.HyperspaceStatus;
 }
 
 std::uint64_t EntityLibInterface::GetParent(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	if (const auto& parent = *ship.GetParent(); parent.IsValid())
+	if (const auto& parent = ship.Parent; parent.IsValid())
 	{
-		return *parent.GetSimID();
+		return parent.SimID;
 	}
 	return 0;
 }
@@ -1033,11 +1033,11 @@ std::uint64_t EntityLibInterface::GetParent(std::uint64_t entity_id) const
 sol::table EntityLibInterface::GetCollectors(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	const auto& collectors = *ship.GetCollectors();
+	const auto& collectors = ship.Collectors;
 	sol::table result = lua->create_table();
 	for (auto& collector : collectors)
 	{
-		result.add(static_cast<std::uint64_t>(*collector.GetSimID()));
+		result.add(static_cast<std::uint64_t>(collector.SimID));
 	}
 	return result;
 }
@@ -1045,7 +1045,7 @@ sol::table EntityLibInterface::GetCollectors(std::uint64_t entity_id) const
 sol::table EntityLibInterface::GetAnimationStates(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	const auto& animation_states = *ship.GetAnimationStates();
+	const auto& animation_states = ship.AnimationStates;
 	sol::table result = lua->create_table();
 	for (auto& kv : animation_states)
 	{
@@ -1059,7 +1059,7 @@ sol::table EntityLibInterface::GetAnimationStates(std::uint64_t entity_id) const
 UCommandType EntityLibInterface::GetActiveCommandType(std::uint64_t entity_id) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	return *ship.GetActiveCommandType();
+	return ship.ActiveCommandType;
 }
 
 std::tuple<double, double, double> EntityLibInterface::GetShipVelocity(std::uint64_t entity_id) const
@@ -1093,10 +1093,10 @@ bool EntityLibInterface::IsProjectile(std::uint64_t entity_id) const
 	return entity.IsProjectile();
 }
 
-void EntityLibInterface::SetAnimationState(std::uint64_t entity_id, SobAnimationState state, bool value) const
+void EntityLibInterface::SetAnimationState(std::uint64_t entity_id, ESobAnimationState state, bool value) const
 {
 	const auto ship = find_check_ship(entity_id_manager, entity_id);
-	auto& states = *ship.GetAnimationStates();
+	auto& states = ship.AnimationStates;
 	auto kv = states.Find(state, [](auto a, auto b) {return a == b; });
 	kv->Value() = value;
 	ship.ReceiveAnimationStateChanged(state, {});

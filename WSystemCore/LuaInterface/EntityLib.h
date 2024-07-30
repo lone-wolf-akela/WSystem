@@ -36,8 +36,8 @@ public:
 		double rotation_w, double rotation_x, double rotation_y, double rotation_z,
 		double position_x, double position_y, double position_z,
 		double scale_x, double scale_y, double scale_z) const;
-	void SetTactics(std::uint64_t entity_id, SquadronTactics tactics) const;
-	void SetStance(std::uint64_t entity_id, SquadronStance stance) const;
+	void SetTactics(std::uint64_t entity_id, ESquadronTactics tactics) const;
+	void SetStance(std::uint64_t entity_id, ESquadronStance stance) const;
 	void SetRotation(std::uint64_t entity_id, double pitch, double yaw, double roll) const;
 	void SetNoRetaliate(std::uint64_t entity_id, bool enabled) const;
 	void SetMetaDataValue(std::uint64_t entity_id, std::string_view key, std::int32_t value) const;
@@ -47,7 +47,7 @@ public:
 	void SetIgnoreDamage(std::uint64_t entity_id, bool enabled) const;
 	void SetGhost(std::uint64_t entity_id, bool enabled) const;
 	void SetCloaking(std::uint64_t entity_id, bool enabled) const;
-	void SetAutoLaunch(std::uint64_t entity_id, AutoLaunchSetting auto_launch_setting) const;
+	void SetAutoLaunch(std::uint64_t entity_id, EAutoLaunchSetting auto_launch_setting) const;
 	void SetAngularVelocity(std::uint64_t entity_id, double x, double y, double z) const;
 	void Scuttle(std::uint64_t entity_id) const;
 	void SalvageCapture(std::uint64_t entity_id, std::string_view target_group) const;
@@ -56,7 +56,7 @@ public:
 	void Retire(std::uint64_t entity_id) const;
 	void Repair(std::uint64_t entity_id, std::string_view target_group) const;
 	void RemoveObtainableArtifactFromShip(std::uint64_t entity_id) const;
-	void OverrideRetaliationSetting(std::uint64_t entity_id, RetaliationSetting retaliation_setting) const;
+	void OverrideRetaliationSetting(std::uint64_t entity_id, ERetaliationSetting retaliation_setting) const;
 	void MovePingPong(std::uint64_t entity_id, sol::table locations, bool attack_move) const;
 	void MoveAlong(std::uint64_t entity_id, sol::table path, bool loop, bool attack_move) const;
 	void MakeDead(std::uint64_t entity_id, bool instant, bool no_aoe_damage, bool no_debris, bool no_zombie) const;
@@ -110,24 +110,24 @@ public:
 	void Attack(std::uint64_t entity_id, std::string_view target_group, bool maintain_guard) const;
 	TiirModifierHandle AddOverrideModifier(
 		std::uint64_t entity_id, 
-		SobPropertyType property, 
+		ESobPropertyType property, 
 		float value, 
-		InfluenceType influence_type, 
+		EInfluenceType influence_type, 
 		float influence_radius) const;
 	bool RemoveModifier(const TiirModifierHandle& modifier) const;
 	TiirModifierHandle AddMultiplierModifier(
 		std::uint64_t entity_id, 
-		MultiplierType multiplier, 
+		EMultiplierType multiplier, 
 		float multiplier_value, 
-		InfluenceType influence_type, 
+		EInfluenceType influence_type, 
 		float influence_radius, 
-		ActivityRelation multiplier_value_relation, 
+		EActivityRelation multiplier_value_relation, 
 		float multiplier_interp_min_value) const;
 	TiirModifierHandle AddAbilityModifier(
 		std::uint64_t entity_id, 
-		AbilityType ability, 
+		EAbilityType ability, 
 		bool ability_state, 
-		InfluenceType influence_type, 
+		EInfluenceType influence_type, 
 		float influence_radius) const;
 	bool RemoveStatusEffectByHandle(const TiirStatusEffectHandle& handle) const;
 	bool RemoveStatusEffect(std::uint64_t entity_id, std::string_view status) const;
@@ -144,7 +144,7 @@ public:
 	[[nodiscard]] bool IsMissile(std::uint64_t entity_id) const;
 	[[nodiscard]] std::string GetEntityInternalName(std::uint64_t entity_id) const;
 
-	[[nodiscard]] SquadronStance GetStance(std::uint64_t entity_id) const;
+	[[nodiscard]] ESquadronStance GetStance(std::uint64_t entity_id) const;
 	[[nodiscard]] std::string GetFormation(std::uint64_t entity_id) const;
 
 	[[nodiscard]] bool IsNis(std::uint64_t entity_id) const;
@@ -165,7 +165,7 @@ public:
 	[[nodiscard]] float GetAudioFocusRankNormalized(std::uint64_t entity_id) const;
 	[[nodiscard]] std::int32_t GetControlGroupsFlags(std::uint64_t entity_id) const;
 	[[nodiscard]] bool IsCenterFocused(std::uint64_t entity_id) const;
-	[[nodiscard]] TurretDeploymentState GetDeployState(std::uint64_t entity_id) const;
+	[[nodiscard]] ETurretDeploymentState GetDeployState(std::uint64_t entity_id) const;
 	[[nodiscard]] std::tuple<double, double, double> GetDeployLocation(std::uint64_t entity_id) const;
 	[[nodiscard]] std::tuple<double, double, double> GetDeployNormal(std::uint64_t entity_id) const;
 	[[nodiscard]] bool IsDeployedInTacticalPause(std::uint64_t entity_id) const;
@@ -182,13 +182,13 @@ public:
 	[[nodiscard]] float GetDistanceToCamera(std::uint64_t entity_id) const;
 	[[nodiscard]] float GetBackstageEffectiveness(std::uint64_t entity_id) const;
 	[[nodiscard]] std::uint64_t GetDockWith(std::uint64_t entity_id) const;
-	[[nodiscard]] DockingStage GetDockingStage(std::uint64_t entity_id) const;
+	[[nodiscard]] EDockingStage GetDockingStage(std::uint64_t entity_id) const;
 	[[nodiscard]] bool IsDocked(std::uint64_t entity_id) const;
 	[[nodiscard]] bool IsDocking(std::uint64_t entity_id) const;
 	[[nodiscard]] bool HasPower(std::uint64_t entity_id) const;
 	[[nodiscard]] bool IsHandlingExternalMove(std::uint64_t entity_id) const;
 	[[nodiscard]] bool CanRally(std::uint64_t entity_id) const;
-	[[nodiscard]] HyperspaceStatus GetHyperspaceStatus(std::uint64_t entity_id) const;
+	[[nodiscard]] EHyperspaceStatus GetHyperspaceStatus(std::uint64_t entity_id) const;
 	[[nodiscard]] std::uint64_t GetParent(std::uint64_t entity_id) const;
 	[[nodiscard]] sol::table GetCollectors(std::uint64_t entity_id) const;
 	[[nodiscard]] sol::table GetAnimationStates(std::uint64_t entity_id) const;
@@ -200,7 +200,7 @@ public:
 	[[nodiscard]] bool IsRavenSimProjectile(std::uint64_t entity_id) const;
 	[[nodiscard]] bool IsProjectile(std::uint64_t entity_id) const;
 
-	void SetAnimationState(std::uint64_t entity_id, SobAnimationState state, bool value) const;
+	void SetAnimationState(std::uint64_t entity_id, ESobAnimationState state, bool value) const;
 private:
 	sol::state_view* lua = nullptr;
 	SobGroupManager* sob_group_manager = nullptr;

@@ -3,7 +3,7 @@
 
 #include "StartingUnitEntry.h"
 
-struct StartingShipEntry : StartingUnitEntry 
+struct FStartingShipEntry : FStartingUnitEntry 
 {
-	UC::TArray<StartingUnitEntry> HoldEntries;
+	UC::TArray<FStartingUnitEntry> HoldEntries;
 };

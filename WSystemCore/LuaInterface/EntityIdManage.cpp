@@ -19,7 +19,7 @@ void EntityIdManager::Tick()
 	newly_born_entity.clear();
 	new_alive_entity.clear();
 
-	for (const auto& entity_map = *sim_proxy.GetEntityMap(); auto& kv : entity_map)
+	for (const auto& entity_map = sim_proxy.EntityMap; auto& kv : entity_map)
 	{
 		if (auto entity = kv.Value(); entity.IsValid())
 		{
@@ -39,7 +39,7 @@ void EntityIdManager::Tick()
 	alive_entity = std::move(new_alive_entity);
 }
 
-SimEntity EntityIdManager::FindEntity(std::uint64_t entity_id) const
+ASimEntity EntityIdManager::FindEntity(std::uint64_t entity_id) const
 {
 	if (const auto it = id_to_entity.find(entity_id); it != id_to_entity.end())
 	{

@@ -3,7 +3,7 @@
 
 #include "UObject.h"
 
-class MovableStaticData : public UObjWrapper
+class UMovableStaticData : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;

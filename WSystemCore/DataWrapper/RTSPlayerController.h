@@ -5,12 +5,12 @@
 #include "RTSPlayerUnitOrderComponent.h"
 #include "SimulationProxy.h"
 
-class RTSPlayerController : public UObjWrapper
+class ARTSPlayerController : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;
-	WSYS_DATA_PROPERTY(RTSPlayerUnitOrderComponent, UnitOrderComponent)
+	WSYS_DATA_PROPERTY(URTSPlayerUnitOrderComponent, UnitOrderComponent)
 
 	WSYS_MEMBER_FUNCTION_VOID(SetDebugTimeDilation, const float, TimeDilation)
-	WSYS_MEMBER_FUNCTION_NOARGS(SimulationProxy, GetSimulationProxy)
+	WSYS_MEMBER_FUNCTION_NOARGS(ASimulationProxy, GetSimulationProxy)
 };

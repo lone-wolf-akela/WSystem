@@ -146,7 +146,7 @@ WSysResearchManager::WSysResearchManager(TiirResearchFunctionLibrary* tiir_resea
 {
 }
 
-void WSysResearchManager::Begin_InGame(RavenSimulationProxy sim_proxy, RavenHUD hud, WBP_BuildPanel build_panel, RTSPlayerUnitOrderComponent unit_order_component)
+void WSysResearchManager::Begin_InGame(RavenSimulationProxy sim_proxy, RavenHUD hud, WBP_BuildPanel build_panel, URTSPlayerUnitOrderComponent unit_order_component)
 {
 	this->sim_proxy = sim_proxy;
 	this->hud = hud;
@@ -170,25 +170,25 @@ void WSysResearchManager::Tick()
 {
 	static std::set<StringType> owned_ship_types;
 	static std::set<StringType> done_research_list;
-	static std::vector<SimShip> alive_ship_list;
-	static std::vector<SimShip> production_ship_list;
+	static std::vector<ASimShip> alive_ship_list;
+	static std::vector<ASimShip> production_ship_list;
 
 	if (!sim_proxy.IsValid() || !EnableTick)
 	{
 		return;
 	}
 
-	const auto players = sim_proxy.GetSimPlayers();
+	const auto& players = sim_proxy.SimPlayers;
 	bool build_options_has_update = false;
 
-	for (std::int32_t player_idx = 0; player_idx < players->Num(); player_idx++)
+	for (std::int32_t player_idx = 0; player_idx < players.Num(); player_idx++)
 	{
-		auto player = (*players)[player_idx];
+		auto player = players[player_idx];
 
-		const auto research_manager = player.GetResearchManager();
+		const auto& research_manager = player.ResearchManager;
 
-		auto& research_list = *research_manager->GetResearchList();
-		auto& entity_list = *player.GetOwnedSimObjects();
+		auto& research_list = research_manager.ResearchList;
+		auto& entity_list = player.OwnedSimObjects;
 		
 		owned_ship_types.clear();
 		done_research_list.clear();
@@ -199,12 +199,12 @@ void WSysResearchManager::Tick()
 		{
 			if (entity.IsValid() && entity.IsShip() && entity.IsAlive())
 			{
-				SimShip ship = entity.obj;
-				const auto ship_static_data = *ship.GetDataAsset();
+				ASimShip ship = entity.obj;
+				const auto& ship_static_data = ship.DataAsset;
 				owned_ship_types.emplace(ship_static_data->GetName());
 				alive_ship_list.emplace_back(ship);
 
-				if (const auto& production_families = *ship_static_data.GetProductionFamilies();
+				if (const auto& production_families = ship_static_data.ProductionFamilies;
 					production_families.Num() != 0)
 				{
 					production_ship_list.emplace_back(ship);
@@ -214,7 +214,7 @@ void WSysResearchManager::Tick()
 
 		for (auto& research : research_list)
 		{
-			if (research.State == ResearchState::Done)
+			if (research.State == EResearchState::Done)
 			{
 				done_research_list.emplace(research.StaticData->GetName());
 			}
@@ -233,12 +233,12 @@ void WSysResearchManager::Tick()
 void WSysResearchManager::PostBuildPanelGetBuildListOfProductionEntity(
 	Unreal::UnrealScriptFunctionCallableContext& context, [[maybe_unused]] void* custom_data) const
 {
-	const auto& production_entity = context.GetParams<SimEntity>();
+	const auto& production_entity = context.GetParams<ASimEntity>();
 	auto& frame = context.TheStack;
 	const auto outprop_0 = frame.OutParms();
 	const auto outprop_1 = frame.OutParms()->NextOutParm;
-	auto& manual_build_list = *reinterpret_cast<UC::TArray<ShipStaticData>*>(outprop_0->PropAddr);
-	auto& native_build_list = *reinterpret_cast<UC::TArray<ShipStaticData>*>(outprop_1->PropAddr);
+	auto& manual_build_list = *reinterpret_cast<UC::TArray<UShipStaticData>*>(outprop_0->PropAddr);
+	auto& native_build_list = *reinterpret_cast<UC::TArray<UShipStaticData>*>(outprop_1->PropAddr);
 	if (!production_entity.IsShip()) { return; }
 	for (std::int32_t i = 0; i < manual_build_list.Num(); i++)
 	{
@@ -258,9 +258,9 @@ void WSysResearchManager::PostBuildPanelGetBuildListOfProductionEntity(
 	}
 }
 
-BuildConditionCheckResult WSysResearchManager::CanShipBuild(SimShip production_ship, ShipStaticData ship_to_build) const
+BuildConditionCheckResult WSysResearchManager::CanShipBuild(ASimShip production_ship, UShipStaticData ship_to_build) const
 {
-	const auto ship_id = *production_ship.GetSimID();
+	const auto ship_id = production_ship.SimID;
 	if (const auto production_ship_cache = build_capability_cache.find(ship_id); production_ship_cache != build_capability_cache.end())
 	{
 		if (const auto record = production_ship_cache->second.find(ship_to_build->GetName()); record != production_ship_cache->second.end())
@@ -271,16 +271,16 @@ BuildConditionCheckResult WSysResearchManager::CanShipBuild(SimShip production_s
 	return BuildConditionCheckResult::DoNotCare;
 }
 
-void WSysResearchManager::NotifyResearchChanged(SimPlayer player, const ResearchData& data) const
+void WSysResearchManager::NotifyResearchChanged(USimPlayer player, const FResearchData& data) const
 {
-	hud.ResearchChangedEvent(player, data, ResearchEvent::InstaResearchComplete, false);
+	hud.ResearchChangedEvent(player, data, EResearchEvent::InstaResearchComplete, false);
 }
 
 void WSysResearchManager::UpdateResearchStatus(
 	std::int32_t player_idx, 
-	SimPlayer player, 
-	std::span<const SimShip> production_ship_list,
-	const UC::TArray<ResearchData>& research_list, 
+	USimPlayer player,
+	std::span<const ASimShip> production_ship_list,
+	const UC::TArray<FResearchData>& research_list, 
 	const std::set<StringType>& owned_ship_types,
 	const std::set<StringType>& done_research_list) const
 {
@@ -298,19 +298,19 @@ void WSysResearchManager::UpdateResearchStatus(
 		{
 		case ResearchConditionCheckResult::Unlocked:
 		{
-			if (research.State == ResearchState::Done)
+			if (research.State == EResearchState::Done)
 			{
 				break;
 			}
 
 			std::ignore = tiir_research_function_library->UnlockResearchForPlayer(player_idx, research_static_data);
-			research.State = ResearchState::Done;
+			research.State = EResearchState::Done;
 			NotifyResearchChanged(player, research);
 			break;
 		}
 		case ResearchConditionCheckResult::Locked:
 		{
-			if (research.State == ResearchState::Locked)
+			if (research.State == EResearchState::Locked)
 			{
 				// already locked, do nothing
 				break;
@@ -318,7 +318,7 @@ void WSysResearchManager::UpdateResearchStatus(
 
 			tiir_research_function_library->CancelResearchForPlayer(player_idx, research_static_data);
 
-			if (*research_static_data.GetUpgradeType() == UpgradeType::None)
+			if (research_static_data.UpgradeType == EUpgradeType::None)
 			{
 				// is not upgrade,
 				// so it is a ship unlock research.
@@ -329,7 +329,7 @@ void WSysResearchManager::UpdateResearchStatus(
 				}
 			}
 
-			research.State = ResearchState::Locked;
+			research.State = EResearchState::Locked;
 			NotifyResearchChanged(player, research);
 			break;
 		}
@@ -342,30 +342,30 @@ void WSysResearchManager::UpdateResearchStatus(
 namespace
 {
 
-	std::map<SimShip, std::set<StringType>> find_docked_ships(std::span<const SimShip> ship_list)
+	std::map<ASimShip, std::set<StringType>> find_docked_ships(std::span<const ASimShip> ship_list)
 	{
-		std::map<SimShip, std::set<StringType>> docked_ships;
+		std::map<ASimShip, std::set<StringType>> docked_ships;
 		for (auto& ship : ship_list)
 		{
-			if (!*ship.GetIsDocked())
+			if (!ship.IsDocked)
 			{
 				continue;
 			}
-			const auto dock_with = *ship.GetDockWith();
+			const auto& dock_with = ship.DockWith;
 			if (!docked_ships.contains(dock_with))
 			{
 				docked_ships[dock_with] = {};
 			}
-			docked_ships[dock_with].emplace((*ship.GetDataAsset())->GetName());
+			docked_ships[dock_with].emplace(ship.DataAsset->GetName());
 		}
 		return docked_ships;
 	}
 }
 
 bool WSysResearchManager::UpdateBuildStatus(
-	SimPlayer player,
-	std::span<const SimShip> alive_ship_list,
-	std::span<const SimShip> production_ship_list,
+	USimPlayer player,
+	std::span<const ASimShip> alive_ship_list,
+	std::span<const ASimShip> production_ship_list,
 	const std::set<StringType>& owned_ship_types,
 	const std::set<StringType>& done_research_list)
 {
@@ -375,8 +375,8 @@ bool WSysResearchManager::UpdateBuildStatus(
 	bool build_options_has_update = false;
 	for (auto& build_from_ship : production_ship_list)
 	{
-		const auto ship_static_data = *build_from_ship.GetDataAsset();
-		const auto build_from_ship_id = *build_from_ship.GetSimID();
+		const auto& ship_static_data = build_from_ship.DataAsset;
+		const auto build_from_ship_id = build_from_ship.SimID;
 		const auto build_from_ship_name = ship_static_data->GetName();
 		if (!build_capability_cache.contains(build_from_ship_id))
 		{
@@ -421,9 +421,9 @@ void WSysResearchManager::NotifyBuildListChanged() const
 
 
 
-void WSysResearchManager::CancelBuild(SimPlayer player, SimShip builder, ShipStaticData ship_to_build) const
+void WSysResearchManager::CancelBuild(USimPlayer player, ASimShip builder, UShipStaticData ship_to_build) const
 {
-	const auto production = *builder.GetProductionComponent();
+	const auto& production = builder.ProductionComponent;
 	bool valid;
 	const auto build_jobs = production.GetJobTypeState(ship_to_build, valid);
 	if (!valid)
@@ -434,7 +434,7 @@ void WSysResearchManager::CancelBuild(SimPlayer player, SimShip builder, ShipSta
 	for(std::int32_t i = build_jobs.Jobs.Num() - 1; i >= 0; i--)
 	{
 		const auto& job = build_jobs.Jobs[i];
-		auto order = sim_order_factory->MakeCancelBuildOrder(player, builder.obj, BuildCancelType::Job, job.ID, nullptr);
+		auto order = sim_order_factory->MakeCancelBuildOrder(player, builder.obj, EBuildCancelType::Job, job.ID, nullptr);
 		unit_order_component.SendOrder(order);
 	}
 }

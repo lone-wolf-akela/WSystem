@@ -92,7 +92,7 @@ void ScriptRuleManager::AddRuleInterval_Impl(std::string_view name, std::int64_t
 	rule.Name = name;
 	rule.Func = FindFunc(name);
 	rule.TickInterval = interval;
-	rule.NextTick = *sim_proxy.GetSimulatingFrame() + interval;
+	rule.NextTick = sim_proxy.SimulatingFrame + interval;
 	rule.Repeat = repeat;
 
 	interval_rules.emplace(name, std::move(rule));
@@ -111,7 +111,7 @@ void ScriptRuleManager::AddRuleParamInterval_Impl(std::string_view name, std::st
 	rule.Param = param;
 	rule.Func = FindFunc(name);
 	rule.TickInterval = interval;
-	rule.NextTick = *sim_proxy.GetSimulatingFrame() + interval;
+	rule.NextTick = sim_proxy.SimulatingFrame + interval;
 	rule.Repeat = repeat;
 
 	param_interval_rules.emplace(NameParamPair{ std::string(name), std::string(param) }, std::move(rule));
@@ -183,7 +183,7 @@ void ScriptRuleManager::Tick()
 	std::vector<std::string> to_remove_names;
 	for(auto& [name, rule] : interval_rules)
 	{
-		if (rule.NextTick <= *sim_proxy.GetSimulatingFrame())
+		if (rule.NextTick <= sim_proxy.SimulatingFrame)
 		{
 			rule.Call();
 			if (rule.Repeat)
@@ -204,7 +204,7 @@ void ScriptRuleManager::Tick()
 	std::vector<NameParamPair> to_remove_name_params;
 	for(auto& [name_param, rule] : param_interval_rules)
 	{
-		if (rule.NextTick <= *sim_proxy.GetSimulatingFrame())
+		if (rule.NextTick <= sim_proxy.SimulatingFrame)
 		{
 			rule.Call();
 			if (rule.Repeat)

@@ -27,9 +27,9 @@ public:
 	WSYS_MEMBER_FUNCTION_VOID(SetTransform, const TiirEntity&, entity, const RC::Unreal::FTransform&, transform)
 
 	// maybe not works
-	WSYS_MEMBER_FUNCTION_VOID(SetTactics, const TiirEntity&, entity, const SquadronTactics, tactics)
+	WSYS_MEMBER_FUNCTION_VOID(SetTactics, const TiirEntity&, entity, const ESquadronTactics, tactics)
 
-	WSYS_MEMBER_FUNCTION_VOID(SetStance, const TiirEntity&, entity, const SquadronStance, stance)
+	WSYS_MEMBER_FUNCTION_VOID(SetStance, const TiirEntity&, entity, const ESquadronStance, stance)
 
 	WSYS_MEMBER_FUNCTION_VOID(SetRotation, const TiirEntity&, entity, const RC::Unreal::FRotator&, rotation)
 
@@ -49,7 +49,7 @@ public:
 
 	WSYS_MEMBER_FUNCTION_VOID(SetCloaking, const TiirEntity&, entity, const bool, enabled)
 
-	WSYS_MEMBER_FUNCTION_VOID(SetAutoLaunch, const TiirEntity&, entity, const AutoLaunchSetting, auto_launch_setting)
+	WSYS_MEMBER_FUNCTION_VOID(SetAutoLaunch, const TiirEntity&, entity, const EAutoLaunchSetting, auto_launch_setting)
 
 	WSYS_MEMBER_FUNCTION_VOID(SetAngularVelocity, const TiirEntity&, entity, const RC::Unreal::FVector&, angular_velocity)
 
@@ -67,7 +67,7 @@ public:
 	
 	WSYS_MEMBER_FUNCTION(bool, RemoveStatusEffectByHandle, const TiirStatusEffectHandle&, handle)
 
-	WSYS_MEMBER_FUNCTION(bool, RemoveStatusEffect, const TiirEntity&, entity, const StatusEffectStaticData, status)
+	WSYS_MEMBER_FUNCTION(bool, RemoveStatusEffect, const TiirEntity&, entity, const UStatusEffectStaticData, status)
 
 	WSYS_MEMBER_FUNCTION_VOID(RemoveObtainableArtifactFromShip, const TiirEntity&, entity)
 
@@ -76,7 +76,7 @@ public:
 	// todo bound to lua
 	WSYS_MEMBER_FUNCTION_VOID(RemoveEntityStatus, const TiirEntity&, entity, const EntityStatus*, status)
 
-	WSYS_MEMBER_FUNCTION_VOID(OverrideRetaliationSetting, const TiirEntity&, entity, const RetaliationSetting, retaliation_setting)
+	WSYS_MEMBER_FUNCTION_VOID(OverrideRetaliationSetting, const TiirEntity&, entity, const ERetaliationSetting, retaliation_setting)
 
 	// not bound
 	WSYS_MEMBER_FUNCTION(bool, NotEqual_TiirEntityTiirEntity, const TiirEntity&, a, const TiirEntity&, b)
@@ -117,7 +117,7 @@ public:
 	WSYS_MEMBER_FUNCTION(bool, IsAlive, const TiirEntity&, entity)
 
 	// not bound
-	WSYS_MEMBER_FUNCTION(bool, HasStatusEffect, const TiirEntity&, entity, const StatusEffectStaticData, status_effect)
+	WSYS_MEMBER_FUNCTION(bool, HasStatusEffect, const TiirEntity&, entity, const UStatusEffectStaticData, status_effect)
 
 	WSYS_MEMBER_FUNCTION_VOID(Guard, const TiirEntity&, entity, const TiirEntityGroup&, targets)
 
@@ -142,17 +142,17 @@ public:
 	WSYS_MEMBER_FUNCTION(float, GetHealth, const TiirEntity&, entity)
 
 	// not bound
-	WSYS_MEMBER_FUNCTION(TiirEntity, GetEntity_OnPres, const SimEntity, entity)
+	WSYS_MEMBER_FUNCTION(TiirEntity, GetEntity_OnPres, const ASimEntity, entity)
 
 	// not bound
-	WSYS_MEMBER_FUNCTION(TiirEntity, GetEntity, const SimEntity, entity)
+	WSYS_MEMBER_FUNCTION(TiirEntity, GetEntity, const ASimEntity, entity)
 
 	WSYS_MEMBER_FUNCTION(std::int32_t, GetBuildTime, const TiirEntity&, entity)
 
 	WSYS_MEMBER_FUNCTION_VOID(GatherResource, const TiirEntity&, entity, const TiirEntityGroup&, targets)
 
 	// bound to lua: FindShipType
-	WSYS_MEMBER_FUNCTION(ShipStaticData, FindShipStaticData, const TiirEntity&, entity)
+	WSYS_MEMBER_FUNCTION(UShipStaticData, FindShipStaticData, const TiirEntity&, entity)
 
 	// not bound
 	WSYS_MEMBER_FUNCTION(bool, EqualEqual_TiirEntityTiirEntity, const TiirEntity&, a, const TiirEntity&, b)
@@ -192,17 +192,17 @@ public:
 	// todo bound to lua
 	WSYS_MEMBER_FUNCTION_VOID(ApplyEntityStatus, const TiirEntity&, entity, const EntityStatus*, status)
 
-	WSYS_MEMBER_FUNCTION(TiirStatusEffectHandle, AddStatusEffect, const TiirEntity&, entity, StatusEffectStaticData, status_effect)
+	WSYS_MEMBER_FUNCTION(TiirStatusEffectHandle, AddStatusEffect, const TiirEntity&, entity, UStatusEffectStaticData, status_effect)
 
-	WSYS_MEMBER_FUNCTION(TiirModifierHandle, AddOverrideModifier, const TiirEntity&, entity, const SobPropertyType, property, const float, value, const InfluenceType, influence_type, const float, influence_radius)
+	WSYS_MEMBER_FUNCTION(TiirModifierHandle, AddOverrideModifier, const TiirEntity&, entity, const ESobPropertyType, property, const float, value, const EInfluenceType, influence_type, const float, influence_radius)
 
 	// todo bound to lua
 	//WSYS_MEMBER_FUNCTION_VOID(AddObtainableSoftArtifactToShip, const TiirEntity&, entity, const TSoftObjectPtr<UArtifactStaticData>, artifact_static_data)
 
-	WSYS_MEMBER_FUNCTION_VOID(AddObtainableArtifactToShip, const TiirEntity&, entity, const ArtifactStaticData, artifact_static_data)
+	WSYS_MEMBER_FUNCTION_VOID(AddObtainableArtifactToShip, const TiirEntity&, entity, const UArtifactStaticData, artifact_static_data)
 
-	WSYS_MEMBER_FUNCTION(TiirModifierHandle, AddMultiplierModifier, const TiirEntity&, entity, const MultiplierType, multiplier, const float, multiplier_value, const InfluenceType, influence_type, const float, influence_radius, const ActivityRelation, multiplier_value_relation, const float, multiplier_interp_min_value)
+	WSYS_MEMBER_FUNCTION(TiirModifierHandle, AddMultiplierModifier, const TiirEntity&, entity, const EMultiplierType, multiplier, const float, multiplier_value, const EInfluenceType, influence_type, const float, influence_radius, const EActivityRelation, multiplier_value_relation, const float, multiplier_interp_min_value)
 
-	WSYS_MEMBER_FUNCTION(TiirModifierHandle, AddAbilityModifier, const TiirEntity&, entity, const AbilityType, ability, const bool, ability_state, const InfluenceType, influence_type, const float, influence_radius)
+	WSYS_MEMBER_FUNCTION(TiirModifierHandle, AddAbilityModifier, const TiirEntity&, entity, const EAbilityType, ability, const bool, ability_state, const EInfluenceType, influence_type, const float, influence_radius)
 
 };

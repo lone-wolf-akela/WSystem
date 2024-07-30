@@ -4,10 +4,10 @@
 #include "UObject.h"
 #include "BuildFamily.h"
 
-class EntityStaticData : public UObjWrapper
+class UEntityStaticData : public UObjWrapper
 {
 public:
 	using UObjWrapper::UObjWrapper;
 
-	WSYS_DATA_PROPERTY(BuildFamily, BuildFamily)
+	WSYS_DATA_PROPERTY(UBuildFamily, BuildFamily)
 };

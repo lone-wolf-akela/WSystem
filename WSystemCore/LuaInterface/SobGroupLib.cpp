@@ -249,7 +249,7 @@ std::int32_t SobGroupManager::FillGroupFromFilteredType(
 	std::string_view source_group,
 	sol::table desired_types)
 {
-	UC::TArray<EntityStaticData> tarray_desired_types;
+	UC::TArray<UEntityStaticData> tarray_desired_types;
 	tarray_desired_types.Reserve(static_cast<std::int32_t>(desired_types.size()));
 	for (const auto& kv : desired_types)
 	{
@@ -315,7 +315,7 @@ void SobGroupManager::SetTransform(std::string_view group, double rotation_w, do
 	lib->SetTransform(FindGroup(group), RC::Unreal::FTransform{ rotation, translation, scale });
 }
 
-void SobGroupManager::SetTactics(std::string_view group, SquadronTactics tactics) const
+void SobGroupManager::SetTactics(std::string_view group, ESquadronTactics tactics) const
 {
 	lib->SetTactics(FindGroup(group), tactics);
 }
@@ -325,7 +325,7 @@ void SobGroupManager::SetStrikeGroupFormation(std::string_view group, std::strin
 	lib->SetStrikeGroupFormation(FindGroup(group), database->GetStrikeGroupFormationData(formation));
 }
 
-void SobGroupManager::SetStance(std::string_view group, SquadronStance stance) const
+void SobGroupManager::SetStance(std::string_view group, ESquadronStance stance) const
 {
 	lib->SetStance(FindGroup(group), stance);
 }
@@ -375,7 +375,7 @@ void SobGroupManager::SetCloaking(std::string_view group, bool enabled) const
 	lib->SetCloaking(FindGroup(group), enabled);
 }
 
-void SobGroupManager::SetAutoLaunch(std::string_view group, AutoLaunchSetting auto_launch_setting) const
+void SobGroupManager::SetAutoLaunch(std::string_view group, EAutoLaunchSetting auto_launch_setting) const
 {
 	lib->SetAutoLaunch(FindGroup(group), auto_launch_setting);
 }
@@ -433,13 +433,13 @@ void SobGroupManager::RemoveObtainableArtifactFromShips(std::string_view group) 
 }
 
 void SobGroupManager::ParadeAround(std::string_view group, std::uint64_t parade_around_entity_id,
-	ParadeMode parade_mode) const
+	EParadeMode parade_mode) const
 {
 	lib->ParadeAround(FindGroup(group), { parade_around_entity_id }, parade_mode);
 }
 
 void SobGroupManager::OverrideRetaliationSetting(std::string_view group,
-	RetaliationSetting the_retaliation_setting) const
+	ERetaliationSetting the_retaliation_setting) const
 {
 	lib->OverrideRetaliationSetting(FindGroup(group), the_retaliation_setting);
 }
@@ -586,11 +586,11 @@ std::int32_t SobGroupManager::GroupCountFiltered(std::string_view group, bool aw
 	bool in_combat)
 {
 	std::uint8_t filter = 0;
-	if (awake) { filter |= static_cast<std::uint8_t>(TiirGroupCountFilter::Awake); }
-	if (docked) { filter |= static_cast<std::uint8_t>(TiirGroupCountFilter::Docked); }
-	if (in_hyperspace) { filter |= static_cast<std::uint8_t>(TiirGroupCountFilter::InHyperspace); }
-	if (in_combat) { filter |= static_cast<std::uint8_t>(TiirGroupCountFilter::InCombat); }
-	return lib->GroupCountFiltered(FindGroup(group), static_cast<TiirGroupCountFilter>(filter));
+	if (awake) { filter |= static_cast<std::uint8_t>(ETiirGroupCountFilter::Awake); }
+	if (docked) { filter |= static_cast<std::uint8_t>(ETiirGroupCountFilter::Docked); }
+	if (in_hyperspace) { filter |= static_cast<std::uint8_t>(ETiirGroupCountFilter::InHyperspace); }
+	if (in_combat) { filter |= static_cast<std::uint8_t>(ETiirGroupCountFilter::InCombat); }
+	return lib->GroupCountFiltered(FindGroup(group), static_cast<ETiirGroupCountFilter>(filter));
 }
 
 void SobGroupManager::GroupClear(std::string_view group)
@@ -663,7 +663,7 @@ std::int32_t SobGroupManager::FillGroupFromPlayerMothershipList(std::string_view
 std::int32_t SobGroupManager::FillGroupFromFilteredFamily(std::string_view group, std::string_view source_group,
 	sol::table desired_types)
 {
-	UC::TArray<AttackFamily> tarray_desired_types;
+	UC::TArray<UAttackFamily> tarray_desired_types;
 	tarray_desired_types.Reserve(static_cast<std::int32_t>(desired_types.size()));
 	for (const auto& kv : desired_types)
 	{
@@ -779,7 +779,7 @@ void SobGroupManager::CustomCommand(std::string_view group, std::string_view tar
 
 std::int32_t SobGroupManager::CountShipTypePresentInGroup(std::string_view group, sol::table filter_types) const
 {
-	UC::TArray<ShipStaticData> tarray_filter_types;
+	UC::TArray<UShipStaticData> tarray_filter_types;
 	tarray_filter_types.Reserve(static_cast<std::int32_t>(filter_types.size()));
 	for (const auto& kv : filter_types)
 	{
@@ -792,7 +792,7 @@ std::int32_t SobGroupManager::CountShipTypePresentInGroup(std::string_view group
 
 std::int32_t SobGroupManager::CountAttackFamilyPresentInGroup(std::string_view group, sol::table filter_families) const
 {
-	UC::TArray<AttackFamily> tarray_filter_families;
+	UC::TArray<UAttackFamily> tarray_filter_families;
 	tarray_filter_families.Reserve(static_cast<std::int32_t>(filter_families.size()));
 	for (const auto& kv : filter_families)
 	{
@@ -862,8 +862,8 @@ void SobGroupManager::CreateShipSimple(
 	double x, double y, double z,
 	double pitch, double yaw, double roll,
 	std::int32_t owning_player, bool start_in_hyperspace,
-	bool skip_placement_logic, std::string_view ship_type, std::int32_t ship_count, SquadronStance stance,
-	bool use_retaliation_override, RetaliationSetting retaliation_override, bool do_not_retaliate_against_me)
+	bool skip_placement_logic, std::string_view ship_type, std::int32_t ship_count, ESquadronStance stance,
+	bool use_retaliation_override, ERetaliationSetting retaliation_override, bool do_not_retaliate_against_me)
 {	
 	auto world = RC::Unreal::Cast<Unreal::UWorld>(Unreal::UObjectGlobals::FindFirstOf(STR("World")));
 	auto spawner_class = RC::Unreal::UObjectGlobals::StaticFindObject<Unreal::UClass*>(
@@ -874,15 +874,15 @@ void SobGroupManager::CreateShipSimple(
 	Unreal::FVector position{ x, y, z };
 	Unreal::FRotator rotation{ pitch, yaw, roll };
 	auto spawner_actor = world->SpawnActor(spawner_class, &position, &rotation);
-	TiirShipSpawner spawner = spawner_actor;
+	ATiirShipSpawner spawner = spawner_actor;
 
-	*spawner.GetOwningPlayer() = owning_player;
-	*spawner.GetShipType() = database->GetShipData(ship_type);
-	*spawner.GetShipCount() = ship_count;
-	*spawner.GetStance() = stance;
-	*spawner.GetUseRetaliationOverride() = use_retaliation_override;
-	*spawner.GetRetaliationOverride() = retaliation_override;
-	*spawner.GetDoNotRetaliateAgainstMe() = do_not_retaliate_against_me;
+	spawner.OwningPlayer = owning_player;
+	spawner.ShipType = database->GetShipData(ship_type);
+	spawner.ShipCount = ship_count;
+	spawner.Stance = stance;
+	spawner.UseRetaliationOverride = use_retaliation_override;
+	spawner.RetaliationOverride = retaliation_override;
+	spawner.DoNotRetaliateAgainstMe = do_not_retaliate_against_me;
 
 	lib->CreateShip(FindGroup(group), spawner, owning_player, start_in_hyperspace, skip_placement_logic);
 
@@ -891,7 +891,7 @@ void SobGroupManager::CreateShipSimple(
 
 void SobGroupManager::FillGroupAllEntitiesInGame(std::string_view group)
 {
-	auto& entity_map = *this->sim_proxy.GetEntityMap();
+	auto& entity_map = this->sim_proxy.EntityMap;
 	auto& g = FindGroup(group);
 	for (auto& kv : entity_map)
 	{
@@ -902,7 +902,7 @@ void SobGroupManager::FillGroupAllEntitiesInGame(std::string_view group)
 
 void SobGroupManager::FillGroupAllShipsInGame(std::string_view group)
 {
-	auto& entity_map = *this->sim_proxy.GetEntityMap();
+	auto& entity_map = this->sim_proxy.EntityMap;
 	auto& g = FindGroup(group);
 	for (auto& kv : entity_map)
 	{
@@ -917,7 +917,7 @@ void SobGroupManager::FillGroupAllShipsInGame(std::string_view group)
 
 void SobGroupManager::FillGroupAllNonShipEntitiesInGame(std::string_view group)
 {
-	auto& entity_map = *this->sim_proxy.GetEntityMap();
+	auto& entity_map = this->sim_proxy.EntityMap;
 	auto& g = FindGroup(group);
 	for (auto& kv : entity_map)
 	{
@@ -932,7 +932,7 @@ void SobGroupManager::FillGroupAllNonShipEntitiesInGame(std::string_view group)
 
 void SobGroupManager::FillGroupAllAliveShipsInGame(std::string_view group)
 {
-	auto& entity_map = *this->sim_proxy.GetEntityMap();
+	auto& entity_map = this->sim_proxy.EntityMap;
 	auto& g = FindGroup(group);
 	for (auto& kv : entity_map)
 	{
@@ -947,7 +947,7 @@ void SobGroupManager::FillGroupAllAliveShipsInGame(std::string_view group)
 
 void SobGroupManager::FillGroupAllAliveEntitiesInGame(std::string_view group)
 {
-	auto& entity_map = *this->sim_proxy.GetEntityMap();
+	auto& entity_map = this->sim_proxy.EntityMap;
 	auto& g = FindGroup(group);
 	for (auto& kv : entity_map)
 	{
@@ -962,7 +962,7 @@ void SobGroupManager::FillGroupAllAliveEntitiesInGame(std::string_view group)
 
 void SobGroupManager::FillGroupAllAliveNonShipEntitiesInGame(std::string_view group)
 {
-	auto& entity_map = *this->sim_proxy.GetEntityMap();
+	auto& entity_map = this->sim_proxy.EntityMap;
 	auto& g = FindGroup(group);
 	for (auto& kv : entity_map)
 	{
@@ -991,7 +991,7 @@ std::int32_t SobGroupManager::GroupCountAliveEntities(std::string_view group) co
 
 namespace
 {
-	SimEntity find_check_entity(const EntityIdManager* id_manager, std::uint64_t entity_id)
+	ASimEntity find_check_entity(const EntityIdManager* id_manager, std::uint64_t entity_id)
 	{
 		const auto entity = id_manager->FindEntity(entity_id);
 		if (!entity.IsValid())
@@ -1002,7 +1002,7 @@ namespace
 		return entity;
 	}
 
-	SimShip find_check_ship(const EntityIdManager* id_manager, std::uint64_t entity_id)
+	ASimShip find_check_ship(const EntityIdManager* id_manager, std::uint64_t entity_id)
 	{
 		const auto entity = find_check_entity(id_manager, entity_id);
 		if (!entity.IsShip())
@@ -1014,9 +1014,9 @@ namespace
 	}
 }
 
-std::tuple<bool, SquadronStance> SobGroupManager::GetStance(std::string_view group) const
+std::tuple<bool, ESquadronStance> SobGroupManager::GetStance(std::string_view group) const
 {
-	UC::TArray<SimShip> ships;
+	UC::TArray<ASimShip> ships;
 	const auto& g = FindGroup(group);
 	for (auto& e : g.Entities)
 	{
@@ -1025,24 +1025,24 @@ std::tuple<bool, SquadronStance> SobGroupManager::GetStance(std::string_view gro
 	}
 
 	bool single_formation;
-	UnitOrderStaticData formation_order;
+	UUnitOrderStaticData formation_order;
 	std::int32_t formation_order_index;
 	bool single_stance;
 	std::int32_t stance_order_index;
-	UnitOrderStaticData stance_order;
+	UUnitOrderStaticData stance_order;
 	units_info_subsystem.GetShipsFormationAndStance(
 		ships,
 		single_formation, formation_order_index, formation_order,
 		single_stance, stance_order_index, stance_order);
 
-	const auto stance = stance_order.IsValid() ? *stance_order.GetSquadronStance() : SquadronStance{};
+	const auto stance = stance_order.IsValid() ? stance_order.SquadronStance : ESquadronStance{};
 
 	return { single_stance, stance };
 }
 
 std::tuple<bool, std::string> SobGroupManager::GetFormation(std::string_view group) const
 {
-	UC::TArray<SimShip> ships;
+	UC::TArray<ASimShip> ships;
 	const auto& g = FindGroup(group);
 	for (auto& e : g.Entities)
 	{
@@ -1051,18 +1051,18 @@ std::tuple<bool, std::string> SobGroupManager::GetFormation(std::string_view gro
 	}
 
 	bool single_formation;
-	UnitOrderStaticData formation_order;
+	UUnitOrderStaticData formation_order;
 	std::int32_t formation_order_index;
 	bool single_stance;
 	std::int32_t stance_order_index;
-	UnitOrderStaticData stance_order;
+	UUnitOrderStaticData stance_order;
 	units_info_subsystem.GetShipsFormationAndStance(
 		ships,
 		single_formation, formation_order_index, formation_order,
 		single_stance, stance_order_index, stance_order);
 
 	auto formation = formation_order.IsValid() ? 
-		boost::nowide::narrow(formation_order.GetStrikeGroupFormationData()->obj->GetName()) : "";
+		boost::nowide::narrow(formation_order.StrikeGroupFormationData->GetName()) : "";
 
 	return { single_formation, std::move(formation) };
 }

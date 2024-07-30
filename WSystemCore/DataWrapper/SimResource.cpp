@@ -2,13 +2,12 @@
 
 #include "SimResource.h"
 
-std::wstring SimResource::GetDataAssetName() const
+std::wstring ASimResource::GetDataAssetName() const
 {
-	const auto& data = *GetDataAsset();
-	return data->GetName();
+	return DataAsset->GetName();
 }
 
-std::string SimResource::GetDataAssetNameNarrow() const
+std::string ASimResource::GetDataAssetNameNarrow() const
 {
 	return boost::nowide::narrow(GetDataAssetName());
 }

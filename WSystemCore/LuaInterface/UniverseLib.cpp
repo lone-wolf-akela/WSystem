@@ -19,15 +19,15 @@ void UniverseLib::Begin_InGame(RavenSimulationProxy sim_proxy)
 
 float UniverseLib::GameTime() const
 {
-	return *this->sim_proxy.GetElapsedTime();
+	return this->sim_proxy.ElapsedTime;
 }
 
 std::uint32_t UniverseLib::GameFrame() const
 {
-	return *this->sim_proxy.GetSimulatingFrame();
+	return this->sim_proxy.SimulatingFrame;
 }
 
 float UniverseLib::FrameDeltaTime() const
 {
-	return *this->sim_proxy.GetSimulatingDeltaTime();
+	return this->sim_proxy.SimulatingDeltaTime;
 }
