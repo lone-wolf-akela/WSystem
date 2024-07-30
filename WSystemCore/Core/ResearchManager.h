@@ -114,8 +114,8 @@ private:
 	std::map<std::uint64_t, std::map<StringType, BuildConditionCheckResult>> build_capability_cache;
 	[[nodiscard]] BuildConditionCheckResult CanShipBuild(SimShip production_ship, ShipStaticData ship_to_build) const;
 	void NotifyResearchChanged(SimPlayer player, const ResearchData& data) const;
-	void UpdateResearchStatus(std::int32_t player_idx, SimPlayer player, const UC::TArray<ResearchData>& research_list, const std::set<StringType>& owned_ship_types, const std::set<StringType>& done_research_list) const;
-	bool UpdateBuildStatus(SimPlayer player, const UC::TArray<SimEntity>& entity_list, const std::set<StringType>& owned_ship_types, const std::set<StringType>& done_research_list);
+	void UpdateResearchStatus(std::int32_t player_idx, SimPlayer player, std::span<const SimShip> production_ship_list, const UC::TArray<ResearchData>& research_list, const std::set<StringType>& owned_ship_types, const std::set<StringType>& done_research_list) const;
+	bool UpdateBuildStatus(SimPlayer player, std::span<const SimShip> alive_ship_list, std::span<const SimShip> production_ship_list, const std::set<StringType>& owned_ship_types, const std::set<StringType>& done_research_list);
 	void NotifyBuildListChanged() const;
 	void CancelBuild(SimPlayer player, SimShip builder, ShipStaticData ship_to_build) const;
 };

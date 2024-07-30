@@ -369,3 +369,10 @@ enum class BuildPauseType : std::uint8_t
     Queue,
     All,
 };
+
+enum class UpgradeType : std::uint8_t
+{
+    Modifier,
+    Ability,
+    None,
+};

@@ -165,52 +165,54 @@ void WSysResearchManager::Begin_InGame(RavenSimulationProxy sim_proxy, RavenHUD 
 	}
 }
 
-namespace
-{
-	Generator<SimShip> alive_ships(const UC::TArray<SimEntity>& entity_list)
-	{
-		for (auto& entity : entity_list)
-		{
-			if (entity.IsValid() && entity.IsShip() && entity.IsAlive())
-			{
-				co_yield entity.obj;
-			}
-		}
-	}
-}
 
 void WSysResearchManager::Tick()
 {
 	static std::set<StringType> owned_ship_types;
 	static std::set<StringType> done_research_list;
+	static std::vector<SimShip> alive_ship_list;
+	static std::vector<SimShip> production_ship_list;
 
 	if (!sim_proxy.IsValid() || !EnableTick)
 	{
 		return;
 	}
 
-	auto players = sim_proxy.GetSimPlayers();
+	const auto players = sim_proxy.GetSimPlayers();
 	bool build_options_has_update = false;
 
 	for (std::int32_t player_idx = 0; player_idx < players->Num(); player_idx++)
 	{
 		auto player = (*players)[player_idx];
 
-		auto research_manager = player.GetResearchManager();
+		const auto research_manager = player.GetResearchManager();
 
-		auto research_list = research_manager->GetResearchList();
-		auto entity_list = player.GetOwnedSimObjects();
+		auto& research_list = *research_manager->GetResearchList();
+		auto& entity_list = *player.GetOwnedSimObjects();
 		
 		owned_ship_types.clear();
 		done_research_list.clear();
+		alive_ship_list.clear();
+		production_ship_list.clear();
 
-		for (auto& ship : alive_ships(*entity_list))
+		for (auto& entity : entity_list)
 		{
-			const auto ship_static_data = *ship.GetDataAsset();
-			owned_ship_types.emplace(ship_static_data->GetName());
+			if (entity.IsValid() && entity.IsShip() && entity.IsAlive())
+			{
+				SimShip ship = entity.obj;
+				const auto ship_static_data = *ship.GetDataAsset();
+				owned_ship_types.emplace(ship_static_data->GetName());
+				alive_ship_list.emplace_back(ship);
+
+				if (const auto& production_families = *ship_static_data.GetProductionFamilies();
+					production_families.Num() != 0)
+				{
+					production_ship_list.emplace_back(ship);
+				}
+			}
 		}
 
-		for (auto& research : *research_list)
+		for (auto& research : research_list)
 		{
 			if (research.State == ResearchState::Done)
 			{
@@ -218,8 +220,8 @@ void WSysResearchManager::Tick()
 			}
 		}
 
-		UpdateResearchStatus(player_idx, player, *research_list, owned_ship_types, done_research_list);
-		build_options_has_update |= UpdateBuildStatus(player, *entity_list, owned_ship_types, done_research_list);
+		UpdateResearchStatus(player_idx, player, production_ship_list, research_list, owned_ship_types, done_research_list);
+		build_options_has_update |= UpdateBuildStatus(player, alive_ship_list, production_ship_list, owned_ship_types, done_research_list);
 	}
 
 	if (build_options_has_update)
@@ -277,6 +279,7 @@ void WSysResearchManager::NotifyResearchChanged(SimPlayer player, const Research
 void WSysResearchManager::UpdateResearchStatus(
 	std::int32_t player_idx, 
 	SimPlayer player, 
+	std::span<const SimShip> production_ship_list,
 	const UC::TArray<ResearchData>& research_list, 
 	const std::set<StringType>& owned_ship_types,
 	const std::set<StringType>& done_research_list) const
@@ -309,10 +312,23 @@ void WSysResearchManager::UpdateResearchStatus(
 		{
 			if (research.State == ResearchState::Locked)
 			{
+				// already locked, do nothing
 				break;
 			}
 
 			tiir_research_function_library->CancelResearchForPlayer(player_idx, research_static_data);
+
+			if (*research_static_data.GetUpgradeType() == UpgradeType::None)
+			{
+				// is not upgrade,
+				// so it is a ship unlock research.
+				// and we need to cancel all ongoing builds of this ship
+				for (auto& ship : production_ship_list)
+				{
+					CancelBuild(player, ship, research.ShipData);
+				}
+			}
+
 			research.State = ResearchState::Locked;
 			NotifyResearchChanged(player, research);
 			break;
@@ -326,10 +342,10 @@ void WSysResearchManager::UpdateResearchStatus(
 namespace
 {
 
-	std::map<SimShip, std::set<StringType>> find_docked_ships(const UC::TArray<SimEntity>& entity_list)
+	std::map<SimShip, std::set<StringType>> find_docked_ships(std::span<const SimShip> ship_list)
 	{
 		std::map<SimShip, std::set<StringType>> docked_ships;
-		for (auto& ship : alive_ships(entity_list))
+		for (auto& ship : ship_list)
 		{
 			if (!*ship.GetIsDocked())
 			{
@@ -348,24 +364,18 @@ namespace
 
 bool WSysResearchManager::UpdateBuildStatus(
 	SimPlayer player,
-	const UC::TArray<SimEntity>& entity_list,
+	std::span<const SimShip> alive_ship_list,
+	std::span<const SimShip> production_ship_list,
 	const std::set<StringType>& owned_ship_types,
 	const std::set<StringType>& done_research_list)
 {
 	// ship holder -> docked ships
-	auto docked_ships = find_docked_ships(entity_list);
+	auto docked_ships = find_docked_ships(alive_ship_list);
 
 	bool build_options_has_update = false;
-	for (auto& build_from_ship : alive_ships(entity_list))
+	for (auto& build_from_ship : production_ship_list)
 	{
 		const auto ship_static_data = *build_from_ship.GetDataAsset();
-		if (const auto& production_families = *ship_static_data.GetProductionFamilies(); 
-			production_families.Num() == 0)
-		{
-			// not a production ship
-			continue;
-		}
-
 		const auto build_from_ship_id = *build_from_ship.GetSimID();
 		const auto build_from_ship_name = ship_static_data->GetName();
 		if (!build_capability_cache.contains(build_from_ship_id))
