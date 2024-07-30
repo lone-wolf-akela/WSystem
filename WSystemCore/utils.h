@@ -16,80 +16,47 @@ namespace utils
         static constexpr bool value = true;
     };
 
-    // from https://groups.google.com/g/comp.lang.c++.moderated/c/c873bPtT9mQ
-
-    template <class T>
-    struct IncList
-    {
-        template <class S>
-        IncList<T> operator - (IncList<S>) { return {}; }
-
-        using Type = T;
-    };
-
-    template <int Index>
-    struct PickTypeIndex
-    {
-        template <class T>
-        PickTypeIndex<Index - 1> operator - (IncList<T>) { return {}; }
-    };
-
-    template <>
-    struct PickTypeIndex<1>
-    {
-        template <class T>
-        IncList<T> operator - (IncList<T>) { return {}; }
-    };
-
-    template <int Ind, typename ... Types>
-    using PickType = typename decltype((PickTypeIndex<Ind>() - ... - IncList<Types>()))::Type;
-
-    template <int ... IList>
-    struct IntList
-    {
-        template <typename T>
-        IntList<IList..., 1 + sizeof ... (IList)> operator + (IncList<T>) { return {}; }
-    };
-
     template <typename ... Types>
     struct VariadicStructFactory
     {
-        template <int Index>
-        using Type = PickType<Index, Types...>;
+        using TypeList = std::tuple<Types...>;
 
-        template <int Index>
+        template <std::size_t Index>
+        using NthType = decltype(std::get<Index>(std::declval<TypeList>()));
+
+        template <std::size_t Index>
         struct Field
         {
-            std::remove_cvref_t<Type<Index>> field;
+            using FieldType = std::remove_cvref_t<NthType<Index>>;
+            FieldType field;
 
-            template <typename ArgType>
-            Field(ArgType&& arg) : field(std::forward<ArgType>(arg)) {}
+            explicit Field(const FieldType& arg) : field(arg) {}
+            explicit Field(FieldType&& arg) : field(std::move(arg)) {}
         };
 
-        template <int ... IList>
-        struct VariadicStructImpl : Field<IList>...
+        template <std::size_t ... I>
+        struct VariadicStructImpl : Field<I>...
         {
-            template <int I>
-            auto& ref() { return static_cast<Field<I>*>(this)->field; }
+            constexpr static size_t NumFields = sizeof...(Types);
+
+            template <std::size_t Index>
+            auto& GetN() { return static_cast<Field<Index>*>(this)->field; }
+
+            auto& GetFirstMember() { return GetN<0>(); }
+            auto& GetLastMember() { return GetN<NumFields - 1>(); }
 
             template<typename... ArgTypes>
-            VariadicStructImpl(ArgTypes&&... args) : Field<IList>{ std::forward<ArgTypes>(args) }... {}
+            explicit VariadicStructImpl(ArgTypes&&... args) : Field<I>{ std::forward<ArgTypes>(args) }... {}
         };
 
-        template <int ... IList>
-        static constexpr VariadicStructImpl<IList...> FromList(IntList<IList...>) { return {}; }
+        template <std::size_t ... I>
+        constexpr static VariadicStructImpl<I...> FromList(std::index_sequence<I...>); // intentional not implemented
 
-        using Ret = decltype(FromList((IntList<>() + ... + IncList<Types>())));
+        using Ret = decltype(FromList(std::make_index_sequence<sizeof...(Types)>{}));
     };
 
     template <typename ... Types>
     using VariadicStruct = typename VariadicStructFactory<Types...>::Ret;
-
-    template <typename ... Types>
-    auto& get_first_member(VariadicStruct<Types...>& vs) { return vs.template ref<1>(); }
-
-    template <typename ... Types>
-    auto& get_last_member(VariadicStruct<Types...>& vs) { return vs.template ref<sizeof...(Types)>(); }
 
     template<typename... Args>
     void call_unreal_function_void(RC::Unreal::UObject* obj, RC::Unreal::UFunction* func, Args&&... args)
@@ -110,7 +77,7 @@ namespace utils
     {
         VariadicStruct<Args..., Ret> args_struct(std::forward<Args>(args)..., Ret{});
         obj->ProcessEvent(func, &args_struct);
-        return std::move(get_last_member<Args..., Ret>(args_struct));
+        return std::move(args_struct.GetLastMember());
     }
 
     template<typename RefArg, typename... Args>
@@ -118,7 +85,7 @@ namespace utils
     {
         VariadicStruct<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args...> args_struct(std::move(ref_arg), std::forward<Args>(args)...);
         obj->ProcessEvent(func, &args_struct);
-        ref_arg = std::move(get_first_member<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args...>(args_struct));
+        ref_arg = std::move(args_struct.GetFirstMember());
     }
 
 	template<typename Ret, typename RefArg, typename... Args>
@@ -126,8 +93,8 @@ namespace utils
     {
 		VariadicStruct<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args..., Ret> args_struct(std::move(ref_arg), std::forward<Args>(args)..., Ret{});
 		obj->ProcessEvent(func, &args_struct);
-        ref_arg = std::move(get_first_member<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args..., Ret>(args_struct));
-		return std::move(get_last_member<std::add_rvalue_reference_t<std::remove_cvref_t<RefArg>>, Args..., Ret>(args_struct));
+        ref_arg = std::move(args_struct.GetFirstMember());
+		return std::move(args_struct.GetLastMember());
 	}
 }
 
@@ -221,7 +188,7 @@ WSYS_GET_MEMBER_FUNCTION(name)
 }\
 WSYS_GET_MEMBER_FUNCTION(name)
 
-// special ref funcs
+// special ref functions
 
 #define WSYS_MEMBER_FUNCTION_VOID_REF(name, reftype, refarg,...) void name(\
     reftype refarg __VA_OPT__(,) WSYS_CONCAT_EACH_PAIR(__VA_ARGS__),\
