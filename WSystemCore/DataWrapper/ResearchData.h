@@ -13,4 +13,6 @@ struct FResearchData
     EResearchState State;
     bool Paused;
     float Progress;
+    int32_t QueuePosition;
+    int32_t FamilyQueuePosition;
 };

@@ -42,4 +42,10 @@ public:
 	WSYS_MEMBER_FUNCTION_VOID(CancelResearchForPlayer, std::int32_t, player_index, UResearchStaticData, research_static_data)
 
 	WSYS_MEMBER_FUNCTION_VOID(CancelAllResearchForPlayer, std::int32_t, player_index)
+
+	// todo: bind to lua
+	WSYS_MEMBER_FUNCTION_VOID(SetMaxActiveResearchPerFamily, std::int32_t, player_index, std::int32_t, max_active_research)
+
+	// todo: bind to lua
+	WSYS_MEMBER_FUNCTION_VOID(SetMaxActiveResearch, std::int32_t, player_index, std::int32_t, max_active_research)
 };

@@ -375,6 +375,7 @@ enum class EUpgradeType : std::uint8_t
     Modifier,
     Ability,
     None,
+    Effect,
 };
 
 enum class ELobbyState : std::int8_t
@@ -412,5 +413,4 @@ enum class EResearchEvent : std::uint8_t
     ResearchUnrestricted,
     ResearchPaused,
     ResearchUnpaused,
-    _ResearchEventNum,
 };
